@@ -232,7 +232,7 @@ public final class RunMe {
     }
 
     private static void flag15(final byte[] password) {
-        print(15, 3519786268141933778L + password[3], password);
+        // REDACTED
     }
 
     private static void flag16(final byte[] password) {
@@ -284,7 +284,42 @@ public final class RunMe {
         return n;
     }
 
-    
+
+    private static void flag18(final byte[] password) {
+        final int n = 2024 + getInt(password) % 2024;
+        // Find the number of factors of n! modulo PRIME
+        final int factors = 0;
+        if (factors != 0) {
+            print(18, factors, password);
+        }
+    }
+
+
+    private static void flag19(final byte[] password) {
+        // Let n = 2024 * 10**24 + getInt(password).
+        // Consider the sequence of numbers (n + i) ** 2.
+        // Instead of each number, we write the number that is obtained from it by discarding the last 24 digits.
+        // How many of the first numbers of the resulting sequence will form an arithmetic progression?
+        final long result = 0;
+        if (result != 0) {
+            print(19, result, password);
+        }
+    }
+
+    private static void flag20(final byte[] password) {
+        final Collection<Long> longs = new Random(getInt(password)).longs(1_000_000)
+                .map(n -> n % 1000)
+                .boxed()
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        // Calculate the number of objects (recursively) accessible by "longs" reference.
+        final int result = 0;
+
+        if (result != 0) {
+            print(20, result, password);
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------------------------
     // You may ignore all code below this line.
     // It is not required to get any of the flags.
