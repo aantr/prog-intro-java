@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -156,7 +157,7 @@ public final class RunMe {
     }
 
 
-    private static final String PATTERN = "Reading the documentation can be surprisingly helpful!";
+    private static final String PATTERN = "Reading a documentation can be surprisingly helpful!";
     private static final int SMALL_REPEAT_COUNT = 10_000_000;
 
     private static void flag9(final byte[] password) {
