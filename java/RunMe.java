@@ -44,6 +44,9 @@ public final class RunMe {
         flag15(password);
         flag16(password);
         flag17(password);
+        flag18(password);
+        flag19(password);
+        flag20(password);
     }
 
     private static void flag0(final byte[] password) {
