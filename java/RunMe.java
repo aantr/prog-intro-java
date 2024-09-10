@@ -264,7 +264,8 @@ public final class RunMe {
     }
 
     private static void flag17(final byte[] password) {
-        print(17, calc17(Math.abs(Arrays.toString(password).hashCode() % 2024)), password);
+        final int n = Math.abs(getInt(password) % 2024) + 2024;
+        print(17, calc17(n), password);
     }
 
     /**
