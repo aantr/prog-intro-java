@@ -7,8 +7,9 @@
 Модификации
  * *Base*
     * Исходный код тестов:
-        [SumTest.java](java/Sum/SumTest.java),
-        [SumTester.java](java/Sum/SumTester.java)
+        [SumTest.java](java/sum/SumTest.java),
+        [SumTester.java](java/sum/SumTester.java),
+        [Базовые классы](java/base/)
     * Откомпилированные тесты: [SumTest.jar](artifacts/SumTest.jar)
         * Аргументы командной строки: модификации
 
@@ -28,11 +29,6 @@
     ```
  1. Для ускорения отладки рекомендуется сделать скрипт, выполняющий шаги 2−4.
 
-Исходный код тестов:
-
-* [SumTest.java](java/sum/SumTest.java)
-* [SumTester.java](java/sum/SumTester.java)
-* [Базовые классы](java/base/)
 
 
 ## Домашнее задание 1. Запусти меня!
