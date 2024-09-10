@@ -2,6 +2,38 @@
 
 [Условия домашних заданий](https://www.kgeorgiy.info/courses/prog-intro/homeworks.html)
 
+## Домашнее задание 2. Сумма чисел
+
+Модификации
+ * *Base*
+    * Исходный код тестов:
+        [SumTest.java](java/Sum/SumTest.java),
+        [SumTester.java](java/Sum/SumTester.java)
+    * Откомпилированные тесты: [SumTest.jar](artifacts/SumTest.jar)
+        * Аргументы командной строки: модификации
+
+
+Для того, чтобы протестировать программу:
+
+ 1. Скачайте откомпилированные тесты ([SumTest.jar](artifacts/SumTest.jar))
+ 1. Откомпилируйте `Sum.java`
+ 1. Проверьте, что создался `Sum.class`
+ 1. В каталоге, в котором находится `Sum.class`, выполните команду
+    ```
+       java -ea -jar <путь к SumTest.jar> Base
+    ```
+    * Например, если `SumTest.jar` находится в текущем каталоге, выполните команду
+    ```
+        java -ea -jar SumTest.jar Base
+    ```
+ 1. Для ускорени отладки рекомендуется сделать скрипт, выполняющий шаги 2−4.
+
+Исходный код тестов:
+
+* [SumTest.java](java/sum/SumTest.java)
+* [SumTester.java](java/sum/SumTester.java)
+* [Базовые классы](java/base/)
+
 
 ## Домашнее задание 1. Запусти меня!
 
