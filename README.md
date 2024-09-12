@@ -2,6 +2,18 @@
 
 [Условия домашних заданий](https://www.kgeorgiy.info/courses/prog-intro/homeworks.html)
 
+
+## Домашнее задание 3. Реверс
+
+Модификации
+ * *Base*
+    * Исходный код тестов:
+        [ReverseTest.java](java/reverse/ReverseTest.java),
+        [ReverseTester.java](java/reverse/ReverseTester.java)
+    * Откомпилированные тесты: [ReverseTest.jar](artifacts/ReverseTest.jar)
+        * Аргументы командной строки: модификации
+
+
 ## Домашнее задание 2. Сумма чисел
 
 Модификации
@@ -9,10 +21,9 @@
     * Исходный код тестов:
         [SumTest.java](java/sum/SumTest.java),
         [SumTester.java](java/sum/SumTester.java),
-        [Базовые классы](java/base/)
+        [базовые классы](java/base/)
     * Откомпилированные тесты: [SumTest.jar](artifacts/SumTest.jar)
         * Аргументы командной строки: модификации
-
 
 Для того, чтобы протестировать программу:
 
