@@ -3,6 +3,7 @@ package base;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -123,7 +124,15 @@ public interface Runner {
                 final URLClassLoader classLoader = new URLClassLoader(new URL[]{url});
                 for (final String candidate : candidates) {
                     try {
-                        return classLoader.loadClass(candidate).getMethod("main", String[].class);
+                        final Class<?> loaded = classLoader.loadClass(candidate);
+                        if (!Modifier.isPublic(loaded.getModifiers())) {
+                            throw Asserts.error("Class %s is not public", candidate);
+                        }
+                        final Method main = loaded.getMethod("main", String[].class);
+                        if (!Modifier.isPublic(main.getModifiers()) || !Modifier.isStatic(main.getModifiers())) {
+                            throw Asserts.error("Method main of class %s should be public and static", candidate);
+                        }
+                        return main;
                     } catch (final ClassNotFoundException e) {
                         // Ignore
                     } catch (final NoSuchMethodException e) {
