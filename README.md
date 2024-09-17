@@ -38,6 +38,15 @@
       и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
       скобками
     * Класс должен иметь имя `SumBigIntegerPunct`
+ * *LongPunctHex* (41, 42)
+    * Входные данные являются 64-битными целыми числами
+    * Часть чисел во вводе могут быть шестнадцатеричными.
+      Они имеют префикс `0x` и являются беззнаковыми.
+    * Числа дополнительно могут разделяться 
+      [открывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#START_PUNCTUATION)
+      и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
+      скобками
+    * Класс должен иметь имя `SumLongPunctHex`
 
 
 Для того, чтобы протестировать программу:

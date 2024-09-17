@@ -71,6 +71,36 @@ public final class SumTest {
             BigInteger.TEN, BigInteger.TEN.pow(10), BigInteger.TEN.pow(100), BigInteger.TWO.pow(1000))
             .test(0, "10000000000000000000000000000000000000000 -10000000000000000000000000000000000000000"));
 
+
+    /// Hex
+
+    private static <T extends Number> Named<Op<T>> hex(final Function<T, String> toHex) {
+        //noinspection StringConcatenationMissingWhitespace
+        return Named.of("Hex", test -> test
+                .test(1, "0x1")
+                .test(0x1a, "0x1a")
+                .test(0xA2, "0xA2")
+                .testSpaces(62, " 0X0 0X1 0XF 0XF 0x0 0x1 0xF 0xf")
+                .test(0x12345678, "0x12345678")
+                .test(0x09abcdef, "0x09abcdef")
+                .test(0x3CafeBab, "0x3CafeBab")
+                .test(0x3DeadBee, "0x3DeadBee")
+
+                .test(Integer.MAX_VALUE, "0" + Integer.MAX_VALUE)
+                .test(Integer.MIN_VALUE, "" + Integer.MIN_VALUE)
+                .test(Integer.MAX_VALUE, "0x" + Integer.toHexString(Integer.MAX_VALUE))
+                .setToString(number -> {
+                    final int hashCode = number.hashCode();
+                    if ((hashCode & 1) == 0) {
+                        return number.toString();
+                    }
+
+                    final String lower = "0x" + toHex.apply(number).toLowerCase(Locale.ROOT);
+                    return (hashCode & 2) == 0 ? lower : lower.toUpperCase(Locale.ROOT);
+                })
+        );
+    }
+    
     /// Common
 
     /* package-private */ static <T extends Number> Consumer<TestCounter> variant(
@@ -96,6 +126,7 @@ public final class SumTest {
                 .variant("Base",            variant(runner, BASE, plain()))
                 .variant("LongPunct",       variant(runner, LONG, punct(plain())))
                 .variant("BigIntegerPunct", variant(runner, BIG_INTEGER, punct(plain())))
+                .variant("LongPunctHex",    variant(runner, LONG, punct(hex(Long::toHexString))))
                 ;
     }
 
