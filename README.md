@@ -31,6 +31,13 @@
       и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
       скобками
     * Класс должен иметь имя `SumLongPunct`
+ * *BigIntegerPunct* (38, 39)
+    * Входные данные помещаются в тип [BigInteger](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigInteger.html)
+    * Числа дополнительно могут разделяться 
+      [открывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#START_PUNCTUATION)
+      и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
+      скобками
+    * Класс должен иметь имя `SumBigIntegerPunct`
 
 
 Для того, чтобы протестировать программу:

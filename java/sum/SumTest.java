@@ -64,6 +64,13 @@ public final class SumTest {
         ));
     }
 
+    /// BigInteger
+
+    private static final Named<Supplier<SumTester<BigInteger>>> BIG_INTEGER = Named.of("BigInteger", () -> new SumTester<>(
+            BigInteger::add, BigInteger::valueOf, (r, max) -> new BigInteger(max.bitLength(), r.getRandom()), TO_STRING,
+            BigInteger.TEN, BigInteger.TEN.pow(10), BigInteger.TEN.pow(100), BigInteger.TWO.pow(1000))
+            .test(0, "10000000000000000000000000000000000000000 -10000000000000000000000000000000000000000"));
+
     /// Common
 
     /* package-private */ static <T extends Number> Consumer<TestCounter> variant(
@@ -88,6 +95,7 @@ public final class SumTest {
         return new Selector(owner)
                 .variant("Base",            variant(runner, BASE, plain()))
                 .variant("LongPunct",       variant(runner, LONG, punct(plain())))
+                .variant("BigIntegerPunct", variant(runner, BIG_INTEGER, punct(plain())))
                 ;
     }
 
