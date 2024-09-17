@@ -2,6 +2,8 @@ package sum;
 
 import base.*;
 
+import java.math.BigInteger;
+import java.util.Locale;
 import java.util.function.*;
 
 /**
@@ -22,6 +24,44 @@ public final class SumTest {
 
     /* package-private */ static <T extends Number> Named<Op<T>> plain() {
         return Named.of("", test -> test);
+    }
+
+    /// Long
+
+    private static final Named<Supplier<SumTester<Long>>> LONG = Named.of("Long", () -> new SumTester<>(
+            Long::sum, n -> n, (r, max) -> r.getRandom().nextLong() % max, TO_STRING,
+            10L, 100L, (long) Integer.MAX_VALUE, Long.MAX_VALUE)
+            .test(12345678901234567L, " +12345678901234567 ")
+            .test(0L, " +12345678901234567 -12345678901234567")
+            .test(0L, " +12345678901234567 -12345678901234567"));
+
+    /// Punct
+
+    private static <T extends Number> Named<Op<T>> compose(
+            final String prefix,
+            final Named<Op<T>> inner,
+            final Op<T> outer
+    ) {
+        return Named.of(prefix + inner.getName(), t -> outer.apply(inner.getValue().apply(t)));
+    }
+
+    private static <T extends Number> Named<Op<T>> punct(final Named<Op<T>> inner) {
+        //noinspection UnnecessaryUnicodeEscape
+        return compose("Punct", inner, t -> t.addSpaces(
+                "([{)]}",
+                "\u0F3A\u0F3C\u169B\u201A\u201E\u2045\u207D\u208D\u2308\u230A\u2329\u2768\u276A" +
+                        "\u276C\u276E\u2770\u2772\u2774\u27C5\u27E6\u27E8\u27EA\u27EC\u27EE\u2983\u2985" +
+                        "\u2987\u2989\u298B\u298D\u298F\u2991\u2993\u2995\u2997\u29D8\u29DA\u29FC\u2E22" +
+                        "\u2E24\u2E26\u2E28\u2E42\u3008\u300A\u300C\u300E\u3010\u3014\u3016\u3018\u301A" +
+                        "\u301D\uFD3F\uFE17\uFE35\uFE37\uFE39\uFE3B\uFE3D\uFE3F\uFE41\uFE43\uFE47\uFE59" +
+                        "\uFE5B\uFE5D\uFF08\uFF3B\uFF5B\uFF5F\uFF62",
+                "\u0F3B\u0F3D\u169C\u2046\u207E\u208E\u2309\u230B\u232A\u2769\u276B\u276D\u276F" +
+                        "\u2771\u2773\u2775\u27C6\u27E7\u27E9\u27EB\u27ED\u27EF\u2984\u2986\u2988\u298A" +
+                        "\u298C\u298E\u2990\u2992\u2994\u2996\u2998\u29D9\u29DB\u29FD\u2E23\u2E25\u2E27" +
+                        "\u2E29\u3009\u300B\u300D\u300F\u3011\u3015\u3017\u3019\u301B\u301E\u301F\uFD3E" +
+                        "\uFE18\uFE36\uFE38\uFE3A\uFE3C\uFE3E\uFE40\uFE42\uFE44\uFE48\uFE5A\uFE5C\uFE5E" +
+                        "\uFF09\uFF3D\uFF5D\uFF60\uFF63"
+        ));
     }
 
     /// Common
@@ -47,6 +87,7 @@ public final class SumTest {
     public static Selector selector(final Class<?> owner, final Named<Function<String, Runner>> runner) {
         return new Selector(owner)
                 .variant("Base",            variant(runner, BASE, plain()))
+                .variant("LongPunct",       variant(runner, LONG, punct(plain())))
                 ;
     }
 
