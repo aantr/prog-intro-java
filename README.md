@@ -12,13 +12,6 @@
         [ReverseTester.java](java/reverse/ReverseTester.java)
     * Откомпилированные тесты: [ReverseTest.jar](artifacts/ReverseTest.jar)
         * Аргументы командной строки: модификации
- * *LongPunct* (36, 37)
-    * Входные данные являются 64-битными целыми числами
-    * Числа дополнительно могут разделяться 
-      [открывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#START_PUNCTUATION)
-      и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
-      скобками
-    * Класс должен иметь имя `SumLongPunct`
 
 
 ## Домашнее задание 2. Сумма чисел
@@ -31,6 +24,14 @@
         [базовые классы](java/base/)
     * Откомпилированные тесты: [SumTest.jar](artifacts/SumTest.jar)
         * Аргументы командной строки: модификации
+ * *LongPunct* (36, 37)
+    * Входные данные являются 64-битными целыми числами
+    * Числа дополнительно могут разделяться 
+      [открывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#START_PUNCTUATION)
+      и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
+      скобками
+    * Класс должен иметь имя `SumLongPunct`
+
 
 Для того, чтобы протестировать программу:
 
