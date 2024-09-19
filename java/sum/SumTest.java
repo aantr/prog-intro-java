@@ -143,6 +143,7 @@ public final class SumTest {
                 .variant("LongPunct",       variant(runner, LONG, punct(plain())))
                 .variant("BigIntegerPunct", variant(runner, BIG_INTEGER, punct(plain())))
                 .variant("LongPunctHex",    variant(runner, LONG, punct(hex(Long::toHexString))))
+                .variant("Float",           variant(runner, FLOAT, plain()))
                 .variant("FloatPunct",      variant(runner, FLOAT, punct(plain())))
                 ;
     }
