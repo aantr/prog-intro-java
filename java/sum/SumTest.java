@@ -100,7 +100,23 @@ public final class SumTest {
                 })
         );
     }
-    
+
+
+    /// Float
+
+    private static BiConsumer<Number, String> approximate(final Function<String, Number> parser, final double precision) {
+        return (expected, out) ->
+                Asserts.assertEquals("Sum", expected.doubleValue(), parser.apply(out).doubleValue(), precision);
+    }
+
+    private static final Named<Supplier<SumTester<Float>>> FLOAT = Named.of("Float", () -> new SumTester<>(
+            Float::sum, n -> (float) n, (r, max) -> (r.getRandom().nextFloat() - 0.5f) * 2 * max,
+            approximate(Float::parseFloat, 1e-5),
+            10.0f, 0.01f, 1e20f, Float.MAX_VALUE / 10000)
+            .test(5, "2.5 2.5")
+            .test(0, "1e10 -1e10")
+            .testT(2e10f, "1.5e10 0.5E10"));
+
     /// Common
 
     /* package-private */ static <T extends Number> Consumer<TestCounter> variant(
@@ -127,6 +143,7 @@ public final class SumTest {
                 .variant("LongPunct",       variant(runner, LONG, punct(plain())))
                 .variant("BigIntegerPunct", variant(runner, BIG_INTEGER, punct(plain())))
                 .variant("LongPunctHex",    variant(runner, LONG, punct(hex(Long::toHexString))))
+                .variant("FloatPunct",      variant(runner, FLOAT, punct(plain())))
                 ;
     }
 

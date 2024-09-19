@@ -24,6 +24,13 @@
         [базовые классы](java/base/)
     * Откомпилированные тесты: [SumTest.jar](artifacts/SumTest.jar)
         * Аргументы командной строки: модификации
+ * *FloatPunct* (34, 35)
+    * Входные данные являются 32-битными числами с формате с плавающей точкой
+    * Числа дополнительно могут разделяться 
+      [открывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#START_PUNCTUATION)
+      и [закрывающими](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html#END_PUNCTUATION)
+      скобками
+    * Класс должен иметь имя `SumFloatPunct`
  * *LongPunct* (36, 37)
     * Входные данные являются 64-битными целыми числами
     * Числа дополнительно могут разделяться 
