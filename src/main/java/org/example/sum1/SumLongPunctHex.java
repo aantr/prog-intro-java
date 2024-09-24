@@ -1,35 +1,32 @@
-import java.util.HexFormat;
-
 public class SumLongPunctHex {
+
+    private static long parse(String str) {
+        if (str.toLowerCase().startsWith("0x")) {
+            return Long.parseUnsignedLong(str, 2, str.length(), 16);
+        } else {
+            return Long.parseLong(str, 10);
+        }
+    }
 
     public static void main(String[] args) {
         long sum = 0;
-        for (String i : args) {
-
-            StringBuilder current = new StringBuilder();
-            for (char j : i.toCharArray()) {
-                if (Character.isDigit(j) || Character.isAlphabetic(j) || j == '-') {
-                    current.append(j);
-                } else {
-                    if (!current.isEmpty()) {
-                        if (current.length() >= 2 && current.charAt(0) == '0' && Character.toLowerCase(current.charAt(1)) == 'x') {
-                            sum += HexFormat.fromHexDigitsToLong(current.substring(2));
-                        } else {
-                            sum += Long.parseLong(current.toString());
-                        }
-                        current = new StringBuilder();
+        for (String arg : args) {
+            int start = 0;
+            for (int idx = 0; idx < arg.length(); idx++) {
+                char ch = arg.charAt(idx);
+                if (Character.isWhitespace(ch) ||
+                        Character.getType(ch) == Character.START_PUNCTUATION ||
+                        Character.getType(ch) == Character.END_PUNCTUATION) {
+                    if (start != idx) {
+                        sum += parse(arg.substring(start, idx));
                     }
+                    start = idx + 1;
                 }
             }
-            if (!current.isEmpty()) {
-                if (current.length() >= 2 && current.charAt(0) == '0' && current.charAt(1) == 'x') {
-                    sum += HexFormat.fromHexDigitsToLong(current.substring(2));
-                } else {
-                    sum += Long.parseLong(current.toString());
-                }
+            if (arg.length() != start) {
+                sum += parse(arg.substring(start));
             }
         }
-
         System.out.println(sum);
     }
 }
