@@ -16,6 +16,17 @@ import java.util.stream.IntStream;
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 public final class ReverseTest {
+
+    /// SumMod
+
+    private static final int M = 1_000_000_007;
+
+    private static final Named<Op> SUM_MOD = cross(
+            "SumMod",
+            (a, b) -> (a + (b % M + M) % M) % M,
+            (r, c, v) -> ((r + c) % M + (-v % M + M) % M) % M
+    );
+
     /// SumAbs
 
     @FunctionalInterface
@@ -73,6 +84,7 @@ public final class ReverseTest {
         return new Selector(owner)
                 .variant("Base",        ReverseTester.variant(maxSize, REVERSE))
                 .variant("SumAbs",      ReverseTester.variant(maxSize, SUM_ABS))
+                .variant("SumMod",      ReverseTester.variant(maxSize, SUM_MOD))
                 ;
     }
 
