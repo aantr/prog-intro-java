@@ -27,6 +27,14 @@ public final class ReverseTest {
             (r, c, v) -> ((r + c) % M + (-v % M + M) % M) % M
     );
 
+    /// SumAbsMod
+
+    private static final Named<Op> SUM_ABS_MOD = cross(
+            "SumAbsMod",
+            (a, b) -> (a + Math.abs(b) % M) % M,
+            (r, c, v) -> ((r + c) % M + ((M - Math.abs(v) % M) % M)) % M
+    );
+
     /// SumAbs
 
     @FunctionalInterface
@@ -85,6 +93,7 @@ public final class ReverseTest {
                 .variant("Base",        ReverseTester.variant(maxSize, REVERSE))
                 .variant("SumAbs",      ReverseTester.variant(maxSize, SUM_ABS))
                 .variant("SumMod",      ReverseTester.variant(maxSize, SUM_MOD))
+                .variant("SumAbsMod",   ReverseTester.variant(maxSize, SUM_ABS_MOD))
                 ;
     }
 
