@@ -5,10 +5,13 @@ import base.Selector;
 import base.TestCounter;
 import reverse.ReverseTester.Op;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.IntToLongFunction;
 import java.util.function.LongBinaryOperator;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Tests for {@code Reverse} homework.
@@ -16,7 +19,17 @@ import java.util.stream.IntStream;
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 public final class ReverseTest {
-
+    /// Transpose
+    private static final Named<Op> TRANSPOSE = Named.of("Transp", ints -> {
+        final List<int[]> rows = new ArrayList<>(List.of(ints));
+        return IntStream.range(0, Arrays.stream(ints).mapToInt(r -> r.length).max().orElse(0))
+                .mapToObj(c -> {
+                    rows.removeIf(r -> r.length <= c);
+                    return rows.stream().mapToLong(r -> r[c]).filter(v -> (v & 1) == 1).toArray();
+                })
+                .toArray(long[][]::new);
+    });
+    
     /// SumMod
 
     private static final int M = 1_000_000_007;
@@ -94,6 +107,7 @@ public final class ReverseTest {
                 .variant("SumAbs",      ReverseTester.variant(maxSize, SUM_ABS))
                 .variant("SumMod",      ReverseTester.variant(maxSize, SUM_MOD))
                 .variant("SumAbsMod",   ReverseTester.variant(maxSize, SUM_ABS_MOD))
+                .variant("Transpose",   ReverseTester.variant(maxSize, TRANSPOSE))
                 ;
     }
 
