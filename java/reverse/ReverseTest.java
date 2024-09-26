@@ -29,7 +29,19 @@ public final class ReverseTest {
                 })
                 .toArray(long[][]::new);
     });
-    
+
+    /// Odd
+
+    private static final Named<Op> ODD = Named.of(
+            "Odd",
+            ints -> ReverseTester.transform(
+                    Stream.of(ints)
+                            .map(row -> Arrays.stream(row).filter(v -> (v & 1) == 1))
+                            .map(IntStream::toArray)
+                            .toArray(int[][]::new)
+            )
+    );
+
     /// SumMod
 
     private static final int M = 1_000_000_007;
@@ -107,6 +119,7 @@ public final class ReverseTest {
                 .variant("SumAbs",      ReverseTester.variant(maxSize, SUM_ABS))
                 .variant("SumMod",      ReverseTester.variant(maxSize, SUM_MOD))
                 .variant("SumAbsMod",   ReverseTester.variant(maxSize, SUM_ABS_MOD))
+                .variant("Odd",         ReverseTester.variant(maxSize, ODD))
                 .variant("Transpose",   ReverseTester.variant(maxSize, TRANSPOSE))
                 ;
     }
