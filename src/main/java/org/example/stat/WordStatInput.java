@@ -8,13 +8,23 @@ import java.util.HashMap;
 public class WordStatInput {
     private final static int MAXN = 1000;
 
+    private static int hashCode(String str) {
+        int res = 0;
+        int p = 1;
+        for (int i = 0; i < str.length(); i++) {
+            res += p * str.charAt(i);
+            p *= 101;
+        }
+        return res;
+    }
+
     public static void main(String[] args) throws IOException {
         String filename_in = args[0], filename_out = args[1];
         InputStreamReader reader = new InputStreamReader(new FileInputStream(filename_in), StandardCharsets.UTF_8);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename_out),  StandardCharsets.UTF_8);
         int ch;
         StringBuilder sb = new StringBuilder();
-        HashMap<String, Integer> idx = new HashMap<>();
+        HashMap<Integer, Integer> idx = new HashMap<>();
         int[] cnt = new int[MAXN];
         String[] word = new String[MAXN];
         int all = 0;
@@ -24,11 +34,12 @@ public class WordStatInput {
                     ch != '\'') {
                 if (!sb.isEmpty()) {
                     String str = sb.toString().toLowerCase();
-                    if (!idx.containsKey(str)) {
+                    int hc = hashCode(str);
+                    if (!idx.containsKey(hc)) {
                         word[all] = str;
-                        idx.put(str, all++);
+                        idx.put(hc, all++);
                     }
-                    int value = idx.get(str);
+                    int value = idx.get(hc);
                     cnt[value]++;
                     sb = new StringBuilder();
                 }
