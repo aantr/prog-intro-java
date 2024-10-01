@@ -32,7 +32,7 @@ public final class ReverseTest {
 
     /// Odd
 
-    private static final Named<Op> ODD = Named.of(
+    /* package-private */ static final Named<Op> ODD = Named.of(
             "Odd",
             ints -> ReverseTester.transform(
                     Stream.of(ints)
@@ -44,7 +44,7 @@ public final class ReverseTest {
 
     /// SumMod
 
-    private static final int M = 1_000_000_007;
+    /* package-private */ static final int M = 1_000_000_007;
 
     private static final Named<Op> SUM_MOD = cross(
             "SumMod",
@@ -63,7 +63,7 @@ public final class ReverseTest {
     /// SumAbs
 
     @FunctionalInterface
-    private interface LongTernaryOperator {
+    /* package-private */ interface LongTernaryOperator {
         long applyAsLong(long a, long b, long c);
     }
 
