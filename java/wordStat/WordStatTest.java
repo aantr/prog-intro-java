@@ -46,11 +46,17 @@ public final class WordStatTest {
             length("Shingles", SIZE, s -> IntStream.rangeClosed(0, s.length() - SIZE)
                     .mapToObj(i -> s.substring(i, i + SIZE)), Stream::of);
 
+
+    /// Middle
+    private static final Named<Function<String, Stream<String>>> MIDDLE =
+            length("Middle", SIZE * 2 + 1, s -> Stream.of(s.substring(SIZE, s.length() - SIZE)), Stream::of);
+
     /// Common
     public static final Selector SELECTOR = new Selector(WordStatTester.class)
             .variant("Base",            WordStatTester.variant(INPUT, ID))
             .variant("WordsSuffix",     WordStatTester.variant(WORDS, SUFFIX))
             .variant("WordsShingles",   WordStatTester.variant(WORDS, SHINGLES))
+            .variant("WordsMiddle",     WordStatTester.variant(WORDS, MIDDLE))
             ;
 
     private WordStatTest() {
