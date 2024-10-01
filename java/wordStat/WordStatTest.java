@@ -6,6 +6,7 @@ import base.Selector;
 
 import java.util.Comparator;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -40,10 +41,16 @@ public final class WordStatTest {
             length("Suffix", SIZE, s -> Stream.of(s.substring(s.length() - SIZE)), Stream::of);
 
 
+    /// Shingles
+    private static final Named<Function<String, Stream<String>>> SHINGLES =
+            length("Shingles", SIZE, s -> IntStream.rangeClosed(0, s.length() - SIZE)
+                    .mapToObj(i -> s.substring(i, i + SIZE)), Stream::of);
+
     /// Common
     public static final Selector SELECTOR = new Selector(WordStatTester.class)
             .variant("Base",            WordStatTester.variant(INPUT, ID))
             .variant("WordsSuffix",     WordStatTester.variant(WORDS, SUFFIX))
+            .variant("WordsShingles",   WordStatTester.variant(WORDS, SHINGLES))
             ;
 
     private WordStatTest() {
