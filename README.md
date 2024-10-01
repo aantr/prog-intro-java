@@ -14,7 +14,7 @@
         [WordStatChecker.java](java/wordStat/WordStatChecker.java)
     * Откомпилированные тесты: [WordStatTest.jar](artifacts/WordStatTest.jar)
         * Аргументы командной строки: модификации
- * *FastSort* (36, 39)
+ * *FastSort* (36-42)
     * Пусть _n_ – число слов во входном файле,
       тогда программа должна работать за O(_n_ log _n_).
  * *WordsSuffix* (36, 37)
