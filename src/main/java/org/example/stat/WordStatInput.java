@@ -27,7 +27,7 @@ public class WordStatInput {
         HashMap<Integer, Integer> idx = new HashMap<>();
         int[] cnt = new int[MAXN];
         String[] word = new String[MAXN];
-        int all = 0;
+        int word_count = 0;
         while ((ch = reader.read()) != -1) {
             if (!Character.isLetter(ch) &&
                     Character.getType(ch) != Character.DASH_PUNCTUATION &&
@@ -36,8 +36,8 @@ public class WordStatInput {
                     String str = sb.toString().toLowerCase();
                     int hc = hashCode(str);
                     if (!idx.containsKey(hc)) {
-                        word[all] = str;
-                        idx.put(hc, all++);
+                        word[word_count] = str;
+                        idx.put(hc, word_count++);
                     }
                     int value = idx.get(hc);
                     cnt[value]++;
@@ -47,7 +47,7 @@ public class WordStatInput {
                 sb.append((char) ch);
             }
         }
-        for (int i = 0; i < all; i++) {
+        for (int i = 0; i < word_count; i++) {
             writer.write(word[i] + " " + cnt[i] + "\n");
         }
         writer.close();
