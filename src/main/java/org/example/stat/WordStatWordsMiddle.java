@@ -1,11 +1,10 @@
-package org.example.stat;
+//package org.example.stat;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Objects;
 
-public class WordsShingles {
+public class WordStatWordsMiddle {
     static class Pair {
         String first;
         int second;
@@ -18,7 +17,6 @@ public class WordsShingles {
             return first.compareTo(other.first) < 0 || first.compareTo(other.first) == 0 && second < other.second;
         }
     }
-
 
     private final static int MAXN = 100000;
 
