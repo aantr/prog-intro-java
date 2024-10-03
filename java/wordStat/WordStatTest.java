@@ -62,6 +62,7 @@ public final class WordStatTest {
             .variant("WordsSuffix",     WordStatTester.variant(WORDS, SUFFIX))
             .variant("WordsShingles",   WordStatTester.variant(WORDS, SHINGLES))
             .variant("WordsMiddle",     WordStatTester.variant(WORDS, MIDDLE))
+            .variant("Words",           WordStatTester.variant(WORDS, ID))
             .variant("WordsPrefix",     WordStatTester.variant(WORDS, PREFIX))
             ;
 
