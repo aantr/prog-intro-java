@@ -51,12 +51,18 @@ public final class WordStatTest {
     private static final Named<Function<String, Stream<String>>> MIDDLE =
             length("Middle", SIZE * 2 + 1, s -> Stream.of(s.substring(SIZE, s.length() - SIZE)), Stream::of);
 
+    /// Prefix
+    private static final Named<Function<String, Stream<String>>> PREFIX =
+            length("Prefix", SIZE, s -> Stream.of(s.substring(0, SIZE)), Stream::of);
+
+
     /// Common
     public static final Selector SELECTOR = new Selector(WordStatTester.class)
             .variant("Base",            WordStatTester.variant(INPUT, ID))
             .variant("WordsSuffix",     WordStatTester.variant(WORDS, SUFFIX))
             .variant("WordsShingles",   WordStatTester.variant(WORDS, SHINGLES))
             .variant("WordsMiddle",     WordStatTester.variant(WORDS, MIDDLE))
+            .variant("WordsPrefix",     WordStatTester.variant(WORDS, PREFIX))
             ;
 
     private WordStatTest() {
