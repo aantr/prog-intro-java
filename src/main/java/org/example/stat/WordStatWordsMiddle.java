@@ -2,88 +2,130 @@
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 
-public class WordStatWordsMiddle {
-    static class Pair {
-        String first;
-        int second;
-        Pair (String first, int second) {
-            this.first = first;
-            this.second = second;
-        }
 
-        public boolean less(Pair other) {
-            return first.compareTo(other.first) < 0 || first.compareTo(other.first) == 0 && second < other.second;
+class MyScanner {
+
+    Reader readerIn;
+    char[] buffer;
+    int currentIndex = 0;
+    int currentLength = 0;
+    boolean closed = false;
+
+    public MyScanner(InputStreamReader reader) {
+        readerIn = reader;
+        buffer = new char[1024];
+    }
+
+    public MyScanner(String reader) {
+        readerIn = new StringReader(reader);
+    }
+
+    private boolean isValid(char ch) {
+        return Character.isLetter(ch) ||
+                Character.getType(ch) == Character.DASH_PUNCTUATION ||
+                ch == '\'';
+    }
+
+    private void readBuffer() {
+        int res;
+        try {
+            res = readerIn.read(buffer);
+        } catch (IOException e) {
+            throw new RuntimeException("IO error while writing to buffer");
+        }
+        if (res == -1) {
+            closed = true;
+        } else {
+            currentLength = res;
+            currentIndex = 0;
         }
     }
 
-    private final static int MAXN = 100000;
-
-    private static void sort(Pair[] array, int[] idx, int low, int high) {
-        if (low >= high || low < 0 || high > array.length) {
-            return;
-        }
-        int middle = (high + low) / 2;
-        int i = low, j = high - 1;
-        while (i <= j) {
-            while (array[i].less(array[middle])) {
-                i++;
-            }
-            while (array[middle].less(array[j])) {
-                j--;
-            }
-            if (i <= j) {
-                int temp_idx = idx[array[i].second];
-                idx[array[i].second] = idx[array[j].second];
-                idx[array[j].second] = temp_idx;
-                Pair temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
-                i++;
-                j--;
-            }
-        }
-        sort(array, idx, low, j);
-        sort(array, idx, i, high);
-    }
-
-    public static void main(String[] args) throws IOException {
-        String filename_in = args[0], filename_out = args[1];
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(filename_in), StandardCharsets.UTF_8);
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename_out), StandardCharsets.UTF_8);
-        StringBuilder sb = new StringBuilder();
-        Pair[] occurrences = new Pair[MAXN];
-        int[] idx = new int[MAXN];
-        int all = 0;
-        int ch;
-        while ((ch = reader.read()) != -1) {
-            if (!Character.isLetter(ch) &&
-                    Character.getType(ch) != Character.DASH_PUNCTUATION &&
-                    ch != '\'') {
-                if (!sb.isEmpty()) {
-                    String str = sb.toString().toLowerCase();
-                    sb = new StringBuilder();
-
-                    // add
-                    occurrences[all] = new Pair(str, all);
-                    idx[all] = all;
-                    all++;
+    private boolean pushToValid() {
+        while (true) {
+            boolean was_found = false;
+            while (currentIndex < currentLength) {
+                if (isValid(buffer[currentIndex])) {
+                    was_found = true;
+                    break;
                 }
-            } else {
-                sb.append((char) ch);
+                currentIndex++;
+            }
+            if (was_found) {
+                return true;
+            }
+            readBuffer();
+            if (closed) {
+                return false;
             }
         }
-        sort(occurrences, idx, 0, all);
 
-        for (int i = 0; i < all; i++) {
-            int j = i;
-            while (j < all && Objects.equals(occurrences[i].first, occurrences[j].first)) j++;
-            writer.write(occurrences[i].first + " " + (j - i) + "\n");
-            i = j - 1;
+    }
+
+    public boolean hasNext() {
+        return pushToValid();
+    }
+
+    public String next() {
+        if (!pushToValid()) {
+            throw new RuntimeException("Next string was not found");
         }
-        writer.close();
-        reader.close();
+        StringBuilder stringBuilder = new StringBuilder();
+        while (currentIndex < currentLength && isValid(buffer[currentIndex])) {
+            stringBuilder.append(buffer[currentIndex]);
+            currentIndex++;
+            if (currentIndex == currentLength) {
+                readBuffer();
+            }
+        }
+        return stringBuilder.toString();
+    }
 
+}
+
+
+public class WordStatWordsMiddle {
+
+    private final static int MAX_N = 100000;
+
+    public static class StringReverseComparator implements Comparator<String> {
+        @Override
+        public int compare(String o1, String o2) { // reverse comparator
+            return -1 * o1.compareTo(o2);
+        }
+    }
+    
+    public static void main(String[] args) {
+        try {
+            String filename_in = args[0], filename_out = args[1];
+            MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filename_in), StandardCharsets.UTF_8));
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename_out), StandardCharsets.UTF_8);
+
+            String[] occurrences = new String[MAX_N];
+            int all = 0;
+            while (scanner.hasNext()) {
+                String str = scanner.next().toLowerCase();
+                if (str.length() > 6) {
+                    str = str.substring(3, str.length() - 3);
+                }
+                occurrences[all] = str;
+                all++;
+            }
+            occurrences = Arrays.copyOf(occurrences, all);
+            Arrays.sort(occurrences, new StringReverseComparator());
+            for (int i = 0; i < all; i++) {
+                int j = i;
+                while (j < all && Objects.equals(occurrences[i], occurrences[j])) j++;
+                writer.write(occurrences[i] + " " + (j - i) + "\n");
+                i = j - 1;
+            }
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,7 +1,13 @@
+//package org.example.reverse;
+
 import static java.lang.Math.abs;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Scanner;
+
 
 public class ReverseSumAbsMod {
 
@@ -20,16 +26,17 @@ public class ReverseSumAbsMod {
 
         int maxCols = 0;
         int row = 0;
-        Scanner scanner = new Scanner(System.in);
+        MyScanner scanner = new MyScanner(new InputStreamReader(System.in));
+
         while (scanner.hasNextLine()) {
-            Scanner lineScanner = new Scanner(scanner.nextLine());
+            MyScanner lineScanner = new MyScanner(scanner.nextLine());
             int col = 0;
             int[] currentRow = new int[1];
             while (lineScanner.hasNext()) {
                 if (col >= currentRow.length) {
                     currentRow = Arrays.copyOf(currentRow, currentRow.length * 2);
                 }
-                currentRow[col++] = lineScanner.nextInt();
+                currentRow[col++] = lineScanner.next();
                 maxCols = Math.max(maxCols, col);
             }
             if (row >= numbers.length) {
@@ -57,3 +64,122 @@ public class ReverseSumAbsMod {
         }
     }
 }
+
+class MyScanner {
+
+    Reader readerIn;
+    char[] buffer = new char[1024];
+    int currentIndex = 0;
+    int currentLength = 0;
+    boolean closed = false;
+
+    public MyScanner(InputStreamReader reader) {
+        this.readerIn = reader;
+    }
+
+    public MyScanner(String reader) {
+        readerIn = new StringReader(reader);
+    }
+
+    private boolean isValid(char ch) {
+        return Character.isDigit(ch);
+    }
+
+    private void readBuffer() {
+        int res;
+        try {
+            res = readerIn.read(buffer);
+        } catch (IOException e) {
+            throw new RuntimeException("IO error while writing to buffer");
+        }
+        if (res == -1) {
+            closed = true;
+        } else {
+            currentLength = res;
+            currentIndex = 0;
+        }
+    }
+
+    private boolean pushToValid() {
+
+        while (true) {
+            boolean was_found = false;
+            while (currentIndex < currentLength) {
+                if (isValid(buffer[currentIndex])) {
+                    was_found = true;
+                    break;
+                }
+                currentIndex++;
+            }
+            if (was_found) {
+                return true;
+            }
+            readBuffer();
+            if (closed) {
+                return false;
+            }
+        }
+
+    }
+
+    private boolean pushToNextLine() {
+        while (true) {
+            boolean was_found = false;
+            if (currentIndex < currentLength) {
+                was_found = true;
+            }
+            if (was_found) {
+                return true;
+            }
+            readBuffer();
+            if (closed) {
+                return false;
+            }
+        }
+
+    }
+
+    public boolean hasNext() {
+        return pushToValid();
+    }
+
+    public boolean hasNextLine() {
+        return pushToNextLine();
+    }
+
+    public String nextLine() {
+        StringBuilder stringBuilder = new StringBuilder();
+        while (currentIndex < currentLength) {
+            stringBuilder.append(buffer[currentIndex]);
+            currentIndex++;
+            if (currentIndex == currentLength) {
+                readBuffer();
+            }
+            if (stringBuilder.charAt(stringBuilder.length() - 1) == '\n') {
+                break;
+            }
+        }
+        // may throw NumberFormatException
+        return stringBuilder.toString();
+    }
+
+    public int next() {
+        if (!pushToValid()) {
+            throw new RuntimeException("Next integer was not found");
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        while (currentIndex < currentLength && isValid(buffer[currentIndex])) {
+            stringBuilder.append(buffer[currentIndex]);
+            currentIndex++;
+            if (currentIndex == currentLength) {
+                readBuffer();
+                // may be closed
+            }
+        }
+        // may throw NumberFormatException
+
+        return Integer.parseInt(stringBuilder.toString());
+    }
+
+}
+

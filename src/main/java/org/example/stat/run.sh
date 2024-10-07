@@ -1,2 +1,2 @@
 #!/bin/bash
-javac WordStatWordsMiddle.java && java -ea -jar "WordStatTest.jar" WordsMiddle
+javac WordStatInput.java && javac WordStatWordsMiddle.java && java -ea -jar "WordStatTest.jar" WordsMiddle
