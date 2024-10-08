@@ -203,10 +203,10 @@ public final class ReverseTester {
             testRandom(randomProfile(maxSize, maxSize));
             for (final int d : DIVISORS) {
                 final int size = maxSize / d;
-                testRandom(tweakProfile(constProfile(size, 0), new int[][]{new int[]{size, 0}}));
-                testRandom(tweakProfile(randomProfile(size, maxSize), new int[][]{new int[]{size, 0}}));
-                testRandom(tweakProfile(constProfile(size, 0), new int[][]{new int[]{size / 2, size / 2 - 1}}));
-                testRandom(tweakProfile(constProfile(size, 1), new int[][]{new int[]{size / 3, size / 3, size * 2 / 3}}));
+                testRandom(tweakProfile(constProfile(size / 2, 0), new int[][]{{size / 2, 0}}));
+                testRandom(tweakProfile(randomProfile(size, size / 2), new int[][]{{size / 2, 0}}));
+                testRandom(tweakProfile(constProfile(size / 2, 0), new int[][]{{size / 2, size / 2 - 1}}));
+                testRandom(tweakProfile(constProfile(size / 3, 1), new int[][]{{size / 3, size / 6, size / 3 - 1}}));
             }
         }
 
