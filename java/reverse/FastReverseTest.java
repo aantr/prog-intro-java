@@ -23,6 +23,7 @@ public final class FastReverseTest {
 
     private static final Named<Op> MAX_ABS = max("Abs", Math::abs, 0);
     private static final Named<Op> MAX_MOD = max("Mod", a -> (a % M + M) % M, 0);
+    private static final Named<Op> MAX_ABS_MOD = max("AbsMod", a -> Math.abs(a) % M, 0);
 
     private static Named<Op> max(final String suffix, final LongUnaryOperator by, final int zero) {
         final LongBinaryOperator max = (a, b) -> by.applyAsLong(a) > by.applyAsLong(b) ? a : b;
@@ -45,8 +46,6 @@ public final class FastReverseTest {
         });
     }
 
-    /// Octal
-
     private static final Named<BiFunction<ExtendedRandom, Integer, String>> OCT_OUT = Named.of("Oct", (r, i) -> Integer.toOctalString(i) + "o");
     private static final Named<BiFunction<ExtendedRandom, Integer, String>> OCT_DEC = Named.of("OctDec", (r, i) ->
             r.nextBoolean() ? Integer.toString(i) : toOctalString(r, i));
@@ -61,6 +60,7 @@ public final class FastReverseTest {
     public static final Selector SELECTOR = ReverseTest.selector(FastReverseTest.class, MAX_SIZE)
             .variant("MaxAbsOctDec",    ReverseTester.variant(MAX_SIZE, "", MAX_ABS, OCT_DEC, OCT_OUT))
             .variant("MaxModOctDec",    ReverseTester.variant(MAX_SIZE, "", MAX_MOD, OCT_DEC, OCT_OUT))
+            .variant("MaxAbsModOctDec", ReverseTester.variant(MAX_SIZE, "", MAX_ABS_MOD, OCT_DEC, OCT_OUT))
             ;
 
     private FastReverseTest() {
