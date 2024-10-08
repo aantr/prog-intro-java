@@ -4,8 +4,10 @@ import base.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -13,17 +15,17 @@ import java.util.stream.IntStream;
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
-public class WordStatChecker extends BaseChecker {
+public final class WordStatChecker extends BaseChecker {
     public static final String DASH = "-֊־‒–—―⸗⸚⸺〰゠︱︲﹘﹣－'";
     public static final String SIMPLE_DELIMITERS = " \t";
-    public static final String ADVANCED_DELIMITERS = " \t!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~ ¡¢£¤¥¦§¨©«¬\u00AD®¯°±²³´¶·¸¹»¼½¾¿×÷˂˃˄˅˒˓˔˕˖˗˘˙˚˛˜˝₴₵₶₷₸₹₺\u20BB\u20BC\u20BD\u20BE";
+    public static final String ADVANCED_DELIMITERS = " \t!\"#%&()*+,./:;<=>?@[\\]^`{|}~ ¡¦§¨©«¬\u00AD®¯°±²³´¶·¸¹»¼½¾¿×÷˂˃˄˅˒˓˔˕˖˗˘˙˚˛˜˝";
     public static final String ALL = ExtendedRandom.RUSSIAN + ExtendedRandom.ENGLISH + ExtendedRandom.GREEK + DASH;
-    private static final Pattern PATTERN = Pattern.compile("[ ,.:\\d\\[\\]()]+");
-    public static final Runner.Packages RUNNER = Runner.packages("", "wordstat", "wspp", "year");
+    private static final Pattern PATTERN = Pattern.compile("[^\\p{IsLetter}'\\p{Pd}]+");
+    public static final Runner.Packages RUNNER = Runner.packages("", "wordstat", "wspp");
 
     private final Function<String[][], ? extends List<? extends Pair<?, ?>>> processor;
 
-    protected final MainChecker main;
+    private final MainChecker main;
 
     private WordStatChecker(
             final String className,
@@ -44,12 +46,18 @@ public class WordStatChecker extends BaseChecker {
         tests.accept(new WordStatChecker(className, processor, counter));
     }
 
-    @SuppressWarnings("OverloadedVarargsMethod")
     public void test(final String... lines) {
-        test(lines, processor.apply(Arrays.stream(lines).map(PATTERN::split).toArray(String[][]::new)));
+        test(PATTERN, lines);
     }
 
-    protected void randomTest(
+    public void test(final Pattern pattern, final String... lines) {
+        final String[][] data = Arrays.stream(lines)
+                .map(line -> Arrays.stream(pattern.split(line)).filter(Predicate.not(String::isEmpty)).toArray(String[]::new))
+                .toArray(String[][]::new);
+        test(lines, processor.apply(data));
+    }
+
+    private void randomTest(
             final int wordLength,
             final int totalWords,
             final int wordsPerLine,
@@ -74,7 +82,7 @@ public class WordStatChecker extends BaseChecker {
         randomTest(wordLength, totalWords, wordsPerLine, lines, chars, delimiters, processor::apply);
     }
 
-    protected void test(final String[] text, final List<? extends Pair<?, ?>> expected) {
+    private void test(final String[] text, final List<? extends Pair<?, ?>> expected) {
         final List<String> expectedList = expected.stream()
                 .map(p -> p.first + " " + p.second)
                 .collect(Collectors.toList());
@@ -86,7 +94,8 @@ public class WordStatChecker extends BaseChecker {
     }
 
     private String[] generateWords(final int wordLength, final int totalWords, final String chars) {
-        final String allChars = chars + chars.toUpperCase();
+        final String allChars = chars.chars().anyMatch(Character::isUpperCase)
+                ? chars : chars + chars.toUpperCase(Locale.ROOT);
         return IntStream.range(0, totalWords)
                 .mapToObj(i -> random().randomString(allChars, wordLength / 2, wordLength))
                 .toArray(String[]::new);

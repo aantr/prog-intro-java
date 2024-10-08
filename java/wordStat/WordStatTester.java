@@ -1,21 +1,41 @@
 package wordStat;
 
-import base.*;
+import base.ExtendedRandom;
+import base.Named;
+import base.Pair;
+import base.TestCounter;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 public final class WordStatTester {
+    public static final String PRE_LOWER = chars()
+            .filter(s -> s.toLowerCase(Locale.ROOT).length() == 1)
+            .collect(Collectors.joining());
+    public static final String POST_LOWER = chars()
+            .collect(Collectors.joining())
+            .toLowerCase();
+
     private WordStatTester() {
+    }
+
+    private static Stream<String> chars() {
+        return IntStream.range(' ', Character.MAX_VALUE)
+                .filter(ch -> !Character.isSurrogate((char) ch))
+                .filter(ch -> Character.getType(ch) != Character.NON_SPACING_MARK)
+                .filter(ch -> Character.getType(ch) != Character.DIRECTIONALITY_NONSPACING_MARK)
+                .mapToObj(Character::toString);
     }
 
     public static Consumer<TestCounter> variant(
@@ -64,6 +84,11 @@ public final class WordStatTester {
                     checker.randomTest(10, 1000 / d, 100 / d2, 100 / d2, WordStatChecker.ALL, WordStatChecker.ADVANCED_DELIMITERS);
                     checker.randomTest(4, 1000 / d, 10, 3000 / d, WordStatChecker.ALL, WordStatChecker.ADVANCED_DELIMITERS);
                     checker.randomTest(4, 1000 / d, 3000 / d, 10, WordStatChecker.ALL, WordStatChecker.ADVANCED_DELIMITERS);
+                    checker.randomTest(10000 / d, 20, 10, 5, WordStatChecker.ALL, WordStatChecker.ADVANCED_DELIMITERS);
+                    checker.randomTest(1000000 / d, 2, 2, 1, WordStatChecker.ALL, WordStatChecker.ADVANCED_DELIMITERS);
+
+                    checker.test(PRE_LOWER);
+                    checker.test(POST_LOWER);
                 }
         );
     }
