@@ -13,6 +13,8 @@ import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
 import java.util.stream.IntStream;
 
+import static reverse.ReverseTest.M;
+
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
@@ -20,6 +22,7 @@ public final class FastReverseTest {
     /// Max
 
     private static final Named<Op> MAX_ABS = max("Abs", Math::abs, 0);
+    private static final Named<Op> MAX_MOD = max("Mod", a -> (a % M + M) % M, 0);
 
     private static Named<Op> max(final String suffix, final LongUnaryOperator by, final int zero) {
         final LongBinaryOperator max = (a, b) -> by.applyAsLong(a) > by.applyAsLong(b) ? a : b;
@@ -57,6 +60,7 @@ public final class FastReverseTest {
     public static final int MAX_SIZE = 1_000_000 / TestCounter.DENOMINATOR;
     public static final Selector SELECTOR = ReverseTest.selector(FastReverseTest.class, MAX_SIZE)
             .variant("MaxAbsOctDec",    ReverseTester.variant(MAX_SIZE, "", MAX_ABS, OCT_DEC, OCT_OUT))
+            .variant("MaxModOctDec",    ReverseTester.variant(MAX_SIZE, "", MAX_MOD, OCT_DEC, OCT_OUT))
             ;
 
     private FastReverseTest() {
