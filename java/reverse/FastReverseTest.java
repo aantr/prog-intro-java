@@ -65,6 +65,7 @@ public final class FastReverseTest {
             .variant("MaxAbsOctDec",    ReverseTester.variant(MAX_SIZE, "", MAX_ABS, OCT_DEC, OCT_OUT))
             .variant("MaxModOctDec",    ReverseTester.variant(MAX_SIZE, "", MAX_MOD, OCT_DEC, OCT_OUT))
             .variant("MaxAbsModOctDec", ReverseTester.variant(MAX_SIZE, "", MAX_ABS_MOD, OCT_DEC, OCT_OUT))
+            .variant("OddOct",          ReverseTester.variant(MAX_SIZE, "", ReverseTest.ODD, OCT_IN, OCT_IN))
             .variant("MaxOct",          ReverseTester.variant(MAX_SIZE, "", MAX, OCT_IN, OCT_IN))
             ;
 
