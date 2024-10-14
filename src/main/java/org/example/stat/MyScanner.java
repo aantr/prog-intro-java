@@ -1,11 +1,8 @@
-import com.sun.jdi.VoidType;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.function.Function;
 
 public class MyScanner {
@@ -15,6 +12,7 @@ public class MyScanner {
 
     Reader readerIn;
     char[] buffer = new char[BUF_SIZE];
+    int currentLineSep = 0;
     int currentIndex = 0;
     int currentLength = 0;
     boolean closed = false;
@@ -72,7 +70,6 @@ public class MyScanner {
                 return false;
             }
         }
-
     }
 
     private boolean pushToNextLine() throws IOException {
@@ -110,10 +107,9 @@ public class MyScanner {
     public int nextIntOct() throws IOException, NumberFormatException {
         String nxt = next(INT_LIMIT, MyScanner::isValidIntOct).toLowerCase();
         if (nxt.endsWith("o")) {
-            return (int) Long.parseLong(nxt.substring(0, nxt.length() - 1), 8);
+            return Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
         }
-        return (int) Long.parseLong(nxt);
-
+        return Integer.parseInt(nxt);
     }
 
     public String nextWord() throws IOException {
@@ -144,14 +140,11 @@ public class MyScanner {
         return stringBuilder.toString();
     }
 
-    public String nextLine() throws IOException {
+    public String nextLine() throws IOException { // reads until new line sep inclusively
         StringBuilder stringBuilder = new StringBuilder();
         int start = currentIndex;
         while (currentIndex < currentLength) {
-            currentIndex++;
-            if (buffer[currentIndex - 1] == System.lineSeparator().charAt(0)) {
-                break;
-            }
+            if (readLine()) break;
             if (currentIndex == currentLength) {
                 stringBuilder.append(buffer, start, currentIndex - start);
                 readBuffer();
@@ -172,10 +165,7 @@ public class MyScanner {
         StringBuilder stringBuilder = new StringBuilder();
 
         while (currentIndex < currentLength) {
-            currentIndex++;
-            if (buffer[currentIndex - 1] == '\n') {
-                break;
-            }
+            if (readLine()) break;
             if (MyScanner.isValidInt(buffer[currentIndex - 1])) {
                 stringBuilder.append(buffer[currentIndex - 1]);
                 if (stringBuilder.length() >= INT_LIMIT) {
@@ -204,10 +194,23 @@ public class MyScanner {
         return Arrays.copyOf(res, length);
     }
 
+    private boolean readLine() {
+        currentIndex++;
+        if (buffer[currentIndex - 1] == System.lineSeparator().charAt(currentLineSep)) {
+            currentLineSep++;
+            if (currentLineSep >= System.lineSeparator().length()) {
+                currentLineSep = 0;
+                return true;
+            }
+        } else {
+            currentLineSep = 0;
+        }
+        return false;
+    }
+
     public void close() throws IOException {
         readerIn.close();
         closed = true;
     }
-
 }
 
