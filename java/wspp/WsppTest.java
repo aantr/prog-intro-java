@@ -19,8 +19,14 @@ public final class WsppTest {
     private static final Named<String> NONE = Named.of("", "");
 
 
+    /// Even digits
+    private static final Named<IntFunction<IntStream>> EVEN = Named.of("Even", size -> IntStream.range(0, size).filter(i -> (i & 1) == 1));
+    private static final Named<WsppTester.Extractor<Integer>> EXTRA = Named.of("", (r, w, t, g) -> w);
+    private static final Named<String> DIGITS = Named.of("Digits", "XHB7TmR9");
+
     public static final Selector SELECTOR = new Selector(WsppTester.class)
             .variant("Base",            WsppTester.variant(INPUT, ALL, WSPP, NONE))
+            .variant("EvenDigits",      WsppTester.variant(INPUT, EVEN, EXTRA, DIGITS))
             ;
 
     private WsppTest() {
