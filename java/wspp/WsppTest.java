@@ -24,9 +24,13 @@ public final class WsppTest {
     private static final Named<WsppTester.Extractor<Integer>> EXTRA = Named.of("", (r, w, t, g) -> w);
     private static final Named<String> DIGITS = Named.of("Digits", "XHB7TmR9");
 
+    /// Count
+    private static final Named<Comparator<Map.Entry<String, Integer>>> COUNT = Named.of("Count", Comparator.comparingInt(Map.Entry::getValue));
+
     public static final Selector SELECTOR = new Selector(WsppTester.class)
             .variant("Base",            WsppTester.variant(INPUT, ALL, WSPP, NONE))
             .variant("EvenDigits",      WsppTester.variant(INPUT, EVEN, EXTRA, DIGITS))
+            .variant("CountEvenDigits", WsppTester.variant(COUNT, EVEN, EXTRA, DIGITS))
             ;
 
     private WsppTest() {
