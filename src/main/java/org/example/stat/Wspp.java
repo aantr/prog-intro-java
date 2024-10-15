@@ -12,7 +12,13 @@ public class Wspp {
             MyScanner scanner = new MyScanner(new FileReader(filenameIn, StandardCharsets.UTF_8));
             try {
                 for (int i = 0; scanner.hasNextWord(); i++) {
-                    String str = scanner.nextWord().toLowerCase();
+                    String str;
+                    try {
+                        str = scanner.nextWord().toLowerCase();
+                    } catch (MyScanner.ScannerException e) {
+                        System.err.println("Scanner error: " + e.getMessage());
+                        return;
+                    }
                     if (!m.containsKey(str)) {
                         first.add(str);
                         m.put(str, new ArrayList<>());

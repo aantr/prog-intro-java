@@ -46,6 +46,12 @@ public class MyScanner {
     private static boolean isValidWord(char ch) {
         return Character.isLetter(ch) ||
                 Character.getType(ch) == Character.DASH_PUNCTUATION ||
+                ch == '\'';
+    }
+
+    private static boolean isValidWordCurrency(char ch) {
+        return Character.isLetter(ch) ||
+                Character.getType(ch) == Character.DASH_PUNCTUATION ||
                 ch == '\'' ||
                 Character.getType(ch) == Character.CURRENCY_SYMBOL;
     }
@@ -103,12 +109,20 @@ public class MyScanner {
         return pushToValid(MyScanner::isValidWord);
     }
 
+    public boolean hasNextWordCurrency() throws IOException {
+        return pushToValid(MyScanner::isValidWordCurrency);
+    }
+
     public Integer nextInt() throws IOException, NumberFormatException, ScannerException {
         return Integer.parseInt(next(MyScanner::isValidInt));
     }
 
     public String nextWord() throws IOException, ScannerException {
         return next(MyScanner::isValidWord);
+    }
+
+    public String nextWordCurrency() throws IOException, ScannerException {
+        return next(MyScanner::isValidWordCurrency);
     }
 
     // IntPredicate
@@ -189,7 +203,21 @@ public class MyScanner {
     public String[] nextLineWord() throws IOException {
         final String[][] res = {new String[1]};
         final int[] length = {0};
-        nextLine(MyScanner::isValidIntOct, (String s) -> {
+        nextLine(MyScanner::isValidWord, (String s) -> {
+            while (length[0] >= res[0].length) {
+                res[0] = Arrays.copyOf(res[0], res[0].length * 2);
+            }
+            res[0][length[0]] = s;
+            length[0]++;
+            return 0;
+        });
+        return Arrays.copyOf(res[0], length[0]);
+    }
+
+    public String[] nextLineWordCurrency() throws IOException {
+        final String[][] res = {new String[1]};
+        final int[] length = {0};
+        nextLine(MyScanner::isValidWordCurrency, (String s) -> {
             while (length[0] >= res[0].length) {
                 res[0] = Arrays.copyOf(res[0], res[0].length * 2);
             }

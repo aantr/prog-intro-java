@@ -1,55 +1,60 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.security.spec.ECField;
+import java.util.*;
 
 public class WsppEvenCurrency {
 
     public static void main(String[] args) {
-        String filename_in = args[0], filename_out = args[1];
-        try {
-            MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filename_in), StandardCharsets.UTF_8));
-            try {
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename_out), StandardCharsets.UTF_8);
-                try {
-                    HashMap<String, HashSet<Integer>> m = new HashMap<>();
-                    ArrayList<String> first = new ArrayList<>();
-                    while (scanner.hasNextLine()) {
-                        int i = 0;
-                        for (String str : scanner.nextLineWord()) {
-                            str = str.toLowerCase();
-                            System.err.println(str);
-                            if (!m.containsKey(str)) {
-                                first.add(str);
-                                m.put(str, new HashSet<>());
-                            }
-                            m.get(str).add(i++);
-                        }
-                        System.err.println();
-                    }
+        String filenameIn = args[0], filenameOut = args[1];
+        LinkedHashMap<String, HashSet<Integer>> m = new LinkedHashMap<>();
+        LinkedHashMap<String, Integer> cnt = new LinkedHashMap<>();
 
-                    for (String s : first) {
-                        HashSet<Integer> el = m.get(s);
-                        writer.write(s + " " + el.size());
-                        boolean even = false;
-                        for (int i : el) {
-                            if (even) {
-                                writer.write(" " + (i + 1));
-                            }
-                            even = !even;
+        try {
+            MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filenameIn), StandardCharsets.UTF_8));
+            try {
+                while (scanner.hasNextLine()) {
+                    int i = 0;
+                    for (String str : scanner.nextLineWordCurrency()) {
+                        str = str.toLowerCase();
+                        System.err.print(str + " ");
+                        if (!m.containsKey(str)) {
+                            cnt.put(str, 0);
+                            m.put(str, new HashSet<>());
                         }
-                        writer.write(System.lineSeparator());
+                        cnt.put(str, cnt.get(str) + 1);
+                        m.get(str).add(i++);
                     }
-                } finally {
-                    writer.close();
+                    System.err.println();
                 }
             } finally {
                 scanner.close();
             }
         } catch (IOException e) {
-            System.err.println("IO error: " + e.getMessage());
+            System.err.println("Read error: " + e.getMessage());
+        }
+
+        try {
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filenameOut), StandardCharsets.UTF_8);
+            try {
+                for (var word : m.entrySet()) {
+                    HashSet<Integer> el = word.getValue();
+                    writer.write(word.getKey() + " " + cnt.get(word.getKey()));
+                    boolean even = false;
+                    for (var i : el) {
+                        if (even) {
+                            writer.write(" " + (i + 1));
+                        }
+                        even = !even;
+                    }
+                    writer.write(System.lineSeparator());
+                }
+            } finally {
+                writer.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Write error: " + e.getMessage());
+
         }
     }
 }
