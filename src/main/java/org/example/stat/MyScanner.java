@@ -26,7 +26,8 @@ public class MyScanner {
     }
 
     private static boolean isValidInt(char ch) {
-        return Character.isDigit(ch) || Character.getType(ch) == Character.DASH_PUNCTUATION;
+        return Character.isDigit(ch) ||
+                Character.getType(ch) == Character.DASH_PUNCTUATION;
     }
 
     private static boolean isValidIntOct(char ch) {
@@ -42,6 +43,9 @@ public class MyScanner {
     }
 
     private void readBuffer() throws IOException {
+        if (closed) {
+            return;
+        }
         int res;
         res = readerIn.read(buffer);
         if (res == -1) {
@@ -53,35 +57,26 @@ public class MyScanner {
     }
 
     private boolean pushToValid(Function<Character, Boolean> f) throws IOException {
-        while (true) {
-            boolean was_found = false;
+        do {
             while (currentIndex < currentLength) {
                 if (f.apply(buffer[currentIndex])) {
-                    was_found = true;
-                    break;
+                    return true;
                 }
                 currentIndex++;
             }
-            if (was_found) {
-                return true;
-            }
             readBuffer();
-            if (closed) {
-                return false;
-            }
-        }
+        } while (!closed);
+        return false;
     }
 
     private boolean pushToNextLine() throws IOException {
-        while (true) {
+        do {
             if (currentIndex < currentLength) {
                 return true;
             }
             readBuffer();
-            if (closed) {
-                return false;
-            }
-        }
+        } while (!closed);
+        return false;
     }
 
     public boolean hasNext(Function<Character, Boolean> f) throws IOException {
@@ -117,7 +112,7 @@ public class MyScanner {
     }
 
     public String next(int limit, Function<Character, Boolean> f) throws IOException {
-        if (!pushToValid(f)) {
+        if (!pushToValid(f)) { // have a valid char at currentIndex
             throw new RuntimeException("Next was not found");
         }
         StringBuilder stringBuilder = new StringBuilder();
@@ -143,9 +138,11 @@ public class MyScanner {
     public String nextLine() throws IOException { // reads until new line sep inclusively
         StringBuilder stringBuilder = new StringBuilder();
         int start = currentIndex;
-        while (currentIndex < currentLength) {
-            if (readLine()) break;
-            if (currentIndex == currentLength) {
+
+        do {
+            if (currentIndex < currentLength) {
+                if (readLineSeparator()) break;
+            } else {
                 stringBuilder.append(buffer, start, currentIndex - start);
                 readBuffer();
                 start = currentIndex;
@@ -153,10 +150,19 @@ public class MyScanner {
                     start = 0;
                 }
             }
-        }
+        } while (!closed);
+
         stringBuilder.append(buffer, start, currentIndex - start);
 
         return stringBuilder.toString();
+    }
+
+    private int[] pushNextInt(int[] res, int length, StringBuilder stringBuilder) {
+        while (length >= res.length) {
+            res = Arrays.copyOf(res, res.length * 2);
+        }
+        res[length] = Integer.parseInt(stringBuilder.toString());
+        return res;
     }
 
     public int[] nextLineInt() throws IOException {
@@ -164,37 +170,32 @@ public class MyScanner {
         int length = 0;
         StringBuilder stringBuilder = new StringBuilder();
 
-        while (currentIndex < currentLength) {
-            if (readLine()) break;
-            if (MyScanner.isValidInt(buffer[currentIndex - 1])) {
-                stringBuilder.append(buffer[currentIndex - 1]);
-                if (stringBuilder.length() >= INT_LIMIT) {
-                    throw new RuntimeException("Integer is too big");
+        do {
+            if (currentIndex < currentLength) {
+                if (readLineSeparator()) break;
+                if (MyScanner.isValidInt(buffer[currentIndex - 1])) {
+                    stringBuilder.append(buffer[currentIndex - 1]);
+                    if (stringBuilder.length() >= INT_LIMIT) {
+                        throw new RuntimeException("Integer is too big");
+                    }
+                } else {
+                    if (!stringBuilder.isEmpty()) {
+                        res = pushNextInt(res, length++, stringBuilder);
+                    }
+                    stringBuilder = new StringBuilder();
                 }
             } else {
-                // append
-                if (!stringBuilder.isEmpty()) {
-                    while (length >= res.length) {
-                        res = Arrays.copyOf(res, res.length * 2);
-                    }
-                    res[length++] = Integer.parseInt(stringBuilder.toString());
-                }
-                stringBuilder = new StringBuilder();
-            }
-            if (currentIndex == currentLength) {
                 readBuffer();
             }
-        }
+        } while (!closed);
+
         if (!stringBuilder.isEmpty()) {
-            while (length >= res.length) {
-                res = Arrays.copyOf(res, res.length * 2);
-            }
-            res[length++] = Integer.parseInt(stringBuilder.toString());
+            res = pushNextInt(res, length++, stringBuilder);
         }
         return Arrays.copyOf(res, length);
     }
 
-    private boolean readLine() {
+    private boolean readLineSeparator() {
         currentIndex++;
         if (buffer[currentIndex - 1] == System.lineSeparator().charAt(currentLineSep)) {
             currentLineSep++;
@@ -211,6 +212,7 @@ public class MyScanner {
     public void close() throws IOException {
         readerIn.close();
         closed = true;
+        currentIndex = 0;
+        currentLength = 0; // force to read next time
     }
 }
-

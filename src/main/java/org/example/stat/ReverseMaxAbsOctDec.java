@@ -7,14 +7,14 @@ import java.util.Scanner;
 
 public class ReverseMaxAbsOctDec {
     public static void main(String[] args) throws IOException {
-        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        MineScanner scanner = new MineScanner(new InputStreamReader(System.in));
         int[][] matrix = new int[1][];
         int[] maxInLine = new int[1];
         int[] maxInColumn = new int[1];
         int countLines = 0;
         int columnAmount = 0;
         while (scanner.hasNextLine()) {
-            Scanner sc = new Scanner(scanner.nextLine());
+            MineScanner sc = new MineScanner(scanner.nextLine());
             if (matrix.length >= maxInLine.length) {
                 maxInLine = Arrays.copyOf(maxInLine, 2 * maxInLine.length);
             }
