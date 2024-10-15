@@ -1,13 +1,20 @@
+import javax.lang.model.type.NullType;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.function.Function;
 
 public class MyScanner {
 
-    final static int INT_LIMIT = 1024;
+    public static class ScannerException extends Exception {
+        public ScannerException(String msg) {
+            super(msg);
+        }
+    }
+
     final static int BUF_SIZE = 1024;
 
     Reader readerIn;
@@ -39,7 +46,8 @@ public class MyScanner {
     private static boolean isValidWord(char ch) {
         return Character.isLetter(ch) ||
                 Character.getType(ch) == Character.DASH_PUNCTUATION ||
-                ch == '\'';
+                ch == '\'' ||
+                Character.getType(ch) == Character.CURRENCY_SYMBOL;
     }
 
     private void readBuffer() throws IOException {
@@ -95,92 +103,58 @@ public class MyScanner {
         return pushToValid(MyScanner::isValidWord);
     }
 
-    public Integer nextInt() throws IOException, NumberFormatException {
-        return Integer.parseInt(next(INT_LIMIT, MyScanner::isValidInt));
+    public Integer nextInt() throws IOException, NumberFormatException, ScannerException {
+        return Integer.parseInt(next(MyScanner::isValidInt));
     }
 
-    public int nextIntOct() throws IOException, NumberFormatException {
-        String nxt = next(INT_LIMIT, MyScanner::isValidIntOct).toLowerCase();
-        if (nxt.endsWith("o")) {
-            return Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
-        }
-        return Integer.parseInt(nxt);
+    public String nextWord() throws IOException, ScannerException {
+        return next(MyScanner::isValidWord);
     }
 
-    public String nextWord() throws IOException {
-        return next(Integer.MAX_VALUE, MyScanner::isValidWord);
-    }
-
-    public String next(int limit, Function<Character, Boolean> f) throws IOException {
+    // IntPredicate
+    public String next(Function<Character, Boolean> f) throws IOException, ScannerException {
         if (!pushToValid(f)) { // have a valid char at currentIndex
-            throw new RuntimeException("Next was not found");
+            throw new ScannerException("Unable to find next int"); // new RuntimeException
         }
         StringBuilder stringBuilder = new StringBuilder();
-        int start = currentIndex;
         while (currentIndex < currentLength && f.apply(buffer[currentIndex])) {
-            if (stringBuilder.length() >= limit) {
-                throw new RuntimeException("Next out of limit");
-            }
-            currentIndex++;
+            stringBuilder.append(buffer[currentIndex++]);
             if (currentIndex == currentLength) {
-                stringBuilder.append(buffer, start, currentIndex - start);
                 readBuffer();
-                start = currentIndex;
-                if (!closed) {
-                    start = 0;
-                }
             }
         }
-        stringBuilder.append(buffer, start, currentIndex - start);
         return stringBuilder.toString();
     }
 
     public String nextLine() throws IOException { // reads until new line sep inclusively
         StringBuilder stringBuilder = new StringBuilder();
         int start = currentIndex;
-
         while (!closed) {
             if (currentIndex < currentLength) {
-                if (readLineSeparator()) break;
-            } else {
-                stringBuilder.append(buffer, start, currentIndex - start);
-                readBuffer();
-                start = currentIndex;
-                if (!closed) {
-                    start = 0;
+                if (readLineSeparator()) {
+                    break;
                 }
+                stringBuilder.append(buffer[currentIndex - 1]);
+            } else {
+                readBuffer();
             }
         }
-
         stringBuilder.append(buffer, start, currentIndex - start);
 
         return stringBuilder.toString();
     }
 
-    private int[] pushNextInt(int[] res, int length, StringBuilder stringBuilder) {
-        while (length >= res.length) {
-            res = Arrays.copyOf(res, res.length * 2);
-        }
-        res[length] = Integer.parseInt(stringBuilder.toString());
-        return res;
-    }
-
-    public int[] nextLineInt() throws IOException {
-        int[] res = new int[1];
-        int length = 0;
+    // Predicate, WordProcessor
+    public void nextLine(Function<Character, Boolean> f, Function<String, Integer> callback) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
-
         while (!closed) {
             if (currentIndex < currentLength) {
                 if (readLineSeparator()) break;
-                if (MyScanner.isValidInt(buffer[currentIndex - 1])) {
+                if (f.apply(buffer[currentIndex - 1])) {
                     stringBuilder.append(buffer[currentIndex - 1]);
-                    if (stringBuilder.length() >= INT_LIMIT) {
-                        throw new RuntimeException("Integer is too big");
-                    }
                 } else {
                     if (!stringBuilder.isEmpty()) {
-                        res = pushNextInt(res, length++, stringBuilder);
+                        callback.apply(stringBuilder.toString());
                     }
                     stringBuilder = new StringBuilder();
                 }
@@ -188,11 +162,42 @@ public class MyScanner {
                 readBuffer();
             }
         }
-
         if (!stringBuilder.isEmpty()) {
-            res = pushNextInt(res, length++, stringBuilder);
+            callback.apply(stringBuilder.toString());
         }
-        return Arrays.copyOf(res, length);
+    }
+
+    public int[] nextLineInt() throws IOException {
+        final int[][] res = {new int[1]};
+        final int[] length = {0};
+        nextLine(MyScanner::isValidIntOct, (String s) -> {
+            while (length[0] >= res[0].length) {
+                res[0] = Arrays.copyOf(res[0], res[0].length * 2);
+            }
+            String nxt = s.toLowerCase();
+            if (nxt.endsWith("o")) {
+                res[0][length[0]] = Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
+            } else {
+                res[0][length[0]] = Integer.parseInt(nxt);
+            }
+            length[0]++;
+            return 0;
+        });
+        return Arrays.copyOf(res[0], length[0]);
+    }
+
+    public String[] nextLineWord() throws IOException {
+        final String[][] res = {new String[1]};
+        final int[] length = {0};
+        nextLine(MyScanner::isValidIntOct, (String s) -> {
+            while (length[0] >= res[0].length) {
+                res[0] = Arrays.copyOf(res[0], res[0].length * 2);
+            }
+            res[0][length[0]] = s;
+            length[0]++;
+            return 0;
+        });
+        return Arrays.copyOf(res[0], length[0]);
     }
 
     private boolean readLineSeparator() {

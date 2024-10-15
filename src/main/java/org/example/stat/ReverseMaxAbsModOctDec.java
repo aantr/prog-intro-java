@@ -24,13 +24,11 @@ public class ReverseMaxAbsModOctDec {
                 while (scanner.hasNextLine()) {
                     int col = 0;
                     int[] currentRow = new int[1];
-                    MyScanner lineScanner = new MyScanner(scanner.nextLine());
-                    while (lineScanner.hasNextInt()) {
-                        int nextLong = lineScanner.nextIntOct();
+                    for (int nextInt : scanner.nextLineInt()) {
                         if (col >= currentRow.length) {
                             currentRow = Arrays.copyOf(currentRow, currentRow.length * 2);
                         }
-                        currentRow[col++] = nextLong;
+                        currentRow[col++] = nextInt;
                         maxCols = Math.max(maxCols, col);
                     }
                     if (row >= numbers.length) {
@@ -60,7 +58,7 @@ public class ReverseMaxAbsModOctDec {
                 scanner.close();
             }
         } catch (IOException e) {
-            System.err.println("IO error: " + e.getMessage());
+            System.err.println("Read error: " + e.getMessage());
         }
     }
 }

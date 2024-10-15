@@ -1,8 +1,7 @@
+import java.awt.desktop.ScreenSleepEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 
 public class WordStatWordsMiddle {
 
@@ -14,43 +13,40 @@ public class WordStatWordsMiddle {
     }
 
     public static void main(String[] args) {
-        String filename_in = args[0], filename_out = args[1];
+        String filenameIn = args[0], filenameOut = args[1];
+        TreeMap<String, Integer> treeMap = new TreeMap<>();
         try {
-            MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filename_in), StandardCharsets.UTF_8));
+            MyScanner scanner = new MyScanner(new FileReader(filenameIn, StandardCharsets.UTF_8));
             try {
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename_out), StandardCharsets.UTF_8);
-                try {
-                    String[] occurrences = new String[1];
-                    int all = 0;
-                    while (scanner.hasNextWord()) {
-                        String str = scanner.nextWord().toLowerCase();
+                while (scanner.hasNextLine()) {
+                    for (String str : scanner.nextLineWord()) {
+                        str = str.toLowerCase();
                         if (str.length() > 6) {
                             str = str.substring(3, str.length() - 3);
                         }
-                        if (occurrences.length <= all) {
-                            occurrences = Arrays.copyOf(occurrences, occurrences.length * 2);
+                        if (!treeMap.containsKey(str)) {
+                            treeMap.put(str, 0);
                         }
-                        occurrences[all] = str;
-                        all++;
+                        treeMap.put(str, treeMap.get(str) + 1);
                     }
-                    occurrences = Arrays.copyOf(occurrences, all);
-                    Arrays.sort(occurrences, new StringReverseComparator());
-                    for (int start = 0; start < all; start++) {
-                        int last = start;
-                        while (last < all && Objects.equals(occurrences[start], occurrences[last])) {
-                            last++;
-                        }
-                        writer.write(occurrences[start] + " " + (last - start) + System.lineSeparator());
-                        start = last - 1;
-                    }
-                } finally {
-                    writer.close();
                 }
             } finally {
                 scanner.close();
             }
         } catch (IOException e) {
-            System.err.println("IO error: " + e.getMessage());
+            System.err.println("Read error: " + e.getMessage());
+        }
+        try {
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filenameOut), StandardCharsets.UTF_8);
+            try {
+                for (var i : treeMap.reversed().entrySet()) {
+                    writer.write(i.getKey() + " " + i.getValue() + System.lineSeparator());
+                }
+            } finally {
+                writer.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Write error: " + e.getMessage());
         }
     }
 }
