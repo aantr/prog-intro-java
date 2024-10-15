@@ -57,7 +57,7 @@ public class MyScanner {
     }
 
     private boolean pushToValid(Function<Character, Boolean> f) throws IOException {
-        do {
+        while (!closed) {
             while (currentIndex < currentLength) {
                 if (f.apply(buffer[currentIndex])) {
                     return true;
@@ -65,17 +65,17 @@ public class MyScanner {
                 currentIndex++;
             }
             readBuffer();
-        } while (!closed);
+        }
         return false;
     }
 
     private boolean pushToNextLine() throws IOException {
-        do {
+        while (!closed) {
             if (currentIndex < currentLength) {
                 return true;
             }
             readBuffer();
-        } while (!closed);
+        }
         return false;
     }
 
@@ -139,7 +139,7 @@ public class MyScanner {
         StringBuilder stringBuilder = new StringBuilder();
         int start = currentIndex;
 
-        do {
+        while (!closed) {
             if (currentIndex < currentLength) {
                 if (readLineSeparator()) break;
             } else {
@@ -150,7 +150,7 @@ public class MyScanner {
                     start = 0;
                 }
             }
-        } while (!closed);
+        }
 
         stringBuilder.append(buffer, start, currentIndex - start);
 
@@ -170,7 +170,7 @@ public class MyScanner {
         int length = 0;
         StringBuilder stringBuilder = new StringBuilder();
 
-        do {
+        while (!closed) {
             if (currentIndex < currentLength) {
                 if (readLineSeparator()) break;
                 if (MyScanner.isValidInt(buffer[currentIndex - 1])) {
@@ -187,7 +187,7 @@ public class MyScanner {
             } else {
                 readBuffer();
             }
-        } while (!closed);
+        }
 
         if (!stringBuilder.isEmpty()) {
             res = pushNextInt(res, length++, stringBuilder);
