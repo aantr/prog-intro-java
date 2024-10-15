@@ -3,6 +3,18 @@
 [Условия домашних заданий](https://www.kgeorgiy.info/courses/prog-intro/homeworks.html)
 
 
+## Домашнее задание 7. Разметка
+
+Модификации
+ * *Base*
+    * Исходный код тестов:
+        * [MarkupTester.java](java/markup/MarkupTester.java)
+        * [MarkupTest.java](java/markup/MarkupTest.java)
+        * Аргументы командной строки: модификации
+    * Откомпилированных тестов не существуют,
+      так как они зависят от вашего кода
+
+
 ## Домашнее задание 6. Подсчет слов++
 
 Модификации
