@@ -17,15 +17,14 @@ public class MyScanner {
         Object[] arr;
         int length;
 
-        public MyArray(Class<?> type) throws ScannerException {
-            if (type == Integer.class)
+        public MyArray(Class<?> type) {
+            if (type == Integer.class) {
                 arr = new Integer[1];
-            else if (type == String.class)
+            } else if (type == String.class) {
                 arr = new String[1];
-            else {
-                throw new ScannerException("Unknown type passed in MyArray, possible types: String, Integer");
+            } else {
+                arr = new Object[1];
             }
-
             length = 0;
         }
 
@@ -215,12 +214,7 @@ public class MyScanner {
     }
 
     private Object[] nextLine(Function<Character, Boolean> f, Function<String, Object> callback, Class<?> type) throws IOException {
-        final MyArray myArray;
-        try {
-            myArray = new MyArray(type);
-        } catch (ScannerException e) {
-            throw new RuntimeException(e); // never will be thrown
-        }
+        final MyArray myArray = new MyArray(type);
         nextLineRead(f, (String s) -> {
             myArray.add(callback.apply(s));
             return null;
