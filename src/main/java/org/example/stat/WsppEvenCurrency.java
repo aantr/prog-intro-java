@@ -8,7 +8,6 @@ public class WsppEvenCurrency {
         String filenameIn = args[0], filenameOut = args[1];
         LinkedHashMap<String, ArrayList<Integer>> map = new LinkedHashMap<>();
         LinkedHashMap<String, Integer> cnt = new LinkedHashMap<>();
-
         try {
             MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filenameIn), StandardCharsets.UTF_8));
             try {

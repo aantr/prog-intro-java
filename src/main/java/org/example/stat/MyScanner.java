@@ -1,10 +1,8 @@
-import javax.lang.model.type.NullType;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.function.Function;
 
 public class MyScanner {
@@ -12,6 +10,42 @@ public class MyScanner {
     public static class ScannerException extends Exception {
         public ScannerException(String msg) {
             super(msg);
+        }
+    }
+
+    private static class MyArray {
+        Object[] arr;
+        int length;
+
+        public MyArray(Class<?> type) throws ScannerException {
+            if (type == Integer.class)
+                arr = new Integer[1];
+            else if (type == String.class)
+                arr = new String[1];
+            else {
+                throw new ScannerException("Unknown type passed in MyArray, possible types: String, Integer");
+            }
+
+            length = 0;
+        }
+
+        public void add(Object el) {
+            while (arr.length <= length) {
+                arr = Arrays.copyOf(arr, arr.length * 2);
+            }
+            arr[length] = el;
+            length++;
+        }
+
+        public Object get(int idx) {
+            if (idx < 0 || idx >= length) {
+                throw new ArrayIndexOutOfBoundsException("MyArray.get index of bounds");
+            }
+            return arr[idx];
+        }
+
+        public Object[] getArray() {
+            return Arrays.copyOf(arr, length);
         }
     }
 
@@ -126,7 +160,7 @@ public class MyScanner {
     }
 
     // IntPredicate
-    public String next(Function<Character, Boolean> f) throws IOException, ScannerException {
+    private String next(Function<Character, Boolean> f) throws IOException, ScannerException {
         if (!pushToValid(f)) { // have a valid char at currentIndex
             throw new ScannerException("Unable to find next int"); // new RuntimeException
         }
@@ -154,12 +188,11 @@ public class MyScanner {
             }
         }
         stringBuilder.append(buffer, start, currentIndex - start);
-
         return stringBuilder.toString();
     }
 
     // Predicate, WordProcessor
-    public void nextLine(Function<Character, Boolean> f, Function<String, Integer> callback) throws IOException {
+    private void nextLineRead(Function<Character, Boolean> f, Function<String, Void> callback) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         while (!closed) {
             if (currentIndex < currentLength) {
@@ -181,51 +214,36 @@ public class MyScanner {
         }
     }
 
-    public int[] nextLineInt() throws IOException {
-        final int[][] res = {new int[1]};
-        final int[] length = {0};
-        nextLine(MyScanner::isValidIntOct, (String s) -> {
-            while (length[0] >= res[0].length) {
-                res[0] = Arrays.copyOf(res[0], res[0].length * 2);
-            }
+    private Object[] nextLine(Function<Character, Boolean> f, Function<String, Object> callback, Class<?> type) throws IOException {
+        final MyArray myArray;
+        try {
+            myArray = new MyArray(type);
+        } catch (ScannerException e) {
+            throw new RuntimeException(e); // never will be thrown
+        }
+        nextLineRead(f, (String s) -> {
+            myArray.add(callback.apply(s));
+            return null;
+        });
+        return myArray.getArray();
+    }
+
+    public Integer[] nextLineInt() throws IOException {
+        return (Integer[]) nextLine(MyScanner::isValidIntOct, (String s) -> {
             String nxt = s.toLowerCase();
             if (nxt.endsWith("o")) {
-                res[0][length[0]] = Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
-            } else {
-                res[0][length[0]] = Integer.parseInt(nxt);
+                return Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
             }
-            length[0]++;
-            return 0;
-        });
-        return Arrays.copyOf(res[0], length[0]);
+            return Integer.parseInt(nxt);
+        }, Integer.class);
     }
 
     public String[] nextLineWord() throws IOException {
-        final String[][] res = {new String[1]};
-        final int[] length = {0};
-        nextLine(MyScanner::isValidWord, (String s) -> {
-            while (length[0] >= res[0].length) {
-                res[0] = Arrays.copyOf(res[0], res[0].length * 2);
-            }
-            res[0][length[0]] = s;
-            length[0]++;
-            return 0;
-        });
-        return Arrays.copyOf(res[0], length[0]);
+        return (String[]) nextLine(MyScanner::isValidWord, (String s) -> s, String.class);
     }
 
     public String[] nextLineWordCurrency() throws IOException {
-        final String[][] res = {new String[1]};
-        final int[] length = {0};
-        nextLine(MyScanner::isValidWordCurrency, (String s) -> {
-            while (length[0] >= res[0].length) {
-                res[0] = Arrays.copyOf(res[0], res[0].length * 2);
-            }
-            res[0][length[0]] = s;
-            length[0]++;
-            return 0;
-        });
-        return Arrays.copyOf(res[0], length[0]);
+        return (String[]) nextLine(MyScanner::isValidWordCurrency, (String s) -> s, String.class);
     }
 
     private boolean readLineSeparator() {
