@@ -35,6 +35,7 @@ public class WordStatWordsMiddle {
             }
         } catch (IOException e) {
             System.err.println("Read error: " + e.getMessage());
+            return;
         }
         try {
             OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filenameOut), StandardCharsets.UTF_8);

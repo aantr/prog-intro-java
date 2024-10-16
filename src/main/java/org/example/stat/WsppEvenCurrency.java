@@ -1,51 +1,58 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.security.spec.ECField;
 import java.util.*;
 
 public class WsppEvenCurrency {
 
     public static void main(String[] args) {
         String filenameIn = args[0], filenameOut = args[1];
-        LinkedHashMap<String, HashSet<Integer>> m = new LinkedHashMap<>();
+        LinkedHashMap<String, ArrayList<Integer>> map = new LinkedHashMap<>();
         LinkedHashMap<String, Integer> cnt = new LinkedHashMap<>();
 
         try {
             MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filenameIn), StandardCharsets.UTF_8));
             try {
                 while (scanner.hasNextLine()) {
-                    int i = 0;
+                    int index = 0;
+                    LinkedHashMap<String, Integer> cntLine = new LinkedHashMap<>();
                     for (String str : scanner.nextLineWordCurrency()) {
                         str = str.toLowerCase();
-                        System.err.print(str + " ");
-                        if (!m.containsKey(str)) {
+                        if (!map.containsKey(str)) {
+                            map.put(str, new ArrayList<>());
                             cnt.put(str, 0);
-                            m.put(str, new HashSet<>());
                         }
-                        cnt.put(str, cnt.get(str) + 1);
-                        m.get(str).add(i++);
+                        if (!cntLine.containsKey(str)) {
+                            cntLine.put(str, 1);
+                        } else {
+                            int cntL = cntLine.get(str);
+                            cntLine.put(str, cntL + 1);
+                            if (cntL % 2 == 1) {
+                                map.get(str).add(index);
+                            }
+                        }
+                        index++;
                     }
-                    System.err.println();
+                    for (var i : cntLine.entrySet()) {
+                        cnt.put(i.getKey(), cnt.get(i.getKey()) + i.getValue());
+                    }
+
                 }
             } finally {
                 scanner.close();
             }
         } catch (IOException e) {
             System.err.println("Read error: " + e.getMessage());
+            return;
         }
 
         try {
             OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filenameOut), StandardCharsets.UTF_8);
             try {
-                for (var word : m.entrySet()) {
-                    HashSet<Integer> el = word.getValue();
+                for (var word : map.entrySet()) {
+                    var el = word.getValue();
                     writer.write(word.getKey() + " " + cnt.get(word.getKey()));
-                    boolean even = false;
                     for (var i : el) {
-                        if (even) {
-                            writer.write(" " + (i + 1));
-                        }
-                        even = !even;
+                        writer.write(" " + (i + 1));
                     }
                     writer.write(System.lineSeparator());
                 }
@@ -54,7 +61,6 @@ public class WsppEvenCurrency {
             }
         } catch (Exception e) {
             System.err.println("Write error: " + e.getMessage());
-
         }
     }
 }
