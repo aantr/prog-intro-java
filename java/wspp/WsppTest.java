@@ -30,11 +30,15 @@ public final class WsppTest {
     /// Count
     private static final Named<Comparator<Map.Entry<String, Integer>>> COUNT = Named.of("Count", Comparator.comparingInt(Map.Entry::getValue));
 
+    /// Position
+    private static final Named<WsppTester.Extractor<String>> POSITION = Named.of("Position", (r, w, t, g) -> r + ":" + w);
+
     public static final Selector SELECTOR = new Selector(WsppTester.class)
             .variant("Base",            WsppTester.variant(INPUT, ALL, WSPP, NONE))
             .variant("EvenDigits",      WsppTester.variant(INPUT, EVEN, EXTRA, DIGITS))
             .variant("CountEvenDigits", WsppTester.variant(COUNT, EVEN, EXTRA, DIGITS))
             .variant("EvenCurrency",    WsppTester.variant(INPUT, EVEN, EXTRA, CURRENCY))
+            .variant("CountPosition",   WsppTester.variant(COUNT, ALL, POSITION, NONE))
             ;
 
     private WsppTest() {
