@@ -39,6 +39,7 @@ public final class WsppTest {
             .variant("CountEvenDigits", WsppTester.variant(COUNT, EVEN, EXTRA, DIGITS))
             .variant("EvenCurrency",    WsppTester.variant(INPUT, EVEN, EXTRA, CURRENCY))
             .variant("CountPosition",   WsppTester.variant(COUNT, ALL, POSITION, NONE))
+            .variant("Position",        WsppTester.variant(INPUT, ALL, POSITION, NONE))
             ;
 
     private WsppTest() {
