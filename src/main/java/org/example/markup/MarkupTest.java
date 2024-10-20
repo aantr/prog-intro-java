@@ -1,7 +1,6 @@
 package org.example.markup;
 
-import base.Selector;
-import base.TestCounter;
+import org.example.base.TestCounter;
 
 import java.util.List;
 import java.util.Map;

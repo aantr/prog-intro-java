@@ -1,6 +1,6 @@
 package org.example.reverse;
 
-import org.example.stat.MyScanner;
+import org.example.stat.M
 
 import static java.lang.Math.abs;
 

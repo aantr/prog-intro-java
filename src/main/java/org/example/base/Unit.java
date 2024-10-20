@@ -1,4 +1,4 @@
-package base;
+package org.example.base;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)

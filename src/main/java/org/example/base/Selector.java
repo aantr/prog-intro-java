@@ -1,4 +1,4 @@
-package base;
+package org.example.base;
 
 import java.util.*;
 import java.util.function.BiConsumer;

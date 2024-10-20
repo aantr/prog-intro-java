@@ -1,3 +1,5 @@
+package org.example.stat;
+
 import javax.imageio.stream.ImageOutputStreamImpl;
 import java.io.IOException;
 import java.io.InputStreamReader;

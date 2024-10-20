@@ -1,4 +1,4 @@
-package base;
+package org.example.base;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
