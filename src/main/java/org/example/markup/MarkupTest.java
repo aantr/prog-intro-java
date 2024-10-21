@@ -1,6 +1,6 @@
 package org.example.markup;
 
-import org.example.base.TestCounter;
+import org.example.base.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,8 +20,7 @@ public final class MarkupTest {
                     "*<", "<emphasis>", "*>", "</emphasis>",
                     "__<", "<emphasis role='bold'>", "__>", "</emphasis>",
                     "~<", "<emphasis role='strikeout'>", "~>", "</emphasis>"
-            )))
-            ;
+            )));
 
     public static Consumer<TestCounter> variant(final String name, final Map<String, String> mapping) {
         return MarkupTester.variant(MarkupTest::test, name, mapping);

@@ -1,5 +1,3 @@
-//package org.example.stat;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -15,6 +13,7 @@ public class MyScanner {
         }
     }
 
+    // MyArray(Integer.class) or MyArray(String.class)
     private static class MyArray {
         Object[] arr;
         int length;

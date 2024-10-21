@@ -1,3 +1,4 @@
+package org.example.runme;
 
 import com.sun.source.util.SourcePositions;
 

@@ -1,11 +1,7 @@
-package org.example.stat;
-
-import javax.imageio.stream.ImageOutputStreamImpl;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 
-public class Reverse {
+public  class Reverse {
     private final static int MAX_N = 3_000_000;
 
     public static void main(String[] args) {
