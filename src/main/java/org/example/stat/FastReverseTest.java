@@ -1,11 +1,10 @@
-package reverse;
+package org.example.stat;
 
-import base.Named;
-import base.Selector;
-import base.TestCounter;
-import reverse.ReverseTester.Op;
+import org.example.base.ExtendedRandom;
+import org.example.base.Named;
+import org.example.base.Selector;
+import org.example.stat.ReverseTester.Op;
 
-import base.ExtendedRandom;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.IntToLongFunction;
@@ -13,7 +12,7 @@ import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
 import java.util.stream.IntStream;
 
-import static reverse.ReverseTest.M;
+import static org.example.stat.ReverseTest.M;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)

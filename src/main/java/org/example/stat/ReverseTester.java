@@ -1,15 +1,12 @@
-package reverse;
+package org.example.stat;
 
-import base.*;
+import org.example.base.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,8 +18,7 @@ public final class ReverseTester {
     public static final Named<Op> TRANSFORM = Named.of("", ReverseTester::transform);
 
     @FunctionalInterface
-    public interface Op extends Function<int[][], long[][]> {
-    }
+    public interface Op extends Function<int[][], long[][]> {}
 
     private static final int[] DIVISORS = {100, 10, 1};
 

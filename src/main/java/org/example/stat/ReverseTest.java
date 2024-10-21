@@ -1,9 +1,9 @@
-package reverse;
+package org.example.stat;
 
-import base.Named;
-import base.Selector;
-import base.TestCounter;
-import reverse.ReverseTester.Op;
+import org.example.base.Named;
+import org.example.base.Selector;
+import org.example.base.TestCounter;
+import org.example.stat.ReverseTester.Op;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ public final class ReverseTest {
 
     /// Odd
 
-    /* package-private */ public static final Named<Op> ODD = Named.of(
+    /* package-private */ static final Named<Op> ODD = Named.of(
             "Odd",
             ints -> ReverseTester.transform(
                     Stream.of(ints)
@@ -63,7 +63,7 @@ public final class ReverseTest {
     /// SumAbs
 
     @FunctionalInterface
-            /* package-private */ interface LongTernaryOperator {
+    /* package-private */ interface LongTernaryOperator {
         long applyAsLong(long a, long b, long c);
     }
 
@@ -115,12 +115,12 @@ public final class ReverseTest {
 
     public static Selector selector(final Class<?> owner, final int maxSize) {
         return new Selector(owner)
-                .variant("Base", ReverseTester.variant(maxSize, REVERSE))
-                .variant("SumAbs", ReverseTester.variant(maxSize, SUM_ABS))
-                .variant("SumMod", ReverseTester.variant(maxSize, SUM_MOD))
-                .variant("SumAbsMod", ReverseTester.variant(maxSize, SUM_ABS_MOD))
-                .variant("Odd", ReverseTester.variant(maxSize, ODD))
-                .variant("Transpose", ReverseTester.variant(maxSize, TRANSPOSE))
+                .variant("Base",        ReverseTester.variant(maxSize, REVERSE))
+                .variant("SumAbs",      ReverseTester.variant(maxSize, SUM_ABS))
+                .variant("SumMod",      ReverseTester.variant(maxSize, SUM_MOD))
+                .variant("SumAbsMod",   ReverseTester.variant(maxSize, SUM_ABS_MOD))
+                .variant("Odd",         ReverseTester.variant(maxSize, ODD))
+                .variant("Transpose",   ReverseTester.variant(maxSize, TRANSPOSE))
                 ;
     }
 

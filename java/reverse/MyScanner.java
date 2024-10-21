@@ -1,4 +1,4 @@
-//package org.example.stat;
+//package reverse;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
