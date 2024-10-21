@@ -14,7 +14,14 @@ public class WsppEvenCurrency {
                 while (scanner.hasNextLine()) {
                     int index = 0;
                     LinkedHashMap<String, Integer> cntLine = new LinkedHashMap<>();
-                    for (String str : scanner.nextLineWordCurrency()) {
+                    while (!scanner.hasNextLineSeparatorWordCurrency()) {
+                        String str;
+                        try {
+                            str = scanner.nextWordCurrency();
+                        } catch (MyScanner.ScannerException e) {
+                            System.err.println("Scanner error: " + e.getMessage());
+                            return;
+                        }
                         str = str.toLowerCase();
                         if (!map.containsKey(str)) {
                             map.put(str, new ArrayList<>());
@@ -58,7 +65,7 @@ public class WsppEvenCurrency {
             } finally {
                 writer.close();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Write error: " + e.getMessage());
         }
     }

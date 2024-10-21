@@ -1,3 +1,5 @@
+//package org.example.stat;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;

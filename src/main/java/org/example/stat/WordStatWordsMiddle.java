@@ -19,7 +19,14 @@ public class WordStatWordsMiddle {
             MyScanner scanner = new MyScanner(new FileReader(filenameIn, StandardCharsets.UTF_8));
             try {
                 while (scanner.hasNextLine()) {
-                    for (String str : scanner.nextLineWord()) {
+                    while (!scanner.hasNextLineSeparatorWord()) {
+                        String str;
+                        try {
+                            str = scanner.nextWord();
+                        } catch (MyScanner.ScannerException e) {
+                            System.err.println("Scanner error: " + e.getMessage());
+                            return;
+                        }
                         str = str.toLowerCase();
                         if (str.length() > 6) {
                             str = str.substring(3, str.length() - 3);

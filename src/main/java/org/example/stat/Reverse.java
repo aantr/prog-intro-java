@@ -1,3 +1,5 @@
+//package org.example.stat;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -11,11 +13,15 @@ public  class Reverse {
             MyScanner sc = new MyScanner(new InputStreamReader(System.in));
             while (sc.hasNextLine()) {
                 numbers[current++] = Integer.MAX_VALUE;
-//                while (scanner.hasNextInt()) {
-//                int nextInt = scanner.nextInt();
-                for (int nextInt : sc.nextLineInt()) {
+                while (!sc.hasNextLineSeparatorInt()) {
+                    int nextInt;
+                    try {
+                        nextInt = sc.nextInt();
+                    } catch (MyScanner.ScannerException e) {
+                        System.err.println("Scanner error: " + e.getMessage());
+                        return;
+                    }
                     numbers[current++] = nextInt;
-
                 }
             }
 

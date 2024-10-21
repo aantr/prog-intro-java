@@ -1,6 +1,9 @@
+//package org.example.stat;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class ReverseMaxAbsModOctDec {
 
@@ -24,7 +27,14 @@ public class ReverseMaxAbsModOctDec {
                 while (scanner.hasNextLine()) {
                     int col = 0;
                     int[] currentRow = new int[1];
-                    for (int nextInt : scanner.nextLineInt()) {
+                    while (!scanner.hasNextLineSeparatorIntOct()) {
+                        int nextInt;
+                        try {
+                            nextInt = scanner.nextIntOct();
+                        } catch (MyScanner.ScannerException e) {
+                            System.err.println("Scanner error: " + e.getMessage());
+                            return;
+                        }
                         if (col >= currentRow.length) {
                             currentRow = Arrays.copyOf(currentRow, currentRow.length * 2);
                         }

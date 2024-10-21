@@ -1,8 +1,11 @@
+//package org.example.stat;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.function.Function;
 
 public class MyScanner {
@@ -49,14 +52,14 @@ public class MyScanner {
         }
     }
 
-    final static int BUF_SIZE = 1024;
+    private final static int BUF_SIZE = 1024;
 
-    Reader readerIn;
-    char[] buffer = new char[BUF_SIZE];
-    int currentLineSep = 0;
-    int currentIndex = 0;
-    int currentLength = 0;
-    boolean closed = false;
+    private final Reader readerIn;
+    private final char[] buffer = new char[BUF_SIZE];
+    private int currentLineSep = 0;
+    private int currentIndex = 0;
+    private int currentLength = 0;
+    private boolean closed = false;
 
     public MyScanner(InputStreamReader reader) {
         this.readerIn = reader;
@@ -75,6 +78,14 @@ public class MyScanner {
         return Character.isDigit(ch) ||
                 Character.getType(ch) == Character.DASH_PUNCTUATION ||
                 Character.toLowerCase(ch) == 'o';
+    }
+
+    private static Integer parseIntOct(String s) {
+        String nxt = s.toLowerCase();
+        if (nxt.endsWith("o")) {
+            return Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
+        }
+        return Integer.parseInt(nxt);
     }
 
     private static boolean isValidWord(char ch) {
@@ -104,15 +115,34 @@ public class MyScanner {
         }
     }
 
-    private boolean pushToValid(Function<Character, Boolean> f) throws IOException {
+    // Predicate x
+    private boolean pushToValid(Function<Character, Boolean> f) throws IOException { // moves currentIndex to nearest ok predicate symbol and sets the wasLineSeparator
         while (!closed) {
-            while (currentIndex < currentLength) {
+            if (currentIndex < currentLength) {
                 if (f.apply(buffer[currentIndex])) {
                     return true;
                 }
                 currentIndex++;
+            } else {
+                readBuffer();
             }
-            readBuffer();
+        }
+        return false;
+    }
+
+    // Predicate x
+    private boolean pushToLineSeparator(Function<Character, Boolean> f) throws IOException { // moves currentIndex to either nearest ok predicate symbol or line sep
+        while (!closed) {
+            if (currentIndex < currentLength) {
+                if (f.apply(buffer[currentIndex])) {
+                    return false;
+                }
+                if (readLineSeparator()) {
+                    return true;
+                }
+            } else {
+                readBuffer();
+            }
         }
         return false;
     }
@@ -121,8 +151,9 @@ public class MyScanner {
         while (!closed) {
             if (currentIndex < currentLength) {
                 return true;
+            } else {
+                readBuffer();
             }
-            readBuffer();
         }
         return false;
     }
@@ -139,6 +170,10 @@ public class MyScanner {
         return pushToValid(MyScanner::isValidInt);
     }
 
+    public boolean hasNextIntOct() throws IOException {
+        return pushToValid(MyScanner::isValidIntOct);
+    }
+
     public boolean hasNextWord() throws IOException {
         return pushToValid(MyScanner::isValidWord);
     }
@@ -151,6 +186,10 @@ public class MyScanner {
         return Integer.parseInt(next(MyScanner::isValidInt));
     }
 
+    public Integer nextIntOct() throws IOException, NumberFormatException, ScannerException {
+        return parseIntOct(next(MyScanner::isValidIntOct));
+    }
+
     public String nextWord() throws IOException, ScannerException {
         return next(MyScanner::isValidWord);
     }
@@ -161,8 +200,8 @@ public class MyScanner {
 
     // IntPredicate
     private String next(Function<Character, Boolean> f) throws IOException, ScannerException {
-        if (!pushToValid(f)) { // have a valid char at currentIndex
-            throw new ScannerException("Unable to find next int"); // new RuntimeException
+        if (!pushToValid(f)) { // has a valid char at currentIndex
+            throw new ScannerException("Unable to find next");
         }
         StringBuilder stringBuilder = new StringBuilder();
         while (currentIndex < currentLength && f.apply(buffer[currentIndex])) {
@@ -172,6 +211,26 @@ public class MyScanner {
             }
         }
         return stringBuilder.toString();
+    }
+
+    private boolean hasNextLineSeparator(Function<Character, Boolean> f) throws IOException {
+        return pushToLineSeparator(f);
+    }
+
+    public boolean hasNextLineSeparatorInt() throws IOException {
+        return hasNextLineSeparator(MyScanner::isValidInt);
+    }
+
+    public boolean hasNextLineSeparatorIntOct() throws IOException {
+        return hasNextLineSeparator(MyScanner::isValidIntOct);
+    }
+
+    public boolean hasNextLineSeparatorWord() throws IOException {
+        return hasNextLineSeparator(MyScanner::isValidWord);
+    }
+
+    public boolean hasNextLineSeparatorWordCurrency() throws IOException {
+        return hasNextLineSeparator(MyScanner::isValidWordCurrency);
     }
 
     public String nextLine() throws IOException { // reads until new line sep inclusively
@@ -224,13 +283,11 @@ public class MyScanner {
     }
 
     public Integer[] nextLineInt() throws IOException {
-        return (Integer[]) nextLine(MyScanner::isValidIntOct, (String s) -> {
-            String nxt = s.toLowerCase();
-            if (nxt.endsWith("o")) {
-                return Integer.parseUnsignedInt(nxt.substring(0, nxt.length() - 1), 8);
-            }
-            return Integer.parseInt(nxt);
-        }, Integer.class);
+        return (Integer[]) nextLine(MyScanner::isValidInt, Integer::parseInt, Integer.class);
+    }
+
+    public Integer[] nextLineIntOct() throws IOException {
+        return (Integer[]) nextLine(MyScanner::isValidIntOct, MyScanner::parseIntOct, Integer.class);
     }
 
     public String[] nextLineWord() throws IOException {
@@ -241,7 +298,7 @@ public class MyScanner {
         return (String[]) nextLine(MyScanner::isValidWordCurrency, (String s) -> s, String.class);
     }
 
-    private boolean readLineSeparator() {
+    private boolean readLineSeparator() { // moves currentIndex and returns if there was a line break
         currentIndex++;
         if (buffer[currentIndex - 1] == System.lineSeparator().charAt(currentLineSep)) {
             currentLineSep++;
@@ -260,5 +317,9 @@ public class MyScanner {
         closed = true;
         currentIndex = 0;
         currentLength = 0; // force to read next time
+    }
+
+    public boolean isClosed() {
+        return closed;
     }
 }
