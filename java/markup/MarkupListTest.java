@@ -171,7 +171,6 @@ public final class MarkupListTest {
         checkConstructor(classes, allClasses, "ListItem", "OrderedList", "UnorderedList", "Paragraph");
         List.of("Paragraph", "Emphasis", "Strong", "Strikeout")
                 .forEach(parent -> checkConstructor(classes, allClasses, parent, inlineClasses));
-        checkConstructor(classes, allClasses, "ListItem", "Paragraph", "OrderedList", "UnorderedList");
     }
 
     private static void checkConstructor(final Map<String, Class<?>> classes, final Set<Class<?>> allClasses, final String parent, final String... children) {
