@@ -1,6 +1,7 @@
 package markup;
 
-import base.*;
+import base.Selector;
+import base.TestCounter;
 
 import java.util.List;
 import java.util.Map;
