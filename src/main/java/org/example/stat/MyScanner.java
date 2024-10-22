@@ -104,8 +104,7 @@ public class MyScanner {
         if (closed) {
             return;
         }
-        int res;
-        res = readerIn.read(buffer);
+        int res = readerIn.read(buffer);
         if (res == -1) {
             closed = true;
         } else {
@@ -114,40 +113,8 @@ public class MyScanner {
         }
     }
 
-    // Predicate x
-    private boolean pushToValid(Function<Character, Boolean> f) throws IOException { // moves currentIndex to nearest ok predicate symbol and sets the wasLineSeparator
-        while (!closed) {
-            if (currentIndex < currentLength) {
-                if (f.apply(buffer[currentIndex])) {
-                    return true;
-                }
-                currentIndex++;
-            } else {
-                readBuffer();
-            }
-        }
-        return false;
-    }
-
-    // Predicate x
-    // return true if there was a line break between current pos and next input
-    private boolean pushToLineSeparator(Function<Character, Boolean> f) throws IOException { // moves currentIndex to either nearest ok predicate symbol or line sep
-        while (!closed) {
-            if (currentIndex < currentLength) {
-                if (f.apply(buffer[currentIndex])) {
-                    return false;
-                }
-                if (readLineSeparator()) {
-                    return true;
-                }
-            } else {
-                readBuffer();
-            }
-        }
-        return false;
-    }
-
-    private boolean pushToNextLine() throws IOException {
+    // checks if current index is out of buffer length and reads buffer if needed
+    private boolean readNextChar() throws IOException {
         while (!closed) {
             if (currentIndex < currentLength) {
                 return true;
@@ -158,12 +125,36 @@ public class MyScanner {
         return false;
     }
 
+    // Predicate x
+    // moves currentIndex to nearest ok predicate symbol and sets the wasLineSeparator
+    private boolean pushToValid(Function<Character, Boolean> f) throws IOException {
+        while (readNextChar()) {
+            if (f.apply(buffer[currentIndex])) {
+                return true;
+            }
+            currentIndex++;
+        }
+        return false;
+    }
+
+    // Predicate x
+    // return true if there was a line break between current pos and next input
+    // moves currentIndex to either nearest ok predicate symbol or line sep
+    private boolean pushToLineSeparator(Function<Character, Boolean> f) throws IOException {
+        while (readNextChar() && !f.apply(buffer[currentIndex])) {
+            if (readLineSeparator(currentIndex++)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasNext(Function<Character, Boolean> f) throws IOException {
         return pushToValid(f);
     }
 
     public boolean hasNextLine() throws IOException {
-        return pushToNextLine();
+        return readNextChar();
     }
 
     public boolean hasNextInt() throws IOException {
@@ -199,16 +190,14 @@ public class MyScanner {
     }
 
     // IntPredicate
+    // Checks if there is at least one valid char
     private String next(Function<Character, Boolean> f) throws IOException, ScannerException {
         if (!pushToValid(f)) { // has a valid char at currentIndex
             throw new ScannerException("Unable to find next");
         }
         StringBuilder stringBuilder = new StringBuilder();
-        while (currentIndex < currentLength && f.apply(buffer[currentIndex])) {
+        while (readNextChar() && f.apply(buffer[currentIndex])) {
             stringBuilder.append(buffer[currentIndex++]);
-            if (currentIndex == currentLength) {
-                readBuffer();
-            }
         }
         return stringBuilder.toString();
     }
@@ -235,41 +224,33 @@ public class MyScanner {
 
     public String nextLine() throws IOException { // reads until new line sep inclusively
         StringBuilder stringBuilder = new StringBuilder();
-        int start = currentIndex;
-        while (!closed) {
-            if (currentIndex < currentLength) {
-                if (readLineSeparator()) {
-                    break;
-                }
-                stringBuilder.append(buffer[currentIndex - 1]);
-            } else {
-                readBuffer();
+        while (readNextChar()) {
+            stringBuilder.append(buffer[currentIndex]);
+            if (readLineSeparator(currentIndex++)) {
+                break;
             }
         }
-        stringBuilder.append(buffer, start, currentIndex - start);
         return stringBuilder.toString();
     }
 
     // Predicate, WordProcessor
-    private void nextLineRead(Function<Character, Boolean> f, Function<String, Void> callback) throws IOException {
+    private void nextLineRead(Function<Character, Boolean> f, Function<String, Void> wordProcessor) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
-        while (!closed) {
-            if (currentIndex < currentLength) {
-                if (readLineSeparator()) break;
-                if (f.apply(buffer[currentIndex - 1])) {
-                    stringBuilder.append(buffer[currentIndex - 1]);
-                } else {
-                    if (!stringBuilder.isEmpty()) {
-                        callback.apply(stringBuilder.toString());
-                    }
+        while (readNextChar()) {
+            if (f.apply(buffer[currentIndex])) {
+                stringBuilder.append(buffer[currentIndex]);
+            } else {
+                if (!stringBuilder.isEmpty()) {
+                    wordProcessor.apply(stringBuilder.toString());
                     stringBuilder = new StringBuilder();
                 }
-            } else {
-                readBuffer();
+            }
+            if (readLineSeparator(currentIndex++)) {
+                break;
             }
         }
         if (!stringBuilder.isEmpty()) {
-            callback.apply(stringBuilder.toString());
+            wordProcessor.apply(stringBuilder.toString());
         }
     }
 
@@ -298,9 +279,10 @@ public class MyScanner {
         return (String[]) nextLine(MyScanner::isValidWordCurrency, (String s) -> s, String.class);
     }
 
-    private boolean readLineSeparator() { // moves currentIndex and returns if there was a line break
-        currentIndex++;
-        if (buffer[currentIndex - 1] == System.lineSeparator().charAt(currentLineSep)) {
+    // saves current state if read line separator and
+    // returns if there was a line break that ends with index
+    private boolean readLineSeparator(int index) {
+        if (buffer[index] == System.lineSeparator().charAt(currentLineSep)) {
             currentLineSep++;
             if (currentLineSep >= System.lineSeparator().length()) {
                 currentLineSep = 0;
@@ -315,8 +297,6 @@ public class MyScanner {
     public void close() throws IOException {
         readerIn.close();
         closed = true;
-        currentIndex = 0;
-        currentLength = 0; // clear buffer
     }
 
     public boolean isClosed() {
