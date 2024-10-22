@@ -1,11 +1,11 @@
-package org.example.markup;
+package markup;
 
 import java.util.List;
 
 public class ListItem implements Element {
-    private final List<Element> elements;
+    private final List<ListItemBase> elements;
 
-    public ListItem(List<Element> elements) {
+    public ListItem(List<ListItemBase> elements) {
         this.elements = elements;
     }
 

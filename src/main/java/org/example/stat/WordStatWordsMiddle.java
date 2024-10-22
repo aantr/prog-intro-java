@@ -1,4 +1,6 @@
-import java.awt.desktop.ScreenSleepEvent;
+import myscanner.MyScanner;
+import myscanner.ScannerException;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -23,7 +25,7 @@ public class WordStatWordsMiddle {
                         String str;
                         try {
                             str = scanner.nextWord();
-                        } catch (MyScanner.ScannerException e) {
+                        } catch (ScannerException e) {
                             System.err.println("Scanner error: " + e.getMessage());
                             return;
                         }

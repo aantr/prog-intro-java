@@ -1,4 +1,4 @@
-package org.example.markup;
+package markup;
 
 public interface Element {
     public void toMarkdown(StringBuilder stringBuilder);

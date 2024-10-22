@@ -1,23 +1,21 @@
-package reverse;
+//package reverse;
 
 import myscanner.MyScanner;
+import myscanner.ScannerException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import static java.lang.Math.abs;
-
-public class ReverseSumAbsMod {
+public class ReverseMaxAbsModOctDec {
 
     static final int MOD = 1_000_000_007;
 
-    private static int addMod(int x, int y) {
-        return ((x % MOD + y % MOD) % MOD + MOD) % MOD;
-    }
-
-    private static int subMod(int x, int y) {
-        return ((x % MOD - y % MOD) % MOD + MOD) % MOD;
+    static int max(int a, int b) {
+        if (Math.abs(a) % MOD > Math.abs(b) % MOD) {
+            return a;
+        }
+        return b;
     }
 
     public static void main(String[] args) {
@@ -31,11 +29,11 @@ public class ReverseSumAbsMod {
                 while (scanner.hasNextLine()) {
                     int col = 0;
                     int[] currentRow = new int[1];
-                    while (scanner.hasNextLineSeparatorInt()) {
+                    while (!scanner.hasNextLineSeparatorIntOct()) {
                         int nextInt;
                         try {
-                            nextInt = scanner.nextInt();
-                        } catch (MyScanner.ScannerException e) {
+                            nextInt = scanner.nextIntOct();
+                        } catch (ScannerException e) {
                             System.err.println("Scanner error: " + e.getMessage());
                             return;
                         }
@@ -57,13 +55,14 @@ public class ReverseSumAbsMod {
                 int[] cols = new int[maxCols];
                 for (int i = 0; i < row; i++) {
                     for (int j = 0; j < numbers[i].length; j++) {
-                        rows[i] = addMod(rows[i], abs(numbers[i][j]));
-                        cols[j] = addMod(cols[j], abs(numbers[i][j]));
+                        rows[i] = max(rows[i], numbers[i][j]);
+                        cols[j] = max(cols[j], numbers[i][j]);
                     }
                 }
+
                 for (int i = 0; i < row; i++) {
                     for (int j = 0; j < numbers[i].length; j++) {
-                        System.out.print(subMod(addMod(rows[i], cols[j]), abs(numbers[i][j])) + " ");
+                        System.out.print(Integer.toOctalString(max(rows[i], cols[j])) + "o ");
                     }
                     System.out.println();
                 }
@@ -71,7 +70,7 @@ public class ReverseSumAbsMod {
                 scanner.close();
             }
         } catch (IOException e) {
-            System.err.println("IO error: " + e.getMessage());
+            System.err.println("Read error: " + e.getMessage());
         }
     }
 }

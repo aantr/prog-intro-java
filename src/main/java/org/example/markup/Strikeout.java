@@ -1,9 +1,9 @@
-package org.example.markup;
+package markup;
 
 import java.util.List;
 
-public class Strikeout extends MarkupBase {
-    public Strikeout(List<Element> elements) {
+public class Strikeout extends MarkupBase implements ParagraphBase {
+    public Strikeout(List<ParagraphBase> elements) {
         super(elements, "~", "emphasis", "strikeout");
     }
 }

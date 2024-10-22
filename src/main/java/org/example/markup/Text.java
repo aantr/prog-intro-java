@@ -1,6 +1,6 @@
-package org.example.markup;
+package markup;
 
-public class Text implements Element {
+public class Text implements ParagraphBase {
     private final String text;
 
     public Text(String text) {

@@ -4,4 +4,4 @@
  *
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
-package org.example.markup;
+package markup;

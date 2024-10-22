@@ -1,8 +1,8 @@
-package org.example.markup;
+package markup;
 
-import org.example.base.Asserts;
-import org.example.base.BaseChecker;
-import org.example.base.TestCounter;
+import base.Asserts;
+import base.BaseChecker;
+import base.TestCounter;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

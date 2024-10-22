@@ -1,4 +1,3 @@
 #!/bin/bash
-javac WordStatInput.java &&
-javac WordStatWordsMiddle.java MyScanner.java &&
-java -ea -jar "WordStatTest.jar" WordsMiddle
+javac -sourcepath .. WordStatInput.java WordStatWordsMiddle.java &&
+java -ea -cp .. -jar WordStatTest.jar WordsMiddle

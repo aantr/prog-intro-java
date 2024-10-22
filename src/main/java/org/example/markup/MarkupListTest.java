@@ -184,6 +184,7 @@ public final class MarkupListTest {
                     final Predicate<Class<?>> isAssignableFrom = ((Class<?>) actualType)::isAssignableFrom;
                     final Set<Class<?>> childC = Arrays.stream(children).map(classes::get).collect(Collectors.toUnmodifiableSet());
                     checkType(parentC, Predicate.not(isAssignableFrom), "not ", childC.stream());
+//                    System.err.println(parentC + " " + allClasses.stream().filter(Predicate.not(childC::contains)));
                     checkType(parentC, isAssignableFrom, "", allClasses.stream().filter(Predicate.not(childC::contains)));
                 }
             }

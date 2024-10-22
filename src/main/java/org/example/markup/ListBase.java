@@ -1,8 +1,8 @@
-package org.example.markup;
+package markup;
 
 import java.util.List;
 
-public class ListBase implements Element {
+public class ListBase implements ListItemBase {
 
     private final String tag;
     private final List<ListItem> elements;
