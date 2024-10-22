@@ -316,7 +316,7 @@ public class MyScanner {
         readerIn.close();
         closed = true;
         currentIndex = 0;
-        currentLength = 0; // force to read next time
+        currentLength = 0; // clear buffer
     }
 
     public boolean isClosed() {
