@@ -3,21 +3,15 @@
 import java.util.Arrays;
 
 public class MyArray {
-    Object[] arr;
+    int[] arr;
     int length;
 
-    public MyArray(Class<?> type) {
-        if (type == Integer.class) {
-            arr = new Integer[1];
-        } else if (type == String.class) {
-            arr = new String[1];
-        } else {
-            arr = new Object[1];
-        }
+    public MyArray() {
+        arr = new int[1];
         length = 0;
     }
 
-    public void add(Object el) {
+    public void add(int el) {
         while (arr.length <= length) {
             arr = Arrays.copyOf(arr, arr.length * 2);
         }
@@ -25,14 +19,14 @@ public class MyArray {
         length++;
     }
 
-    public Object get(int idx) {
+    public int get(int idx) {
         if (idx < 0 || idx >= length) {
             throw new ArrayIndexOutOfBoundsException("MyArray.get index of bounds");
         }
         return arr[idx];
     }
 
-    public Object[] getArray() {
+    public int[] getArray() {
         return Arrays.copyOf(arr, length);
     }
 }

@@ -1,3 +1,3 @@
 #!/bin/bash
-javac Reverse.java ReverseMaxAbsModOctDec.java &&
+javac PrefixFunction.java MyScanner.java Reverse.java ReverseMaxAbsModOctDec.java &&
 java -ea -jar FastReverseTest.jar MaxAbsModOctDec

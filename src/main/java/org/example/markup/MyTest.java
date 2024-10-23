@@ -1,7 +1,5 @@
 package markup;
 
-import java.util.List;
-
 public class MyTest {
     public static void main(String[] args) {
         StringBuilder sb = new StringBuilder();

@@ -4,6 +4,16 @@ import java.util.List;
 
 public class UnorderedList extends ListBase {
     public UnorderedList(List<ListItem> elements) {
-        super("itemizedlist", elements);
+        super(elements);
+    }
+
+    @Override
+    public void toMarkdown(StringBuilder stringBuilder) {
+
+    }
+
+    @Override
+    public void toDocBook(StringBuilder stringBuilder) {
+        buildDocBook(stringBuilder, "itemizedlist");
     }
 }

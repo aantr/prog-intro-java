@@ -8,21 +8,20 @@ public class Reverse {
     private final static int MAX_N = 3_000_000;
 
     public static void main(String[] args) {
-        try {
+        try (MyScanner sc = new MyScanner(new InputStreamReader(System.in))) {
             int[] numbers = new int[MAX_N];
             int current = 0;
-            MyScanner sc = new MyScanner(new InputStreamReader(System.in));
             while (sc.hasNextLine()) {
                 numbers[current++] = Integer.MAX_VALUE;
-                while (!sc.hasNextLineSeparatorInt()) {
-                    int nextInt;
-                    try {
-                        nextInt = sc.nextInt();
-                    } catch (ScannerException e) {
-                        System.err.println("Scanner error: " + e.getMessage());
-                        return;
+                while (sc.hasNextOrLineSeparator()) {
+                    String read = sc.nextNextOrLineSeparator(MyScanner::isValidInt);
+                    if (read.isEmpty()) {
+                        break;
                     }
-                    numbers[current++] = nextInt;
+                    numbers[current++] = Integer.parseInt(read);
+                    if (sc.wasLineSeparator()) {
+                        break;
+                    }
                 }
             }
 
@@ -35,7 +34,9 @@ public class Reverse {
                 }
             }
         } catch (IOException e) {
-            System.err.println("error: " + e.getMessage());
+            System.err.println("Read error: " + e.getMessage());
+        } catch (ScannerException e) {
+            System.err.println("Scanner error: " + e.getMessage());
         }
     }
 }

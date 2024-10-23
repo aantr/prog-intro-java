@@ -2,52 +2,30 @@ package markup;
 
 import java.util.List;
 
-public class MarkupBase implements Element {
+public class MarkupBase {
     private final List<? extends Element> elements;
-    private final String markdownSymbol;
-    private final String tag;
-    private final String role;
 
-    public MarkupBase(List<? extends Element> elements, String symbol) {
+    public MarkupBase(List<? extends Element> elements) {
         this.elements = elements;
-        this.markdownSymbol = symbol;
-        this.tag = null;
-        this.role = null;
     }
 
-    public MarkupBase(List<? extends Element> elements, String symbol, String tag) {
-        this.elements = elements;
-        this.markdownSymbol = symbol;
-        this.tag = tag;
-        this.role = null;
-    }
-
-    public MarkupBase(List<? extends Element> elements, String symbol, String tag, String role) {
-        this.elements = elements;
-        this.markdownSymbol = symbol;
-        this.tag = tag;
-        this.role = role;
-    }
-
-    @Override
-    public void toMarkdown(StringBuilder stringBuilder) {
-        stringBuilder.append(markdownSymbol);
+    public void buildMarkdown(StringBuilder stringBuilder, String symbol) {
+        stringBuilder.append(symbol);
         for (Element el : elements) {
             el.toMarkdown(stringBuilder);
         }
-        stringBuilder.append(markdownSymbol);
+        stringBuilder.append(symbol);
     }
 
-    @Override
-    public void toDocBook(StringBuilder stringBuilder) {
-        String roleString = "";
-        if (role != null) {
-            roleString += " role='" + role + "'";
-        }
-        stringBuilder.append('<').append(tag).append(roleString).append('>');
+    public void buildDocBook(StringBuilder stringBuilder, String tag, String role) {
+        stringBuilder.append('<').append(tag).append(role != null ? String.format(" role='%s'", role) : "").append('>');
         for (Element el : elements) {
             el.toDocBook(stringBuilder);
         }
         stringBuilder.append("</").append(tag).append('>');
+    }
+
+    public void buildDocBook(StringBuilder stringBuilder, String tag) {
+        buildDocBook(stringBuilder, tag, null);
     }
 }
