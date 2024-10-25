@@ -6,22 +6,21 @@ public class MyScanner implements AutoCloseable {
 
     private final Reader readerIn;
     private final char[] buffer = new char[BUF_SIZE];
-    private int currentIndex = 0;
-    private int currentLength = 0;
-    private boolean closed = false;
-    private boolean eof = false;
+    private int bufferIndex;
+    private int bufferLength;
+    private boolean closed;
+    private boolean eof;
 
     private final PrefixFunction prefixFunction;
 
-    private int currentLineSeparator = 0;
-    private int currentLineSeparatorPosition = 0;
-    private int nextLineSeparator = 0;
-    private int nextLineSeparatorPosition = 0;
-    private int prevPrefixFunctionValue = 0;
-    private int distance = 0;
-    private boolean wasLineSep = false;
-    private boolean wasPrevSymbol = false;
-    private char prevSymbol = 0;
+    private int readChars;
+    private int currentPrefix;
+    private int currentPosition;
+    private int nextPrefix;
+    private int prevPrefixFunction;
+    private boolean wasLineSeparator;
+    private boolean hasNextSymbol;
+    private char nextSymbol;
 
     @FunctionalInterface
     public interface Predicate {
@@ -36,6 +35,168 @@ public class MyScanner implements AutoCloseable {
     public MyScanner(Reader reader) {
         this(reader, System.lineSeparator());
     }
+
+    // writes next char to bufferIndex
+    // returns true if nothing to read
+    private boolean nextChar() throws IOException {
+        while (!closed) {
+            if (bufferIndex < bufferLength) {
+                return false;
+            } else {
+                bufferIndex = 0;
+                if ((bufferLength = readerIn.read(buffer)) == -1) {
+                    closed = true;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void setNullState() {
+        readChars = 0;
+        prevPrefixFunction = 0;
+        currentPrefix = 0;
+        currentPosition = 0;
+        nextPrefix = 0;
+    }
+
+    private char setLineSep() {
+        setNullState();
+        wasLineSeparator = true;
+        return 0;
+    }
+
+    private char setEof() {
+        eof = true;
+        return 0;
+    }
+
+    // if stream is closed but there is a prefix of a read line sep return it else return eof.
+    private char onEof() {
+        if (currentPrefix <= currentPosition) {
+            return setEof();
+        }
+        nextPrefix = 0;
+        readChars--;
+        return prefixFunction.str.charAt(currentPosition++);
+    }
+
+    private char readChar() {
+        setNullState();
+        return buffer[bufferIndex - 1];
+    }
+
+    private char findNextPrefix() throws IOException {
+        while (readChars <= nextPrefix) { // find next
+            currentPrefix = nextPrefix; // set maximum length of prefix of line sep that char in
+            if (nextPrefix == prefixFunction.str.length()) { // it is a line sep
+                return setLineSep();
+            }
+            if (nextChar()) { // next was not found because of eof
+                return onEof();
+            }
+            // read next char and set nextPrefix as a maximum prefix of
+            // a line sep that equals current suffix
+            nextPrefix = readLineSeparator(bufferIndex++);
+            readChars++;
+        }
+        readChars--;
+        if (currentPosition < currentPrefix) {
+            return prefixFunction.str.charAt(currentPosition++);
+        }
+        return readChar();
+    }
+
+    private char readNextOrSeparator() throws IOException {
+        if (hasNextSymbol) {
+            hasNextSymbol = false;
+            return nextSymbol;
+        }
+        wasLineSeparator = false;
+        if (readChars == 0 && closed) {
+            return setEof();
+        }
+        // possible states are:
+        // 1) null state
+        // 2) next char is not a line sep but in prefix of line sep, may be started earlier
+        // 3) next char is not a line sep and not in prefix of any line sep
+        // 4) next char is in prefix of a line sep but might be a line sep
+        if (readChars > nextPrefix) {
+            readChars--;
+            if (currentPosition < currentPrefix) { // 2
+                return prefixFunction.str.charAt(currentPosition++);
+            }
+            return readChar(); // 3
+        }
+        currentPrefix = nextPrefix;
+        currentPosition = 0;
+        return findNextPrefix(); // 4
+    }
+
+    // returns maximum suffix with current input, s.t. suffix = lineSep prefix (see PrefixFunction)
+    // if lineSep appeared, then we set prevPrefixFunctionValue equals 0, so lineSeps don't intersect each other
+    private int readLineSeparator(int index) {
+        return prevPrefixFunction = prefixFunction.get(prevPrefixFunction, buffer[index]);
+    }
+
+    // has unread chars before eof
+    public boolean hasNextLine() throws IOException {
+        return hasNextOrSeparator((char s) -> true);
+    }
+
+    // read until valid or lineSep or eof, if found either lineSep or valid then save it
+    public boolean hasNextOrSeparator(Predicate f) throws IOException {
+        while (true) {
+            char ch = readNextOrSeparator();
+            if (eof) {
+                return false;
+            }
+            if (wasLineSeparator || f.apply(ch)) {
+                // don`t skip current char
+                setNextChar(ch);
+                return true;
+            }
+        }
+    }
+
+    private void setNextChar(char ch) {
+        nextSymbol = ch;
+        hasNextSymbol = true;
+    }
+
+    // returns empty string if read line sep
+    // return string contains all next consecutive symbols applied for predicate
+    public String nextOrSeparator(Predicate f) throws IOException, ScannerException {
+        if (!hasNextOrSeparator(f)) {
+            throw new ScannerException("Unable to find either next or separator");
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        while (true) {
+            char ch = readNextOrSeparator();
+            if (eof) {
+                break;
+            }
+            // if lineSep at the end of the word or not valid then set next char as current
+            // so after reading a word scanner does not skip next char
+            boolean valid = f.apply(ch);
+            if (wasLineSeparator || !valid) {
+                if (!stringBuilder.isEmpty()) {
+
+                    setNextChar(ch);
+                }
+                break;
+            }
+            stringBuilder.append(ch);
+        }
+        return stringBuilder.toString();
+    }
+
+    public void close() throws IOException {
+        readerIn.close();
+        closed = true;
+    }
+
+    // static methods
 
     public static boolean isValidInt(char ch) {
         return Character.isDigit(ch) ||
@@ -66,249 +227,6 @@ public class MyScanner implements AutoCloseable {
                 Character.getType(ch) == Character.DASH_PUNCTUATION ||
                 Character.getType(ch) == Character.CURRENCY_SYMBOL ||
                 ch == '\'';
-    }
-
-    private void readBuffer() throws IOException {
-        if (closed) {
-            return;
-        }
-        int res = readerIn.read(buffer);
-        if (res == -1) {
-            closed = true;
-        } else {
-            currentLength = res;
-            currentIndex = 0;
-        }
-    }
-
-    private boolean readNextChar() throws IOException {
-        while (!closed) {
-            if (currentIndex < currentLength) {
-                return true;
-            } else {
-                readBuffer();
-            }
-        }
-        return false;
-    }
-
-
-    private void printState() {
-        System.err.println("cur pos: " + currentLineSeparatorPosition + " cur len: " + currentLineSeparator +
-                " nxt len: " + nextLineSeparator + " dist: " + distance);
-    }
-
-    // read symbol from null or current set.
-    // set next, current either 0 or > 0
-    private char goFromNormal() throws IOException {
-        // what about oef ?
-//        printState();
-        if (currentLineSeparator == 0) {
-
-            assert nextLineSeparator == 0 && currentLineSeparatorPosition == 0 && nextLineSeparatorPosition == 0;
-            while (distance <= nextLineSeparator) { // find nxt
-
-                currentLineSeparator = nextLineSeparator; // set last correct line sep
-
-                if (nextLineSeparator == prefixFunction.str.length()) {
-//                    System.err.println("/n");
-                    currentLineSeparator = 0;
-                    currentLineSeparatorPosition = 0;
-                    nextLineSeparator = 0;
-                    nextLineSeparatorPosition = 0;
-                    wasLineSep = true;
-                    distance = 0;
-                    prevPrefixFunctionValue = 0;
-                    return 0;
-                }
-
-                if (!readNextChar()) { // might not be correct nxt
-                    if (currentLineSeparator <= currentLineSeparatorPosition) {
-                        eof = true;
-                        return 0; // eof
-                    } else {
-                        nextLineSeparator = 0;
-                        nextLineSeparatorPosition = 0;
-                        distance--;
-//                        System.err.println("not eof 0: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
-                        return prefixFunction.str.charAt(currentLineSeparatorPosition++);
-                    }
-                }
-
-                int length = readLineSeparator(currentIndex++); // if length == 0 then go null
-                nextLineSeparatorPosition = 0;
-                nextLineSeparator = length;
-
-                distance++;
-            }
-            distance--;
-            if (currentLineSeparatorPosition < currentLineSeparator) {
-                return prefixFunction.str.charAt(currentLineSeparatorPosition++);
-            }
-            return buffer[currentIndex - 1];
-
-        }
-        // current line sep > 0
-        // nxt was not set yet
-
-        assert nextLineSeparator == currentLineSeparator;
-        assert(currentLineSeparatorPosition == 0 && currentLineSeparator > 0);
-//        System.err.println("pos: " + currentLineSeparatorPosition);
-        while (distance <= nextLineSeparator) { // find nxt
-
-            currentLineSeparator = nextLineSeparator; // set last correct line sep
-
-            if (nextLineSeparator == prefixFunction.str.length()) {
-                currentLineSeparator = 0;
-                currentLineSeparatorPosition = 0;
-                nextLineSeparator = 0;
-                nextLineSeparatorPosition = 0;
-                wasLineSep = true;
-                distance = 0;
-                prevPrefixFunctionValue = 0;
-
-                return 0;
-            }
-
-            if (!readNextChar()) {
-                if (currentLineSeparator <= currentLineSeparatorPosition) {
-                    eof = true;
-//                    System.err.println("eof");
-                    return 0; // eof
-                } else {
-                    nextLineSeparatorPosition = 0;
-                    nextLineSeparator = 0;
-                    distance--;
-//                    System.err.println("not eof: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
-
-                    return prefixFunction.str.charAt(currentLineSeparatorPosition++);
-                }
-            }
-
-            int length = readLineSeparator(currentIndex++);
-            nextLineSeparatorPosition = 0;
-            nextLineSeparator = length;
-
-            distance++;
-        }
-        distance--;
-        return prefixFunction.str.charAt(currentLineSeparatorPosition++);
-    }
-
-    // want symbol that not in lineSep or lineSep
-    // determine current symbol or lineSep
-    // update currentLineSeparator
-    private char readNextOrLineSeparator() throws IOException {
-        if (wasPrevSymbol) {
-            wasPrevSymbol = false;
-//            System.err.println("res 0: " + prevSymbol);
-            return prevSymbol;
-        }
-        wasLineSep = false;
-        if (distance > 0) {
-            if (distance > nextLineSeparator) {
-                distance--;
-                if (currentLineSeparatorPosition < currentLineSeparator) {
-//                    printState();;
-//                    System.err.println("res eof: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
-
-                    return prefixFunction.str.charAt(currentLineSeparatorPosition++);
-                }
-//                System.err.println("res buffer: " + buffer[currentIndex - 1]);
-                currentLineSeparator = 0;
-                currentLineSeparatorPosition = 0;
-                assert nextLineSeparator == 0 && nextLineSeparatorPosition == 0; // go to null state
-                return buffer[currentIndex - 1];
-            }
-            // in next ?
-
-            // distance == nextLineSeparator
-            // now replace
-            currentLineSeparator = nextLineSeparator;
-            currentLineSeparatorPosition = nextLineSeparatorPosition;
-            // and go
-            char res = goFromNormal();
-//            System.err.println("res 1: " + res);
-
-            return res;
-        }
-        // current_pos = currentLength
-        // suffix is null
-//        printState();
-        assert currentLineSeparatorPosition == currentLineSeparator;
-//        currentLineSeparator = 0;
-//        currentLineSeparatorPosition = 0;
-        if (closed) {
-            eof = true;
-            return 0;
-        }
-        char res = goFromNormal();
-//        System.err.println("res 3: " + res);
-        return res;
-    }
-
-    // returns maximum suffix with current input, s.t. suffix = lineSep prefix (see PrefixFunction)
-    private int readLineSeparator(int index) {
-        return prevPrefixFunctionValue = prefixFunction.get(prevPrefixFunctionValue, buffer[index]);
-    }
-
-    // alternative name: has unread chars before eof
-    public boolean hasNextLine() throws IOException {
-        return hasNextOrLineSeparator((char s) -> true);
-    }
-
-    // read until valid or lineSep or eof, if found either lineSep or valid then save it
-    public boolean hasNextOrLineSeparator(Predicate f) throws IOException {
-        while (true) {
-            char ch = readNextOrLineSeparator();
-            if (eof) {
-                return false;
-            }
-            if (wasLineSep || f.apply(ch)) {
-                prevSymbol = ch;
-                wasPrevSymbol = true;
-                return true;
-            }
-        }
-    }
-
-    // returns empty string if read line sep
-    // return string contains all next consecutive symbols applied for predicate
-    public String nextOrLineSeparator(Predicate f) throws IOException, ScannerException {
-        if (!hasNextOrLineSeparator(f)) { // reads until valid
-            throw new ScannerException("Unable to find either next or lineSep");
-        }
-        // called hasNextOrLineSeparator here, so we have been prevSymbol
-        // if it is lineSep then return lineSep
-        // else return char
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        while (true) {
-            char ch = readNextOrLineSeparator();
-//            System.err.println("sym: " + ch);
-            if (eof) { // has at least one
-                break;
-            }
-
-            if (wasLineSep || !f.apply(ch)) {
-                if (!stringBuilder.isEmpty()) {
-                    wasPrevSymbol = true;
-                    prevSymbol = ch;
-                }
-                break;
-            }
-            if (f.apply(ch)) {
-                stringBuilder.append(ch);
-            }
-        }
-
-        return stringBuilder.toString();
-    }
-
-    public void close() throws IOException {
-        readerIn.close();
-        closed = true;
     }
 
 }

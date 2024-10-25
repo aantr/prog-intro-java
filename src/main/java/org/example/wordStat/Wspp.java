@@ -18,7 +18,7 @@ public class Wspp {
             String str;
             int yandex = 0;
             while (scanner.hasNextLine()) {
-                while (!(str = scanner.nextOrLineSeparator(MyScanner::isValidWord)).isEmpty()) {
+                while (!(str = scanner.nextOrSeparator(MyScanner::isValidWord)).isEmpty()) {
                     str = str.toLowerCase();
                     if (!m.containsKey(str)) {
                         first.add(str);

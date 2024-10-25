@@ -11,7 +11,7 @@ public class Reverse {
             while (sc.hasNextLine()) {
                 numbers[current++] = Integer.MAX_VALUE;
                 String read;
-                while (!(read = sc.nextOrLineSeparator(MyScanner::isValidInt)).isEmpty()) {
+                while (!(read = sc.nextOrSeparator(MyScanner::isValidInt)).isEmpty()) {
                     numbers[current++] = Integer.parseInt(read);
                 }
             }

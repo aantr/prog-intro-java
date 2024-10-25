@@ -22,7 +22,7 @@ public class WordStatWordsMiddle {
         try (MyScanner scanner = new MyScanner(new FileReader(filenameIn, StandardCharsets.UTF_8))) {
             while (scanner.hasNextLine()) {
                 String str;
-                while (!(str = scanner.nextOrLineSeparator(MyScanner::isValidWord)).isEmpty()) {
+                while (!(str = scanner.nextOrSeparator(MyScanner::isValidWord)).isEmpty()) {
                     str = str.toLowerCase();
                     if (str.length() >= 7) {
                         str = str.substring(3, str.length() - 3);

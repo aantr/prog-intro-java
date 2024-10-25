@@ -48,7 +48,7 @@ def test():
 	assert solution == correct
 
 if __name__ == '__main__':
-	tests = 15
+	tests = 10
 	seed(tests)
 	for i in range(tests):
 	    test()

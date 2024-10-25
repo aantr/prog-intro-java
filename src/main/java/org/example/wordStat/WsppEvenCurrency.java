@@ -21,7 +21,7 @@ public class WsppEvenCurrency {
                 int index = 0;
                 Map<String, Integer> cntLine = new LinkedHashMap<>();
                 String str;
-                while (!(str = scanner.nextOrLineSeparator(MyScanner::isValidWordCurrency)).isEmpty()) {
+                while (!(str = scanner.nextOrSeparator(MyScanner::isValidWordCurrency)).isEmpty()) {
                     str = str.toLowerCase();
                     // if map does not contain current word add empty list of occurrences
                     map.putIfAbsent(str, new ArrayList<>());

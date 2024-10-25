@@ -5,17 +5,15 @@ import java.io.StringReader;
 public class MyTest {
     public static void main(String[] args) throws ScannerException, IOException {
         MyScanner input = new MyScanner(new InputStreamReader(System.in), "\n");
-        String sep = input.nextOrLineSeparator((char c) -> true);
-        input.nextOrLineSeparator((char c) -> true);
-        String test = input.nextOrLineSeparator((char c) -> true);
-        System.err.println("\n\n");
-
+        String sep = input.nextOrSeparator((char c) -> true);
+        input.nextOrSeparator((char c) -> true);
+        String test = input.nextOrSeparator((char c) -> true);
         MyScanner scanner = new MyScanner(new StringReader(test), sep);
         try {
             StringBuilder ans = new StringBuilder();
-            while (scanner.hasNextOrLineSeparator(MyScanner::isValidWord)) {
+            while (scanner.hasNextOrSeparator(MyScanner::isValidWord)) {
                 String str;
-                if ((str = scanner.nextOrLineSeparator(MyScanner::isValidWord)).isEmpty()) {
+                if ((str = scanner.nextOrSeparator(MyScanner::isValidWord)).isEmpty()) {
                     ans.append('\n');
                 } else {
                     ans.append(str);

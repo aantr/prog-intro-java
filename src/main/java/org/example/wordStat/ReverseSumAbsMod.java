@@ -27,14 +27,9 @@ public class ReverseSumAbsMod {
                 while (scanner.hasNextLine()) {
                     int col = 0;
                     int[] currentRow = new int[1];
-                    while (scanner.hasNextLineSeparatorInt()) {
-                        int nextInt;
-                        try {
-                            nextInt = scanner.nextInt();
-                        } catch (MyScanner.ScannerException e) {
-                            System.err.println("Scanner error: " + e.getMessage());
-                            return;
-                        }
+                    String read;
+                    while (!(read = scanner.nextOrSeparator(MyScanner::isValidInt)).isEmpty()) {
+                        int nextInt = Integer.parseInt(read);
                         if (col >= currentRow.length) {
                             currentRow = Arrays.copyOf(currentRow, currentRow.length * 2);
                         }
@@ -63,11 +58,13 @@ public class ReverseSumAbsMod {
                     }
                     System.out.println();
                 }
+            } catch (ScannerException e) {
+                System.err.println("Scanner error: " + e.getMessage());
             } finally {
                 scanner.close();
             }
         } catch (IOException e) {
-            System.err.println("IO error: " + e.getMessage());
+            System.err.println("Read error: " + e.getMessage());
         }
     }
 }
