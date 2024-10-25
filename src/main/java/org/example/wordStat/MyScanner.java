@@ -111,7 +111,7 @@ public class MyScanner implements AutoCloseable {
                 currentLineSeparator = nextLineSeparator; // set last correct line sep
 
                 if (nextLineSeparator == prefixFunction.str.length()) {
-                    System.err.println("/n");
+//                    System.err.println("/n");
                     currentLineSeparator = 0;
                     currentLineSeparatorPosition = 0;
                     nextLineSeparator = 0;
@@ -130,7 +130,7 @@ public class MyScanner implements AutoCloseable {
                         nextLineSeparator = 0;
                         nextLineSeparatorPosition = 0;
                         distance--;
-                        System.err.println("not eof 0: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
+//                        System.err.println("not eof 0: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
                         return prefixFunction.str.charAt(currentLineSeparatorPosition++);
                     }
                 }
@@ -153,7 +153,7 @@ public class MyScanner implements AutoCloseable {
 
         assert nextLineSeparator == currentLineSeparator;
         assert(currentLineSeparatorPosition == 0 && currentLineSeparator > 0);
-        System.err.println("pos: " + currentLineSeparatorPosition);
+//        System.err.println("pos: " + currentLineSeparatorPosition);
         while (distance <= nextLineSeparator) { // find nxt
 
             currentLineSeparator = nextLineSeparator; // set last correct line sep
@@ -173,13 +173,13 @@ public class MyScanner implements AutoCloseable {
             if (!readNextChar()) {
                 if (currentLineSeparator <= currentLineSeparatorPosition) {
                     eof = true;
-                    System.err.println("eof");
+//                    System.err.println("eof");
                     return 0; // eof
                 } else {
                     nextLineSeparatorPosition = 0;
                     nextLineSeparator = 0;
                     distance--;
-                    System.err.println("not eof: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
+//                    System.err.println("not eof: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
 
                     return prefixFunction.str.charAt(currentLineSeparatorPosition++);
                 }
@@ -201,7 +201,7 @@ public class MyScanner implements AutoCloseable {
     private char readNextOrLineSeparator() throws IOException {
         if (wasPrevSymbol) {
             wasPrevSymbol = false;
-            System.err.println("res 0: " + prevSymbol);
+//            System.err.println("res 0: " + prevSymbol);
             return prevSymbol;
         }
         wasLineSep = false;
@@ -209,12 +209,12 @@ public class MyScanner implements AutoCloseable {
             if (distance > nextLineSeparator) {
                 distance--;
                 if (currentLineSeparatorPosition < currentLineSeparator) {
-                    printState();;
-                    System.err.println("res eof: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
+//                    printState();;
+//                    System.err.println("res eof: " + prefixFunction.str.charAt(currentLineSeparatorPosition));
 
                     return prefixFunction.str.charAt(currentLineSeparatorPosition++);
                 }
-                System.err.println("res buffer: " + buffer[currentIndex - 1]);
+//                System.err.println("res buffer: " + buffer[currentIndex - 1]);
                 currentLineSeparator = 0;
                 currentLineSeparatorPosition = 0;
                 assert nextLineSeparator == 0 && nextLineSeparatorPosition == 0; // go to null state
@@ -228,13 +228,13 @@ public class MyScanner implements AutoCloseable {
             currentLineSeparatorPosition = nextLineSeparatorPosition;
             // and go
             char res = goFromNormal();
-            System.err.println("res 1: " + res);
+//            System.err.println("res 1: " + res);
 
             return res;
         }
         // current_pos = currentLength
         // suffix is null
-        printState();
+//        printState();
         assert currentLineSeparatorPosition == currentLineSeparator;
 //        currentLineSeparator = 0;
 //        currentLineSeparatorPosition = 0;
@@ -243,7 +243,7 @@ public class MyScanner implements AutoCloseable {
             return 0;
         }
         char res = goFromNormal();
-        System.err.println("res 3: " + res);
+//        System.err.println("res 3: " + res);
         return res;
     }
 
@@ -275,7 +275,7 @@ public class MyScanner implements AutoCloseable {
     // returns empty string if read line sep
     // return string contains all next consecutive symbols applied for predicate
     public String nextOrLineSeparator(Predicate f) throws IOException, ScannerException {
-        if (!hasNextOrLineSeparator(f)) {
+        if (!hasNextOrLineSeparator(f)) { // reads until valid
             throw new ScannerException("Unable to find either next or lineSep");
         }
         // called hasNextOrLineSeparator here, so we have been prevSymbol
@@ -286,11 +286,12 @@ public class MyScanner implements AutoCloseable {
 
         while (true) {
             char ch = readNextOrLineSeparator();
+//            System.err.println("sym: " + ch);
             if (eof) { // has at least one
                 break;
             }
 
-            if (wasLineSep) {
+            if (wasLineSep || !f.apply(ch)) {
                 if (!stringBuilder.isEmpty()) {
                     wasPrevSymbol = true;
                     prevSymbol = ch;

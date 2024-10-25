@@ -1,5 +1,3 @@
-package wordStat;//package org.example.reverse;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;

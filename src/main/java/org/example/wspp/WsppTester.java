@@ -4,7 +4,6 @@ import base.ExtendedRandom;
 import base.Named;
 import base.Pair;
 import base.TestCounter;
-import wordStat.WordStatChecker;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
