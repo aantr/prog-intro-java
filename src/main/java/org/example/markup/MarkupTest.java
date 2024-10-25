@@ -16,6 +16,12 @@ public final class MarkupTest {
                     "&[", "", "&]", "",
                     "<", "", ">", ""
             )))
+            .variant("Typst", MarkupTest.variant("Typst", Map.of(
+                    "&[", "","&]", "",
+                    "*<", "#emph[", "*>", "]",
+                    "__<", "#strong[", "__>", "]",
+                    "~<", "#strike[", "~>", "]"
+            )))
             ;
 
     public static Consumer<TestCounter> variant(final String name, final Map<String, String> mapping) {
