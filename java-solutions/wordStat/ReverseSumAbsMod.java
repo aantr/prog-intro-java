@@ -22,8 +22,7 @@ public class ReverseSumAbsMod {
         int maxCols = 0;
         int row = 0;
         try {
-            MyScanner scanner = new MyScanner(new InputStreamReader(System.in));
-            try {
+            try (MyScanner scanner = new MyScanner(new InputStreamReader(System.in))) {
                 while (scanner.hasNextLine()) {
                     int col = 0;
                     int[] currentRow = new int[1];
@@ -60,8 +59,6 @@ public class ReverseSumAbsMod {
                 }
             } catch (ScannerException e) {
                 System.err.println("Scanner error: " + e.getMessage());
-            } finally {
-                scanner.close();
             }
         } catch (IOException e) {
             System.err.println("Read error: " + e.getMessage());

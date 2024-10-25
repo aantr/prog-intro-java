@@ -1,5 +1,3 @@
-package wordStat;//package org.example.reverse;
-
 import java.util.Scanner;
 
 public class ReverseSumAbs {
