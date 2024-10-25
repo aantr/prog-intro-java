@@ -1,32 +1,13 @@
 /*
-
-from https://ru.algorithmica.org/cs/string-searching/prefix-function/
-
-vector<int> prefix_function(string s) {
-    int n = (int) s.size();
-    vector<int> p(n, 0);
-    for (int i = 1; i < n; i++) {
-        // префикс функция точно не больше этого значения + 1
-        int cur = p[i - 1];
-        // уменьшаем cur значение, пока новый символ не сматчится
-        while (s[i] != s[cur] && cur > 0)
-            cur = p[cur - 1];
-        // здесь либо s[i] == s[cur], либо cur == 0
-        if (s[i] == s[cur])
-            p[i] = cur + 1;
-    }
-    return p;
-}
-
- */
+https://ru.wikipedia.org/wiki/Префикс-функция
+*/
 
 public class PrefixFunction {
-    static String str; // will be System.lineSeparator()
-    static int[] prefixFunction;
+    public String str;
+    private int[] prefixFunction;
 
     public PrefixFunction(String str) {
-        PrefixFunction.str = str;
-        prefixFunction = new int[str.length()];
+        this.str = str;
     }
 
     private int decrease(char ch, int cur) {
@@ -40,6 +21,7 @@ public class PrefixFunction {
     }
 
     public PrefixFunction build() {
+        prefixFunction = new int[str.length()];
         for (int i = 1; i < str.length(); i++) {
             prefixFunction[i] = decrease(str.charAt(i), prefixFunction[i - 1]);
         }

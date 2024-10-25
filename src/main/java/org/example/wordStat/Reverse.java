@@ -1,9 +1,6 @@
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-//import wordStat.MyScanner;
-//import wordStat.ScannerException;
-
 public class Reverse {
     private final static int MAX_N = 3_000_000;
 
@@ -13,15 +10,9 @@ public class Reverse {
             int current = 0;
             while (sc.hasNextLine()) {
                 numbers[current++] = Integer.MAX_VALUE;
-                while (sc.hasNextOrLineSeparator()) {
-                    String read = sc.nextNextOrLineSeparator(MyScanner::isValidInt);
-                    if (read.isEmpty()) {
-                        break;
-                    }
+                String read;
+                while (!(read = sc.nextOrLineSeparator(MyScanner::isValidIntOct)).isEmpty()) {
                     numbers[current++] = Integer.parseInt(read);
-                    if (sc.wasLineSeparator()) {
-                        break;
-                    }
                 }
             }
 

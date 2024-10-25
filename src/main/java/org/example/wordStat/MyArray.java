@@ -1,5 +1,3 @@
-//package wordStat;
-
 import java.util.Arrays;
 
 public class MyArray {

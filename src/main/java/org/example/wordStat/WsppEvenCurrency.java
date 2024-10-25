@@ -1,6 +1,9 @@
 //package wordStat;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,44 +15,37 @@ public class WsppEvenCurrency {
         String filenameIn = args[0], filenameOut = args[1];
         Map<String, ArrayList<Integer>> map = new LinkedHashMap<>();
         Map<String, Integer> cnt = new LinkedHashMap<>();
-        try {
-            MyScanner scanner = new MyScanner(new InputStreamReader(new FileInputStream(filenameIn), StandardCharsets.UTF_8));
-            try {
-                while (scanner.hasNextLine()) {
-                    int index = 0;
-                    Map<String, Integer> cntLine = new LinkedHashMap<>();
-                    while (!scanner.hasNextLineSeparatorWordCurrency()) {
-                        String str;
-                        try {
-                            str = scanner.nextWordCurrency();
-                        } catch (ScannerException e) {
-                            System.err.println("Scanner error: " + e.getMessage());
-                            return;
-                        }
-                        str = str.toLowerCase();
-                        // if map does not contain current word add empty list of occurrences
-                        map.putIfAbsent(str, new ArrayList<>());
-                        cnt.putIfAbsent(str, 0);
+        try (MyScanner scanner = new MyScanner(new FileReader(filenameIn, StandardCharsets.UTF_8))) {
 
-                        // update cntLine and map if cntLine[x] % 2 == 1 (even)
-                        int cntL = cntLine.getOrDefault(str, 0);
-                        cntLine.put(str, cntL + 1);
-                        if (cntL % 2 == 1) {
-                            map.get(str).add(index);
-                        }
+            while (scanner.hasNextLine()) {
+                int index = 0;
+                Map<String, Integer> cntLine = new LinkedHashMap<>();
+                String str;
+                while (!(str = scanner.nextOrLineSeparator(MyScanner::isValidWordCurrency)).isEmpty()) {
+                    str = str.toLowerCase();
+                    // if map does not contain current word add empty list of occurrences
+                    map.putIfAbsent(str, new ArrayList<>());
+                    cnt.putIfAbsent(str, 0);
 
-                        index++;
+                    // update cntLine and map if cntLine[x] % 2 == 1 (even)
+                    int cntL = cntLine.getOrDefault(str, 0);
+                    cntLine.put(str, cntL + 1);
+                    if (cntL % 2 == 1) {
+                        map.get(str).add(index);
                     }
-                    // Update cnt
-                    for (var i : cntLine.entrySet()) {
-                        cnt.put(i.getKey(), cnt.get(i.getKey()) + i.getValue());
-                    }
+
+                    index++;
                 }
-            } finally {
-                scanner.close();
+                // Update cnt
+                for (var i : cntLine.entrySet()) {
+                    cnt.put(i.getKey(), cnt.get(i.getKey()) + i.getValue());
+                }
             }
         } catch (IOException e) {
             System.err.println("Read error: " + e.getMessage());
+            return;
+        } catch (ScannerException e) {
+            System.err.println("Scanner error: " + e.getMessage());
             return;
         }
 

@@ -23,11 +23,11 @@ public class ReverseMaxAbsModOctDec {
                 int col = 0;
                 int[] currentRow = new int[1];
                 String read;
-                while (!(read = scanner.nextNextOrLineSeparator(MyScanner::isValidIntOct)).isEmpty()) {
+                while (!(read = scanner.nextOrLineSeparator(MyScanner::isValidIntOct)).isEmpty()) {
                     if (col >= currentRow.length) {
                         currentRow = Arrays.copyOf(currentRow, currentRow.length * 2);
                     }
-                    currentRow[col++] = MyScanner.parseIntOct(read);;
+                    currentRow[col++] = MyScanner.parseIntOct(read);
                     maxCols = Math.max(maxCols, col);
                 }
                 if (row >= numbers.length) {
