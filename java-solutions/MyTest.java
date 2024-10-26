@@ -11,7 +11,7 @@ public class MyTest {
         MyScanner scanner = new MyScanner(new StringReader(test), sep);
         try {
             StringBuilder ans = new StringBuilder();
-            while (scanner.hasNextOrSeparator(MyScanner::isValidWord)) {
+            while (scanner.readUntil(MyScanner::isValidWord)) {
                 String str;
                 if ((str = scanner.nextOrSeparator(MyScanner::isValidWord)).isEmpty()) {
                     ans.append('\n');

@@ -25,14 +25,15 @@ def stupid(s, sep):
 	return ''.join(words)
 
 def gen():
-	w = ['a', 'aa', 'b', 'bb', '1']
+	w = ['a', 'a' * 100, 'b', 'b' * 100, '1']
 	w1 = ['a', 'b']
 	s = ''
 	sep = ''
-	for i in range(choice([1, 2, 3, 5, 10])):
+	for i in range(choice([10000])):
 		sep += choice(w1)
-	for i in range(randint(1, 100)):
+	for i in range(randint(1, 50000)):
 		s += choice(w)
+	print(f's, sep: {len(s)}, {len(sep)}')
 	return s, sep
 
 def test():
@@ -52,4 +53,5 @@ if __name__ == '__main__':
 	seed(tests)
 	for i in range(tests):
 	    test()
+	    print(f'ok {i + 1}')
 	print(f'{tests} passed')

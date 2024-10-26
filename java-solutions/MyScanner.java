@@ -71,24 +71,30 @@ public class MyScanner implements AutoCloseable {
         return 0;
     }
 
-    // if stream is closed but there is a prefix of a read line sep return it else return eof.
-    private char onEof() {
-        if (currentPrefix <= currentPosition) {
-            return setEof();
-        }
-        nextPrefix = 0;
+    private char readSeparatorPrefix() {
         readChars--;
         return prefixFunction.str.charAt(currentPosition++);
     }
 
+    // if stream is closed but there is a prefix of a read line sep return it else return eof.
+    private char onEof() {
+        if (currentPosition >= currentPrefix) { // actual eof
+            return setEof();
+        }
+        nextPrefix = 0; // set next to eof
+        return readSeparatorPrefix();
+    }
+
     private char readChar() {
+        readChars--;
         setNullState();
         return buffer[bufferIndex - 1];
     }
 
+    // find next: increase next chars until either line sep full or current char will be out of line sep
     private char findNextPrefix() throws IOException {
-        while (readChars <= nextPrefix) { // find next
-            currentPrefix = nextPrefix; // set maximum length of prefix of line sep that char in
+        while (readChars <= nextPrefix) {
+            currentPrefix = nextPrefix; // update current prefix
             if (nextPrefix == prefixFunction.str.length()) { // it is a line sep
                 return setLineSep();
             }
@@ -100,37 +106,37 @@ public class MyScanner implements AutoCloseable {
             nextPrefix = readLineSeparator(bufferIndex++);
             readChars++;
         }
-        readChars--;
         if (currentPosition < currentPrefix) {
-            return prefixFunction.str.charAt(currentPosition++);
+            return readSeparatorPrefix();
         }
         return readChar();
     }
 
+    // possible states are:
+    // 1) current line sep is empty
+    // 2) next char is not a line sep but in prefix of line sep, may be started earlier
+    // 3) next char is not a line sep and not in prefix of any line sep
+    // 4) next char is in prefix of a line sep but might be a full line sep
     private char readNextOrSeparator() throws IOException {
         if (hasNextSymbol) {
             hasNextSymbol = false;
             return nextSymbol;
         }
-        wasLineSeparator = false;
         if (readChars == 0 && closed) {
             return setEof();
         }
-        // possible states are:
-        // 1) null state
-        // 2) next char is not a line sep but in prefix of line sep, may be started earlier
-        // 3) next char is not a line sep and not in prefix of any line sep
-        // 4) next char is in prefix of a line sep but might be a line sep
+
+        wasLineSeparator = false;
         if (readChars > nextPrefix) {
             readChars--;
-            if (currentPosition < currentPrefix) { // 2
+            if (currentPosition < currentPrefix) { // 2, in prefix of line sep
                 return prefixFunction.str.charAt(currentPosition++);
             }
             return readChar(); // 3
         }
         currentPrefix = nextPrefix;
         currentPosition = 0;
-        return findNextPrefix(); // 4
+        return findNextPrefix(); // 4, 1
     }
 
     // returns maximum suffix with current input, s.t. suffix = lineSep prefix (see PrefixFunction)
@@ -141,11 +147,11 @@ public class MyScanner implements AutoCloseable {
 
     // has unread chars before eof
     public boolean hasNextLine() throws IOException {
-        return hasNextOrSeparator((char s) -> true);
+        return readUntil((char s) -> true);
     }
 
     // read until valid or lineSep or eof, if found either lineSep or valid then save it
-    public boolean hasNextOrSeparator(Predicate f) throws IOException {
+    public boolean readUntil(Predicate f) throws IOException {
         while (true) {
             char ch = readNextOrSeparator();
             if (eof) {
@@ -166,8 +172,11 @@ public class MyScanner implements AutoCloseable {
 
     // returns empty string if read line sep
     // return string contains all next consecutive symbols applied for predicate
+    //
+    // if lineSep at the end of the word or not valid then set next char as current
+    // so after reading a word scanner does not skip next char
     public String nextOrSeparator(Predicate f) throws IOException, ScannerException {
-        if (!hasNextOrSeparator(f)) {
+        if (!readUntil(f)) {
             throw new ScannerException("Unable to find either next or separator");
         }
         StringBuilder stringBuilder = new StringBuilder();
@@ -176,12 +185,8 @@ public class MyScanner implements AutoCloseable {
             if (eof) {
                 break;
             }
-            // if lineSep at the end of the word or not valid then set next char as current
-            // so after reading a word scanner does not skip next char
-            boolean valid = f.apply(ch);
-            if (wasLineSeparator || !valid) {
+            if (wasLineSeparator || !f.apply(ch)) {
                 if (!stringBuilder.isEmpty()) {
-
                     setNextChar(ch);
                 }
                 break;
@@ -228,5 +233,4 @@ public class MyScanner implements AutoCloseable {
                 Character.getType(ch) == Character.CURRENCY_SYMBOL ||
                 ch == '\'';
     }
-
 }
