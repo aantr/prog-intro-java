@@ -4,23 +4,26 @@ import java.io.Reader;
 public class MyScanner implements AutoCloseable {
     private final static int BUF_SIZE = 1024;
 
+    // for buffer read
     private final Reader readerIn;
     private final char[] buffer = new char[BUF_SIZE];
     private int bufferIndex;
     private int bufferLength;
     private boolean closed;
+
+    // prefix function
+    private final PrefixFunction prefixFunction;
+    private int prevPrefixFunction;
+
+    // current state of read
+    private int readChars;
+    private int currentPrefix, nextPrefix;
+    private int currentPosition;
     private boolean eof;
 
-    private final PrefixFunction prefixFunction;
-
-    private int readChars;
-    private int currentPrefix;
-    private int currentPosition;
-    private int nextPrefix;
-    private int prevPrefixFunction;
+    // for methods
     private boolean wasLineSeparator;
     private boolean hasNextSymbol;
-    private char nextSymbol;
 
     @FunctionalInterface
     public interface Predicate {
@@ -120,7 +123,7 @@ public class MyScanner implements AutoCloseable {
     private char readNextOrSeparator() throws IOException {
         if (hasNextSymbol) {
             hasNextSymbol = false;
-            return nextSymbol;
+            return buffer[bufferIndex - 1];
         }
         if (readChars == 0 && closed) {
             return setEof();
@@ -159,15 +162,10 @@ public class MyScanner implements AutoCloseable {
             }
             if (wasLineSeparator || f.apply(ch)) {
                 // don`t skip current char
-                setNextChar(ch);
+                hasNextSymbol = true;
                 return true;
             }
         }
-    }
-
-    private void setNextChar(char ch) {
-        nextSymbol = ch;
-        hasNextSymbol = true;
     }
 
     // returns empty string if read line sep
@@ -187,7 +185,7 @@ public class MyScanner implements AutoCloseable {
             }
             if (wasLineSeparator || !f.apply(ch)) {
                 if (!stringBuilder.isEmpty()) {
-                    setNextChar(ch);
+                    hasNextSymbol = true;
                 }
                 break;
             }

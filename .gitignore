@@ -13,3 +13,5 @@ _*
 # Store .git files
 !.git*
 .idea
+
+java-solutions/push.sh

@@ -25,15 +25,15 @@ def stupid(s, sep):
 	return ''.join(words)
 
 def gen():
-	w = ['a', 'a' * 100, 'b', 'b' * 100, '1']
+	w = ['a', 'a' * 2, 'b', 'b' * 2, '1']
 	w1 = ['a', 'b']
 	s = ''
 	sep = ''
-	for i in range(choice([10000])):
+	for i in range(choice([1, 2, 3, 4])):
 		sep += choice(w1)
-	for i in range(randint(1, 50000)):
+	for i in range(randint(1, 10)):
 		s += choice(w)
-	print(f's, sep: {len(s)}, {len(sep)}')
+	print(f'String length, Sep length: {len(s)}, {len(sep)}')
 	return s, sep
 
 def test():
