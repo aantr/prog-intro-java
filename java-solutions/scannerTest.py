@@ -24,34 +24,36 @@ def stupid(s, sep):
 	words.extend(get_words(s))
 	return ''.join(words)
 
-def gen():
+def gen(huge):
 	w = ['a', 'a' * 2, 'b', 'b' * 2, '1']
 	w1 = ['a', 'b']
+	if huge:
+	    w = ['a', 'a' * 2, 'b', 'b' * 2, '1']
+	    w1 = ['a' * 5000, 'b' * 5000]
 	s = ''
 	sep = ''
 	for i in range(choice([1, 2, 3, 4])):
 		sep += choice(w1)
-	for i in range(randint(1, 10)):
+	for i in range(randint(1, 10 + huge * 50000000)):
 		s += choice(w)
 	print(f'String length, Sep length: {len(s)}, {len(sep)}')
 	return s, sep
 
-def test():
-	f = open('input.txt', 'w')
-	s, sep = gen()
-	f.write(sep + '\n' + s)
-	f.close()
+def test(huge=False):
+	s, sep = gen(huge)
+	open('input.txt', 'w').write(sep + '\n' + s)
 	os.system('java -ea MyTest < input.txt > output.txt')
-	f = open('output.txt', 'r')
-	solution = f.read()
-	correct = stupid(s, sep)
-	open('correct.txt', 'w').write(correct)
-	assert solution == correct
+	solution = open('output.txt', 'r').read()
+	if not huge:
+	    correct = stupid(s, sep)
+	    open('correct.txt', 'w').write(correct)
+	    assert solution == correct
 
 if __name__ == '__main__':
-	tests = 10
+	tests = 50
 	seed(tests)
 	for i in range(tests):
 	    test()
 	    print(f'ok {i + 1}')
+	test(huge=True)
 	print(f'{tests} passed')

@@ -2,7 +2,7 @@ package markup;
 
 import java.util.List;
 
-public class Paragraph extends MarkupBase implements ListItemBase {
+public class Paragraph extends MarkupBase implements ListItemBase, Markdown {
     public Paragraph(List<ParagraphBase> elements) {
         super(elements);
     }

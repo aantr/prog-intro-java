@@ -24,6 +24,7 @@ public class MyScanner implements AutoCloseable {
     // for methods
     private boolean wasLineSeparator;
     private boolean hasNextSymbol;
+    private char nextSymbol;
 
     @FunctionalInterface
     public interface Predicate {
@@ -63,15 +64,18 @@ public class MyScanner implements AutoCloseable {
         nextPrefix = 0;
     }
 
-    private char setLineSep() {
+    private void setLineSep() {
         setNullState();
         wasLineSeparator = true;
-        return 0;
     }
 
-    private char setEof() {
+    private void setEof() {
         eof = true;
-        return 0;
+    }
+
+    private void setNextSymbol(char ch) {
+        hasNextSymbol = true;
+        nextSymbol = ch;
     }
 
     private char readSeparatorPrefix() {
@@ -82,7 +86,8 @@ public class MyScanner implements AutoCloseable {
     // if stream is closed but there is a prefix of a read line sep return it else return eof.
     private char onEof() {
         if (currentPosition >= currentPrefix) { // actual eof
-            return setEof();
+            setEof();
+            return 0;
         }
         nextPrefix = 0; // set next to eof
         return readSeparatorPrefix();
@@ -99,7 +104,8 @@ public class MyScanner implements AutoCloseable {
         while (readChars <= nextPrefix) {
             currentPrefix = nextPrefix; // update current prefix
             if (nextPrefix == prefixFunction.str.length()) { // it is a line sep
-                return setLineSep();
+                setLineSep();
+                return 0;
             }
             if (nextChar()) { // next was not found because of eof
                 return onEof();
@@ -123,12 +129,12 @@ public class MyScanner implements AutoCloseable {
     private char readNextOrSeparator() throws IOException {
         if (hasNextSymbol) {
             hasNextSymbol = false;
-            return buffer[bufferIndex - 1];
+            return nextSymbol;
         }
         if (readChars == 0 && closed) {
-            return setEof();
+            setEof();
+            return 0;
         }
-
         wasLineSeparator = false;
         if (readChars > nextPrefix) {
             readChars--;
@@ -162,7 +168,7 @@ public class MyScanner implements AutoCloseable {
             }
             if (wasLineSeparator || f.apply(ch)) {
                 // don`t skip current char
-                hasNextSymbol = true;
+                setNextSymbol(ch);
                 return true;
             }
         }
@@ -185,7 +191,7 @@ public class MyScanner implements AutoCloseable {
             }
             if (wasLineSeparator || !f.apply(ch)) {
                 if (!stringBuilder.isEmpty()) {
-                    hasNextSymbol = true;
+                    setNextSymbol(ch);
                 }
                 break;
             }

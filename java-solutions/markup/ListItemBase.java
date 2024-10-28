@@ -1,5 +1,4 @@
 package markup;
 
-public interface ListItemBase extends Element{
-
+public interface ListItemBase extends DocBook {
 }

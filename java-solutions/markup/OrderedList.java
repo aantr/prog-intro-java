@@ -8,11 +8,6 @@ public class OrderedList extends ListBase {
     }
 
     @Override
-    public void toMarkdown(StringBuilder stringBuilder) {
-
-    }
-
-    @Override
     public void toDocBook(StringBuilder stringBuilder) {
         buildDocBook(stringBuilder, "orderedlist");
     }
