@@ -69,8 +69,9 @@ public class MyScanner implements AutoCloseable {
         wasLineSeparator = true;
     }
 
-    private void setEof() {
+    private char setEof() {
         eof = true;
+        return 0;
     }
 
     private void setNextSymbol(char ch) {
@@ -86,8 +87,7 @@ public class MyScanner implements AutoCloseable {
     // if stream is closed but there is a prefix of a read line sep return it else return eof.
     private char onEof() {
         if (currentPosition >= currentPrefix) { // actual eof
-            setEof();
-            return 0;
+            return setEof();
         }
         nextPrefix = 0; // set next to eof
         return readSeparatorPrefix();
@@ -132,8 +132,7 @@ public class MyScanner implements AutoCloseable {
             return nextSymbol;
         }
         if (readChars == 0 && closed) {
-            setEof();
-            return 0;
+            return setEof();
         }
         wasLineSeparator = false;
         if (readChars > nextPrefix) {
