@@ -6,11 +6,11 @@ public class PrefixFunction {
     public String str;
     private int[] prefixFunction;
 
-    public PrefixFunction(String str) {
+    public PrefixFunction(final String str) {
         this.str = str;
     }
 
-    private int decrease(char ch, int cur) {
+    private int decrease(final char ch, int cur) {
         while (ch != str.charAt(cur) && cur > 0) {
             cur = prefixFunction[cur - 1];
         }
@@ -28,11 +28,10 @@ public class PrefixFunction {
         return this;
     }
 
-    public int get(int previousValue, char newChar) {
+    public int get(int previousValue, final char newChar) {
         if (previousValue == str.length()) {
             previousValue = prefixFunction[previousValue - 1];
         }
         return decrease(newChar, previousValue);
     }
-
 }

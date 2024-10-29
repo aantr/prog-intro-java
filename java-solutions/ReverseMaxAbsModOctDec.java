@@ -6,19 +6,19 @@ public class ReverseMaxAbsModOctDec {
 
     static final int MOD = 1_000_000_007;
 
-    static int max(int a, int b) {
+    static int max(final int a, final int b) {
         if (Math.abs(a) % MOD > Math.abs(b) % MOD) {
             return a;
         }
         return b;
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         int[][] numbers = new int[1][];
 
         int maxCols = 0;
         int row = 0;
-        try (MyScanner scanner = new MyScanner(new InputStreamReader(System.in))) {
+        try (final MyScanner scanner = new MyScanner(new InputStreamReader(System.in))) {
             while (scanner.hasNextLine()) {
                 int col = 0;
                 int[] currentRow = new int[1];
@@ -38,8 +38,8 @@ public class ReverseMaxAbsModOctDec {
             // shrink to fit cols
             numbers = Arrays.copyOf(numbers, row);
 
-            int[] rows = new int[row];
-            int[] cols = new int[maxCols];
+            final int[] rows = new int[row];
+            final int[] cols = new int[maxCols];
             for (int i = 0; i < row; i++) {
                 for (int j = 0; j < numbers[i].length; j++) {
                     rows[i] = max(rows[i], numbers[i][j]);
@@ -53,9 +53,9 @@ public class ReverseMaxAbsModOctDec {
                 }
                 System.out.println();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Read error: " + e.getMessage());
-        } catch (ScannerException e) {
+        } catch (final ScannerException e) {
             System.err.println("Scanner error: " + e.getMessage());
         }
     }

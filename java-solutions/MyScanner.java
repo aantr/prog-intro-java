@@ -31,12 +31,12 @@ public class MyScanner implements AutoCloseable {
         boolean apply(char x);
     }
 
-    public MyScanner(Reader reader, String lineSeparator) {
+    public MyScanner(final Reader reader, final String lineSeparator) {
         this.readerIn = reader;
         prefixFunction = new PrefixFunction(lineSeparator).build(); // might be static
     }
 
-    public MyScanner(Reader reader) {
+    public MyScanner(final Reader reader) {
         this(reader, System.lineSeparator());
     }
 
@@ -73,7 +73,7 @@ public class MyScanner implements AutoCloseable {
         eof = true;
     }
 
-    private void setNextSymbol(char ch) {
+    private void setNextSymbol(final char ch) {
         hasNextSymbol = true;
         nextSymbol = ch;
     }
@@ -150,19 +150,19 @@ public class MyScanner implements AutoCloseable {
 
     // returns maximum suffix with current input, s.t. suffix = lineSep prefix (see PrefixFunction)
     // if lineSep appeared, then we set prevPrefixFunctionValue equals 0, so lineSeps don't intersect each other
-    private int readLineSeparator(int index) {
+    private int readLineSeparator(final int index) {
         return prevPrefixFunction = prefixFunction.get(prevPrefixFunction, buffer[index]);
     }
 
     // has unread chars before eof
     public boolean hasNextLine() throws IOException {
-        return readUntil((char s) -> true);
+        return readUntil(s -> true);
     }
 
     // read until valid or lineSep or eof, if found either lineSep or valid then save it
-    public boolean readUntil(Predicate f) throws IOException {
+    public boolean readUntil(final Predicate f) throws IOException {
         while (true) {
-            char ch = readNextOrSeparator();
+            final char ch = readNextOrSeparator();
             if (eof) {
                 return false;
             }
@@ -179,13 +179,14 @@ public class MyScanner implements AutoCloseable {
     //
     // if lineSep at the end of the word or not valid then set next char as current
     // so after reading a word scanner does not skip next char
-    public String nextOrSeparator(Predicate f) throws IOException, ScannerException {
+    // setter
+    public String nextOrSeparator(final Predicate f) throws IOException, ScannerException {
         if (!readUntil(f)) {
             throw new ScannerException("Unable to find either next or separator");
         }
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         while (true) {
-            char ch = readNextOrSeparator();
+            final char ch = readNextOrSeparator();
             if (eof) {
                 break;
             }
@@ -207,31 +208,32 @@ public class MyScanner implements AutoCloseable {
 
     // static methods
 
-    public static boolean isValidInt(char ch) {
+    public static boolean isValidInt(final char ch) {
         return Character.isDigit(ch) ||
                 ch == '-';
     }
 
-    public static boolean isValidIntOct(char ch) {
+    public static boolean isValidIntOct(final char ch) {
+        // :NOTE: ??
         return Character.isDigit(ch) ||
                 ch == '-' ||
                 Character.toLowerCase(ch) == 'o';
     }
 
-    public static int parseIntOct(String s) {
+    public static int parseIntOct(final String s) {
         if (s.endsWith("o") || s.endsWith("O")) {
             return Integer.parseUnsignedInt(s.substring(0, s.length() - 1), 8);
         }
         return Integer.parseInt(s);
     }
 
-    public static boolean isValidWord(char ch) {
+    public static boolean isValidWord(final char ch) {
         return Character.isLetter(ch) ||
                 Character.getType(ch) == Character.DASH_PUNCTUATION ||
                 ch == '\'';
     }
 
-    public static boolean isValidWordCurrency(char ch) {
+    public static boolean isValidWordCurrency(final char ch) {
         return Character.isLetter(ch) ||
                 Character.getType(ch) == Character.DASH_PUNCTUATION ||
                 Character.getType(ch) == Character.CURRENCY_SYMBOL ||
