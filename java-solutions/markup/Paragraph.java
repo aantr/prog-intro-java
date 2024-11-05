@@ -3,17 +3,17 @@ package markup;
 import java.util.List;
 
 public class Paragraph extends MarkupBase implements ListItemBase, Markdown {
-    public Paragraph(List<ParagraphBase> elements) {
+    public Paragraph(final List<ParagraphBase> elements) {
         super(elements);
     }
 
     @Override
-    public void toMarkdown(StringBuilder stringBuilder) {
+    public void toMarkdown(final StringBuilder stringBuilder) {
         buildMarkdown(stringBuilder, "");
     }
 
     @Override
-    public void toDocBook(StringBuilder stringBuilder) {
+    public void toDocBook(final StringBuilder stringBuilder) {
         buildDocBook(stringBuilder, "para");
     }
 }

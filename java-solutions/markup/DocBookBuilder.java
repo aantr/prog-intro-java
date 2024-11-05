@@ -5,19 +5,19 @@ import java.util.List;
 public class DocBookBuilder {
     private final List<? extends DocBook> elements;
 
-    public DocBookBuilder(List<? extends DocBook> elements) {
+    public DocBookBuilder(final List<? extends DocBook> elements) {
         this.elements = elements;
     }
 
-    public void buildDocBook(StringBuilder stringBuilder, String tag, String role) {
+    public void buildDocBook(final StringBuilder stringBuilder, final String tag, final String role) {
         stringBuilder.append('<').append(tag).append(role != null ? String.format(" role='%s'", role) : "").append('>');
-        for (DocBook el : elements) {
+        for (final DocBook el : elements) {
             el.toDocBook(stringBuilder);
         }
         stringBuilder.append("</").append(tag).append('>');
     }
 
-    public void buildDocBook(StringBuilder stringBuilder, String tag) {
+    public void buildDocBook(final StringBuilder stringBuilder, final String tag) {
         buildDocBook(stringBuilder, tag, null);
     }
 }
