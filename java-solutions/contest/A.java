@@ -13,6 +13,5 @@ public class A {
         n = sc.nextInt();
         sc.close();
         System.out.println(2 * ((n - a - 1) / (b - a)) + 1);
-        
     }
 }

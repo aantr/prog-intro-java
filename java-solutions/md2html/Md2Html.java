@@ -5,7 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class Md2Html {
 
@@ -93,7 +96,9 @@ public class Md2Html {
 
     private static String readHeader(String str) {
         int level = levelHeader(str);
-        return "<h%d>".formatted(level) + parse(str.substring(level + 1)) + "</h%d>".formatted(level);
+        return "<h%d>".formatted(level) +
+                parse(str.substring(level + 1)) +
+                "</h%d>".formatted(level);
     }
 
     private static String readParagraph(String str) {
