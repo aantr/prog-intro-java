@@ -76,10 +76,6 @@ public class Md2Html {
         return res.toString();
     }
 
-    private static String getTagged(final String tag, final String str) {
-        return "<" + tag + ">" + str + "</" + tag + ">";
-    }
-
     private static int levelHeader(final String str) {
         int level = 0;
         while (level < str.length() && str.charAt(level) == '#') {
@@ -91,13 +87,16 @@ public class Md2Html {
         return 0;
     }
 
-    private static String md2Html(final String text) {
+    private static String md2Html(String text) {
         final int level = levelHeader(text);
+        String tag;
         if (level > 0) {
-            return getTagged("h" + level, parse(text.substring(level + 1)));
+            tag = "h" + level;
+            text = text.substring(level + 1);
         } else {
-            return getTagged("p", parse(text));
+            tag = "p";
         }
+        return "<" + tag + ">" + parse(text) + "</" + tag + ">";
     }
 
     public static void main(final String[] args) {
