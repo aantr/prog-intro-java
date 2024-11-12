@@ -80,15 +80,6 @@ public class Md2Html {
         return "<" + tag + ">" + str + "</" + tag + ">";
     }
 
-    private static String readHeader(final String str) {
-        final int level = levelHeader(str);
-        return getTagged("h" + level, parse(str.substring(level + 1)));
-    }
-
-    private static String readParagraph(final String str) {
-        return getTagged("p", parse(str));
-    }
-
     private static int levelHeader(final String str) {
         int level = 0;
         while (level < str.length() && str.charAt(level) == '#') {
@@ -101,7 +92,12 @@ public class Md2Html {
     }
 
     private static String md2Html(final String text) {
-        return levelHeader(text) > 0 ? readHeader(text) : readParagraph(text);
+        final int level = levelHeader(text);
+        if (level > 0) {
+            return getTagged("h" + level, parse(text.substring(level + 1)));
+        } else {
+            return getTagged("p", parse(text));
+        }
     }
 
     public static void main(final String[] args) {
