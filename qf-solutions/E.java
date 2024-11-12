@@ -11,7 +11,9 @@ class E {
         }
         boolean was = false;
         for (var u : gr[vert]) {
-            if (u == parent) continue;
+            if (u == parent) {
+                continue;
+            }
             if (get(u, vert, gr, dst, path)) {
                 was = true;
                 break;
@@ -23,8 +25,8 @@ class E {
         return was;
     }
 
-    static int deepest = 0;
-    static int diam = 0;
+    private static int deepest = 0;
+    private static int diam = 0;
 
     public static void diam(int v, int p, int d, int[][] gr, int[] vert) {
         if (vert[v] == 1 && d > diam) {
@@ -32,12 +34,14 @@ class E {
             deepest = v;
         }
         for (var u : gr[v]) {
-            if (u == p) continue;
+            if (u == p) {
+                continue;
+            }
             diam(u, v, d + 1, gr, vert);
         }
     }
 
-    static int dist = -1; // -1 - not found, -2 - different values
+    private static int dist = -1; // -1 - not found, -2 - different values
 
     public static void check(int v, int p, int current_depth, int[][] gr, int[] vert) {
         if (vert[v] == 1) {
@@ -48,7 +52,9 @@ class E {
             }
         }
         for (var u : gr[v]) {
-            if (u == p) continue;
+            if (u == p) {
+                continue;
+            }
             check(u, v, current_depth + 1, gr, vert);
         }
     }
