@@ -5,7 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Md2Html {
 
@@ -38,7 +41,7 @@ public class Md2Html {
             final Deque<String> open, final StringBuilder res,
             final String special, final String str, final int index
     ) {
-        if (!open.isEmpty() && Objects.equals(open.getLast(), OPENED.getOrDefault(special, special))) {
+        if (!open.isEmpty() && open.getLast().equals(OPENED.getOrDefault(special, special))) {
             open.removeLast();
             res.append("</%s>".formatted(KEYWORDS.get(special)));
         } else if (KEYWORDS.containsKey(special) && index + 1 < str.length() &&
@@ -58,12 +61,11 @@ public class Md2Html {
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
             if (SPECIAL.contains(Character.toString(c))) {
-                final StringBuilder special = new StringBuilder().append(c);
+                int start = i;
                 while (i + 1 < str.length() && str.charAt(i + 1) == c) {
                     i++;
-                    special.append(c);
                 }
-                readSpecial(open, res, special.toString(), str, i);
+                readSpecial(open, res, str.substring(start, i + 1), str, i);
             } else {
                 if (c == '\\' && i + 1 < str.length()) {
                     c = str.charAt(++i);
@@ -117,7 +119,7 @@ public class Md2Html {
                         break;
                     }
                 }
-                if (line.isEmpty()) {
+                if (line.isBlank()) { // fixed
                     break;
                 }
                 final StringBuilder paragraph = new StringBuilder();
@@ -126,7 +128,6 @@ public class Md2Html {
                         paragraph.append(System.lineSeparator());
                     }
                     paragraph.append(line);
-                    // :NOTE: isEmpty - isBlank used
                 } while (scanner.hasNextLine() && !(line = scanner.nextLine()).isBlank());
                 answer.append(md2Html(paragraph.toString())).append(System.lineSeparator());
             }
