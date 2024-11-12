@@ -1,5 +1,3 @@
-package Сhampionship;
-
 import java.util.Scanner;
 
 public class J {

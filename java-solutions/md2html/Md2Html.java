@@ -5,10 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 public class Md2Html {
 
@@ -53,15 +50,15 @@ public class Md2Html {
     }
 
     private static void readSpecial(
-            final Stack<String> open, final StringBuilder res,
+            final Deque<String> open, final StringBuilder res,
             final String special, final String str, final int index
     ) {
         if (!open.isEmpty() && Objects.equals(open.getLast(), getOpened(special))) {
-            open.pop();
+            open.removeLast();
             res.append("</%s>".formatted(KEYWORDS.get(special)));
         } else if (KEYWORDS.containsKey(special) && index + 1 < str.length() &&
                 !Character.isWhitespace(str.charAt(index + 1))) {
-            open.add(special);
+            open.addLast(special);
             res.append("<%s>".formatted(KEYWORDS.get(special)));
         } else {
             for (final char ch : special.toCharArray()) {
@@ -71,27 +68,21 @@ public class Md2Html {
     }
 
     private static String parse(final String str) {
-        // :NOTE: Stack -> Deque
-        final Stack<String> open = new Stack<>();
+        final Deque<String> open = new ArrayDeque<>();
         final StringBuilder res = new StringBuilder();
-        boolean screening = false;
         for (int i = 0; i < str.length(); i++) {
-            final char c = str.charAt(i);
-            if (SPECIAL.contains(Character.toString(c)) && !screening) {
+            char c = str.charAt(i);
+            if (SPECIAL.contains(Character.toString(c))) {
                 final StringBuilder special = new StringBuilder().append(c);
                 while (i + 1 < str.length() && str.charAt(i + 1) == c) {
                     i++;
                     special.append(c);
                 }
-                // :NOTE: -> substring
                 readSpecial(open, res, special.toString(), str, i);
             } else {
-                // :NOTE: next symbol
-                if (c == '\\') {
-                    screening = !screening;
-                    if (screening) {
-                        continue;
-                    }
+                // :NOTE: next symbol - done
+                if (c == '\\' && i + 1 < str.length()) {
+                    c = str.charAt(++i);
                 }
                 res.append(getHtml(c));
             }
@@ -99,17 +90,17 @@ public class Md2Html {
         return res.toString();
     }
 
+    private static String getTagged(final String tag, final String str) {
+        return "<" + tag + ">" + str + "</" + tag + ">";
+    }
+
     private static String readHeader(final String str) {
         final int level = levelHeader(str);
-        final String tag = "h" + level;
-        return "<h%d>".formatted(level) +
-                parse(str.substring(level + 1)) +
-                "</h%d>".formatted(level);
+        return getTagged("h" + level, parse(str.substring(level + 1)));
     }
 
     private static String readParagraph(final String str) {
-        final String tag = "p";
-        return "<p>" + parse(str) + "</p>";
+        return getTagged("p", parse(str));
     }
 
     private static int levelHeader(final String str) {
@@ -117,8 +108,7 @@ public class Md2Html {
         while (level < str.length() && str.charAt(level) == '#') {
             level++;
         }
-        // :NOTE: \t
-        if (level < str.length() && str.charAt(level) == ' ') {
+        if (level < str.length() && Character.isWhitespace(str.charAt(level))) {
             return level;
         }
         return 0;
@@ -127,7 +117,6 @@ public class Md2Html {
     private static String md2Html(final String text) {
         return levelHeader(text) > 0 ? readHeader(text) : readParagraph(text);
     }
-
 
     public static void main(final String[] args) {
         assert args.length >= 2;
@@ -139,7 +128,7 @@ public class Md2Html {
             while (scanner.hasNextLine()) {
                 // find first line
                 String line;
-                while ((line = scanner.nextLine()).isEmpty()) {
+                while ((line = scanner.nextLine()).isBlank()) {
                     if (!scanner.hasNextLine()) {
                         break;
                     }
@@ -153,8 +142,8 @@ public class Md2Html {
                         paragraph.append(System.lineSeparator());
                     }
                     paragraph.append(line);
-                    // :NOTE: isEmpty
-                } while (scanner.hasNextLine() && !(line = scanner.nextLine()).isEmpty());
+                    // :NOTE: isEmpty - isBlank used
+                } while (scanner.hasNextLine() && !(line = scanner.nextLine()).isBlank());
                 answer.append(md2Html(paragraph.toString())).append(System.lineSeparator());
             }
         } catch (final IOException e) {
@@ -168,5 +157,4 @@ public class Md2Html {
             System.err.println("Write error: " + e.getMessage());
         }
     }
-
 }
