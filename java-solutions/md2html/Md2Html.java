@@ -37,14 +37,14 @@ public class Md2Html {
             '>', "&gt;"
     );
 
-    private static String getOpened(String str) {
+    private static String getOpened(final String str) {
         if (OPENED.containsKey(str)) {
             return OPENED.get(str);
         }
         return str;
     }
 
-    private static String getHtml(char ch) {
+    private static String getHtml(final char ch) {
         if (SCREENING.containsKey(ch)) {
             return SCREENING.get(ch);
         } else {
@@ -52,36 +52,41 @@ public class Md2Html {
         }
     }
 
-    private static void readSpecial(Stack<String> open, StringBuilder res,
-                                    StringBuilder special, String str, int index) {
-        if (!open.isEmpty() && Objects.equals(open.getLast(), getOpened(special.toString()))) {
+    private static void readSpecial(
+            final Stack<String> open, final StringBuilder res,
+            final String special, final String str, final int index
+    ) {
+        if (!open.isEmpty() && Objects.equals(open.getLast(), getOpened(special))) {
             open.pop();
-            res.append("</%s>".formatted(KEYWORDS.get(special.toString())));
-        } else if (KEYWORDS.containsKey(special.toString()) && index + 1 < str.length() &&
+            res.append("</%s>".formatted(KEYWORDS.get(special)));
+        } else if (KEYWORDS.containsKey(special) && index + 1 < str.length() &&
                 !Character.isWhitespace(str.charAt(index + 1))) {
-            open.add(special.toString());
-            res.append("<%s>".formatted(KEYWORDS.get(special.toString())));
+            open.add(special);
+            res.append("<%s>".formatted(KEYWORDS.get(special)));
         } else {
-            for (char ch : special.toString().toCharArray()) {
+            for (final char ch : special.toCharArray()) {
                 res.append(getHtml(ch));
             }
         }
     }
 
-    private static String parse(String str) {
-        Stack<String> open = new Stack<>();
-        StringBuilder res = new StringBuilder();
+    private static String parse(final String str) {
+        // :NOTE: Stack -> Deque
+        final Stack<String> open = new Stack<>();
+        final StringBuilder res = new StringBuilder();
         boolean screening = false;
         for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (SPECIAL.contains(Character.toString(c)) && (!screening)) {
-                StringBuilder special = new StringBuilder(Character.toString(c));
+            final char c = str.charAt(i);
+            if (SPECIAL.contains(Character.toString(c)) && !screening) {
+                final StringBuilder special = new StringBuilder().append(c);
                 while (i + 1 < str.length() && str.charAt(i + 1) == c) {
                     i++;
                     special.append(c);
                 }
-                readSpecial(open, res, special, str, i);
+                // :NOTE: -> substring
+                readSpecial(open, res, special.toString(), str, i);
             } else {
+                // :NOTE: next symbol
                 if (c == '\\') {
                     screening = !screening;
                     if (screening) {
@@ -94,42 +99,43 @@ public class Md2Html {
         return res.toString();
     }
 
-    private static String readHeader(String str) {
-        int level = levelHeader(str);
+    private static String readHeader(final String str) {
+        final int level = levelHeader(str);
+        final String tag = "h" + level;
         return "<h%d>".formatted(level) +
                 parse(str.substring(level + 1)) +
                 "</h%d>".formatted(level);
     }
 
-    private static String readParagraph(String str) {
+    private static String readParagraph(final String str) {
+        final String tag = "p";
         return "<p>" + parse(str) + "</p>";
     }
 
-    private static int levelHeader(String str) {
+    private static int levelHeader(final String str) {
         int level = 0;
-        while (str.length() > level && str.charAt(level) == '#') {
+        while (level < str.length() && str.charAt(level) == '#') {
             level++;
         }
-        if (str.length() > level && str.charAt(level) == ' ') {
+        // :NOTE: \t
+        if (level < str.length() && str.charAt(level) == ' ') {
             return level;
         }
         return 0;
     }
 
-    private static String read(String text) {
-        if (levelHeader(text) > 0) {
-            return readHeader(text);
-        }
-        return readParagraph(text);
+    private static String md2Html(final String text) {
+        return levelHeader(text) > 0 ? readHeader(text) : readParagraph(text);
     }
 
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         assert args.length >= 2;
-        String filenameIn = args[0], filenameOut = args[1];
+        final String filenameIn = args[0];
+        final String filenameOut = args[1];
 
-        StringBuilder answer = new StringBuilder();
-        try (Scanner scanner = new Scanner(new FileReader(filenameIn, StandardCharsets.UTF_8))) {
+        final StringBuilder answer = new StringBuilder();
+        try (final Scanner scanner = new Scanner(new FileReader(filenameIn, StandardCharsets.UTF_8))) {
             while (scanner.hasNextLine()) {
                 // find first line
                 String line;
@@ -141,22 +147,24 @@ public class Md2Html {
                 if (line.isEmpty()) {
                     break;
                 }
-                StringBuilder paragraph = new StringBuilder();
+                final StringBuilder paragraph = new StringBuilder();
                 do {
                     if (!paragraph.isEmpty()) {
                         paragraph.append(System.lineSeparator());
                     }
                     paragraph.append(line);
+                    // :NOTE: isEmpty
                 } while (scanner.hasNextLine() && !(line = scanner.nextLine()).isEmpty());
-                answer.append(read(paragraph.toString())).append(System.lineSeparator());
+                answer.append(md2Html(paragraph.toString())).append(System.lineSeparator());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Read error: " + e.getMessage());
             return;
         }
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filenameOut), StandardCharsets.UTF_8)) {
+
+        try (final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filenameOut), StandardCharsets.UTF_8)) {
             writer.write(answer.toString());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Write error: " + e.getMessage());
         }
     }
