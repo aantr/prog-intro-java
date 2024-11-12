@@ -1,36 +1,35 @@
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Stack;
 
 class E {
 
-    public static boolean get(int v, int p, int[][] gr, int b, Stack<Integer> res) {
-        res.add(v);
-        if (v == b) {
+    public static boolean get(int vert, int parent, int[][] gr, int dst, Stack<Integer> path) {
+        path.add(vert);
+        if (vert == dst) {
             return true;
         }
         boolean was = false;
-        for (var u : gr[v]) {
-            if (u == p) continue;
-            if (get(u, v, gr, b, res)) {
+        for (var u : gr[vert]) {
+            if (u == parent) continue;
+            if (get(u, vert, gr, dst, path)) {
                 was = true;
                 break;
             }
         }
         if (!was) {
-            res.pop();
+            path.pop();
         }
         return was;
     }
 
-    static int b = 0;
+    static int deepest = 0;
     static int diam = 0;
 
     public static void diam(int v, int p, int d, int[][] gr, int[] vert) {
         if (vert[v] == 1 && d > diam) {
             diam = d;
-            b = v;
+            deepest = v;
         }
         for (var u : gr[v]) {
             if (u == p) continue;
@@ -38,19 +37,19 @@ class E {
         }
     }
 
-    static int dist = -1;
+    static int dist = -1; // -1 - not found, -2 - different values
 
-    public static void check(int v, int p, int d, int[][] gr, int[] vert) {
+    public static void check(int v, int p, int current_depth, int[][] gr, int[] vert) {
         if (vert[v] == 1) {
-            if (dist == -1 || dist == d) {
-                dist = d;
+            if (dist == -1 || dist == current_depth) {
+                dist = current_depth;
             } else {
                 dist = -2;
             }
         }
         for (var u : gr[v]) {
             if (u == p) continue;
-            check(u, v, d + 1, gr, vert);
+            check(u, v, current_depth + 1, gr, vert);
         }
     }
 
@@ -58,12 +57,9 @@ class E {
         Scanner sc = new Scanner(System.in);
         int n = sc.nextInt();
         int m = sc.nextInt();
-        int N = n;
-        int[][] gr = new int[N][];
-        int[] sz = new int[N];
-        int[] deg = new int[N];
-        int[] vert = new int[N];
-        HashSet<Integer> ones = new HashSet<>();
+        int[][] gr = new int[n][];
+        int[] sz = new int[n];
+        int[] vert = new int[n];
         for (int i = 0; i < n; i++) {
             gr[i] = new int[1];
         }
@@ -72,12 +68,14 @@ class E {
             int v = sc.nextInt();
             u--;
             v--;
-            if (gr[v].length <= sz[v]) gr[v] = Arrays.copyOf(gr[v], gr[v].length * 2);
-            if (gr[u].length <= sz[u]) gr[u] = Arrays.copyOf(gr[u], gr[u].length * 2);
+            if (gr[v].length <= sz[v]) {
+                gr[v] = Arrays.copyOf(gr[v], gr[v].length * 2);
+            }
+            if (gr[u].length <= sz[u]) {
+                gr[u] = Arrays.copyOf(gr[u], gr[u].length * 2);
+            }
             gr[v][sz[v]++] = u;
             gr[u][sz[u]++] = v;
-            deg[u]++;
-            deg[v]++;
         }
         for (int i = 0; i < n; i++) {
             gr[i] = Arrays.copyOf(gr[i], sz[i]);
@@ -89,21 +87,16 @@ class E {
         for (int i = 0; i < m; i++) {
             vert[sc.nextInt() - 1] = 1;
         }
-        for (int i = 0; i < n; i++) {
-            if (deg[i] == 1 && vert[i] == 0) {
-                ones.add(i);
-            }
-        }
         Stack<Integer> res = new Stack<>();
-        int a = 0;
+        int start = 0;
         for (int i = 0; i < n; i++) {
             if (vert[i] == 1) {
-                a = i;
+                start = i;
             }
         }
-        b = a;
-        diam(a, -1, 0, gr, vert);
-        get(a, -1, gr, b, res);
+        deepest = start;
+        diam(start, -1, 0, gr, vert);
+        get(start, -1, gr, deepest, res);
         if (res.size() % 2 == 0) {
             System.out.println("NO");
             return;
