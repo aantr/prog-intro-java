@@ -34,26 +34,11 @@ public class Md2Html {
             '>', "&gt;"
     );
 
-    private static String getOpened(final String str) {
-        if (OPENED.containsKey(str)) {
-            return OPENED.get(str);
-        }
-        return str;
-    }
-
-    private static String getHtml(final char ch) {
-        if (SCREENING.containsKey(ch)) {
-            return SCREENING.get(ch);
-        } else {
-            return Character.toString(ch);
-        }
-    }
-
     private static void readSpecial(
             final Deque<String> open, final StringBuilder res,
             final String special, final String str, final int index
     ) {
-        if (!open.isEmpty() && Objects.equals(open.getLast(), getOpened(special))) {
+        if (!open.isEmpty() && Objects.equals(open.getLast(), OPENED.getOrDefault(special, special))) {
             open.removeLast();
             res.append("</%s>".formatted(KEYWORDS.get(special)));
         } else if (KEYWORDS.containsKey(special) && index + 1 < str.length() &&
@@ -62,7 +47,7 @@ public class Md2Html {
             res.append("<%s>".formatted(KEYWORDS.get(special)));
         } else {
             for (final char ch : special.toCharArray()) {
-                res.append(getHtml(ch));
+                res.append(SCREENING.getOrDefault(ch, Character.toString(ch)));
             }
         }
     }
@@ -80,11 +65,10 @@ public class Md2Html {
                 }
                 readSpecial(open, res, special.toString(), str, i);
             } else {
-                // :NOTE: next symbol - done
                 if (c == '\\' && i + 1 < str.length()) {
                     c = str.charAt(++i);
                 }
-                res.append(getHtml(c));
+                res.append(SCREENING.getOrDefault(c, Character.toString(c)));
             }
         }
         return res.toString();
