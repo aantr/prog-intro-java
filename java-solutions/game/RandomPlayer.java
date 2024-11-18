@@ -1,4 +1,4 @@
-package mnkGame.ticTacToe;
+package game;
 
 import java.util.Random;
 
