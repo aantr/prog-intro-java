@@ -30,8 +30,6 @@ public class HumanPlayer implements Player {
             if (position.isValid(move)) {
                 return move;
             }
-            final int row = move.row();
-            final int column = move.column();
             out.println("Move " + move + " is invalid");
         }
     }
