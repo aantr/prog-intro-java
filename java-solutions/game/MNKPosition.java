@@ -53,5 +53,4 @@ public class MNKPosition implements Position {
         }
         return sb.toString();
     }
-
 }

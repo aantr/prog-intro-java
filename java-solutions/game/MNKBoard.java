@@ -1,7 +1,7 @@
 package game;
 
-import java.util.Arrays;
 import java.util.Map;
+import java.util.Scanner;
 
 import static java.lang.Math.max;
 
@@ -13,12 +13,26 @@ public class MNKBoard implements Board {
     );
 
     private final MNKPosition position;
-    private final int k;
     private int empty;
+    private int n, m, k;
 
-    public MNKBoard(int n, int m, int k) {
-        assert n >= 1 && m >= 1 && k <= max(n, m);
-        this.k = k;
+    private boolean isValidNMK() {
+        return n >= 1 && m >= 1 && k <= max(n, m);
+    }
+
+    private boolean readNMK() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter n, m, k: ");
+        n = scanner.nextInt();
+        m = scanner.nextInt();
+        k = scanner.nextInt();
+        return isValidNMK();
+    }
+
+    public MNKBoard() {
+        while (!readNMK()) {
+            System.out.println("n, m, k are incorrect, try again");
+        }
         this.empty = n * m;
         position = new MNKPosition(n, m);
     }
