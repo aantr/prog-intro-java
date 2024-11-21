@@ -23,7 +23,7 @@ public class MNKBoard implements Board {
         assert isValidNMK(n, m, k);
         this.k = k;
         this.empty = n * m;
-        position = new MNKPosition(n, m);
+        position = new MNKPosition(n, m, true);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class MNKBoard implements Board {
 
     @Override
     public Cell getCell() {
-        return position.turn;
+        return position.getTurn();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class MNKBoard implements Board {
             return Result.LOSE; // loser
         }
 
-        position.cells[move.row()][move.column()] = move.value();
+        position.setCell(move.row(), move.column(), move.value());
         empty--;
 
         int[][] vectors = {{1, 1}, {0, 1}, {1, 0}};
@@ -59,7 +59,7 @@ public class MNKBoard implements Board {
         if (empty == 0) {
             return Result.DRAW;
         }
-        position.turn = position.turn == Cell.X ? Cell.O : Cell.X;
+        position.setTurn(position.getTurn() == Cell.X ? Cell.O : Cell.X);
         return Result.UNKNOWN;
     }
 
