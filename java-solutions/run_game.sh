@@ -1,3 +1,3 @@
 #!/bin/bash
-javac game/Main.java &&
+javac game/Game.java game/SwissSystem.java game/MNKBoard.java game/Main.java &&
 java game/Main

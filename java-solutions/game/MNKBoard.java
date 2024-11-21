@@ -1,7 +1,6 @@
 package game;
 
 import java.util.Map;
-import java.util.Scanner;
 
 import static java.lang.Math.max;
 
@@ -14,25 +13,15 @@ public class MNKBoard implements Board {
 
     private final MNKPosition position;
     private int empty;
-    private int n, m, k;
+    private final int k;
 
-    private boolean isValidNMK() {
+    static boolean isValidNMK(int n, int m, int k) {
         return n >= 1 && m >= 1 && k <= max(n, m);
     }
 
-    private boolean readNMK() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter n, m, k: ");
-        n = scanner.nextInt();
-        m = scanner.nextInt();
-        k = scanner.nextInt();
-        return isValidNMK();
-    }
-
-    public MNKBoard() {
-        while (!readNMK()) {
-            System.out.println("n, m, k are incorrect, try again");
-        }
+    public MNKBoard(int n, int m, int k) {
+        assert isValidNMK(n, m, k);
+        this.k = k;
         this.empty = n * m;
         position = new MNKPosition(n, m);
     }
@@ -50,7 +39,7 @@ public class MNKBoard implements Board {
     @Override
     public Result makeMove(final Move move) {
         if (!position.isValid(move)) {
-            return Result.LOSE;
+            return Result.LOSE; // loser
         }
 
         position.cells[move.row()][move.column()] = move.value();
@@ -67,12 +56,9 @@ public class MNKBoard implements Board {
                 return Result.WIN;
             }
         }
-
-
         if (empty == 0) {
             return Result.DRAW;
         }
-
         position.turn = position.turn == Cell.X ? Cell.O : Cell.X;
         return Result.UNKNOWN;
     }

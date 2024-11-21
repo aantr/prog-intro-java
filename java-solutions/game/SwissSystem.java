@@ -1,21 +1,43 @@
 package game;
 
-import java.util.HashSet;
-import java.util.Scanner;
+import java.io.PrintStream;
+import java.util.*;
 
+import static game.MNKBoard.isValidNMK;
 import static java.util.Arrays.sort;
 
 public class SwissSystem {
-    private int n;
+    private int number;
+    private int n, m, k;
     private final Contestant[] contestants;
     private final PlayerFabric playerFabric;
-    private final HashSet[] games;
+    private final Set[] games;
+    private final PrintStream out;
+    private final Scanner scanner;
+    private final Random random;
 
     private boolean readPlayers() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter number of players: ");
-        n = scanner.nextInt();
-        return n >= 1;
+        out.print("Enter number of players: ");
+        try {
+            number = scanner.nextInt();
+        } catch (InputMismatchException ignored) {
+            scanner.next();
+            return false;
+        }
+        return number >= 1;
+    }
+
+    private boolean readNMK() {
+        try {
+            out.print("Enter n, m, k: ");
+            n = scanner.nextInt();
+            m = scanner.nextInt();
+            k = scanner.nextInt();
+            return isValidNMK(n, m, k);
+        } catch (InputMismatchException ignored) {
+            scanner.next();
+            return false;
+        }
     }
 
     @FunctionalInterface
@@ -23,14 +45,20 @@ public class SwissSystem {
         Player getPlayer();
     }
 
-    public SwissSystem(PlayerFabric playerFabric) {
+    public SwissSystem(PlayerFabric playerFabric, final PrintStream out, final Scanner scanner) {
+        this.out = out;
+        this.scanner = scanner;
         this.playerFabric = playerFabric;
+        this.random = new Random();
         while (!readPlayers()) {
-            System.out.println("Number is incorrect, try again");
+            System.out.println("Number is invalid");
         }
-        contestants = new Contestant[n];
-        games = new HashSet[n];
-        for (int i = 0; i < n; i++) {
+        while (!readNMK()) {
+            out.println("Numbers n, m, k are invalid");
+        }
+        contestants = new Contestant[number];
+        games = new Set[number];
+        for (int i = 0; i < number; i++) {
             contestants[i] = new Contestant();
             games[i] = new HashSet<Integer>();
             contestants[i].id = i;
@@ -38,7 +66,7 @@ public class SwissSystem {
     }
 
     public Contestant[] play() {
-        int numTours = (int) Math.ceil(Math.log(n) / Math.log(2));
+        int numTours = (int) Math.ceil(Math.log(number) / Math.log(2));
         for (int tour = 0; tour < numTours; tour++) {
             System.out.println("Tour #" + (tour + 1) + ": ");
             playTour();
@@ -49,14 +77,14 @@ public class SwissSystem {
 
     public void playTour() {
         int groupStart = 0;
-        while (groupStart < n) {
+        while (groupStart < number) {
             int groupEnd = groupStart;
-            while (groupEnd < n && contestants[groupEnd].points == contestants[groupStart].points) {
+            while (groupEnd < number && contestants[groupEnd].points == contestants[groupStart].points) {
                 groupEnd++;
             }
             boolean oneLeft = false;
             if ((groupEnd - groupStart) % 2 != 0) {
-                if (groupEnd < n) {
+                if (groupEnd < number) {
                     groupEnd++;
                 } else {
                     oneLeft = true;
@@ -67,25 +95,34 @@ public class SwissSystem {
                 int x = segmentL++;
                 int y = --segmentR;
 
-                playGame(x, y);
+                if (random.nextBoolean()) {
+                    playGame(y, x);
+                } else {
+                    playGame(x, y);
+                }
             }
             groupStart = groupEnd;
             if (oneLeft) {
-                contestants[groupEnd - 1].points++;
+                contestants[groupEnd - 1].points += 2;
             }
         }
     }
 
     private void playGame(int player0, int player1) {
-        Game game = new Game(false, playerFabric.getPlayer(), playerFabric.getPlayer());
-        int result = game.play(new MNKBoard());
-        System.out.println(
-                "Player #" + (contestants[player0].id + 1) + " is X, " +
-                        "Player #" + (contestants[player1].id + 1) + " is O"
+        out.println(
+                "Player #" + (contestants[player0].id + 1) + " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
+                        "Player #" + (contestants[player1].id + 1) + " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
         );
+        Game game = new Game(true, playerFabric.getPlayer(), playerFabric.getPlayer());
+
+        int result = game.play(new MNKBoard(n, m, k));
+
         if (result == 1) {
-            contestants[player0].points++;
+            contestants[player0].points += 2;
         } else if (result == 2) {
+            contestants[player1].points += 2;
+        } else {
+            contestants[player0].points++;
             contestants[player1].points++;
         }
     }

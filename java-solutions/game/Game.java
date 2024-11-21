@@ -14,23 +14,56 @@ public class Game {
     }
 
     public int play(Board board) {
+        boolean wasOffer = false;
+        boolean prevOffer = false;
+        int who = 0;
         while (true) {
-            final int result1 = move(board, player1, 1);
-            if (result1 != -1) {
-                return result1;
+            Player player = who == 0 ? player1 : player2;
+            who = 1 - who;
+            final int result = move(board, player, who + 1, wasOffer, prevOffer);
+            if (result == -2) {
+                wasOffer = true;
+                continue;
             }
-            final int result2 = move(board, player2, 2);
-            if (result2 != -1) {
-                return result2;
+            if (prevOffer) {
+                prevOffer = false;
+            }
+            if (wasOffer) {
+                wasOffer = false;
+                prevOffer = true;
+                if (result == 1) { // accepted draw
+                    return 0;
+                }
+                continue;
+            }
+            if (result != -1) {
+                return result;
             }
         }
     }
 
-    private int move(final Board board, final Player player, final int no) {
-        final Move move = player.move(board.getPosition(), board.getCell());
+    private int move(final Board board, final Player player, final int no, final boolean wasOffer, final boolean prevOffer) {
+        if (wasOffer) {
+            int result = player.drawResponse();
+            if (result == 1) {
+                log("Player " + no + " accepts a draw");
+            } else {
+                log("Player " + no + " declined a draw");
+            }
+            return result;
+        }
+        final Move move = player.move(board.getPosition(), board.getCell(), prevOffer);
+        if (move.resign()) {
+            log("Player " + no + " resign");
+            log("Player " + (3 - no) + " won");
+            return 3 - no;
+        }
+        if (move.draw() && !prevOffer) {
+            return -2;
+        }
         final Result result = board.makeMove(move);
         log("Player " + no + " move: " + move);
-        log("Position:\n" + board);
+        log("Position:\n" + board.getPosition());
         if (result == Result.WIN) {
             log("Player " + no + " won");
             return no;

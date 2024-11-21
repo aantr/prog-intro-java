@@ -17,14 +17,19 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public Move move(final Position position, final Cell cell) {
+    public Move move(final Position position, final Cell cell, final boolean prevOffer) {
         while (true) {
             int r = random.nextInt(3);
             int c = random.nextInt(3);
-            final Move move = new Move(r, c, cell);
+            final Move move = new Move(r, c, cell, false, false);
             if (position.isValid(move)) {
                 return move;
             }
         }
+    }
+
+    @Override
+    public int drawResponse() {
+        return 0;
     }
 }
