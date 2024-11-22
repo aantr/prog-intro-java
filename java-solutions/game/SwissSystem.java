@@ -11,7 +11,9 @@ public class SwissSystem {
     private int n, m, k;
     private final Contestant[] contestants;
     private final PlayerFabric playerFabric;
-    private final Set[] games;
+    private final ArrayList<Set<Integer>> games;
+    private final Set<Integer> oneLeft;
+    private int numTours;
     private final PrintStream out;
     private final Scanner scanner;
     private final Random random;
@@ -42,14 +44,15 @@ public class SwissSystem {
 
     @FunctionalInterface
     public interface PlayerFabric {
-        Player getPlayer();
+        Player getPlayer(int n, int m, int k);
     }
 
     public SwissSystem(PlayerFabric playerFabric, final PrintStream out, final Scanner scanner) {
         this.out = out;
         this.scanner = scanner;
         this.playerFabric = playerFabric;
-        this.random = new Random();
+        this.random = new Random(1234);
+        this.oneLeft = new HashSet<>();
         while (!readPlayers()) {
             System.out.println("Number is invalid");
         }
@@ -57,73 +60,150 @@ public class SwissSystem {
             out.println("Numbers n, m, k are invalid");
         }
         contestants = new Contestant[number];
-        games = new Set[number];
+        games = new ArrayList<>();
         for (int i = 0; i < number; i++) {
             contestants[i] = new Contestant();
-            games[i] = new HashSet<Integer>();
             contestants[i].id = i;
+            games.add(new HashSet<>());
         }
     }
 
-    public Contestant[] play() {
-        int numTours = (int) Math.ceil(Math.log(number) / Math.log(2));
+    public void play() {
+        numTours = (int) Math.ceil(Math.log(number) / Math.log(2));
         for (int tour = 0; tour < numTours; tour++) {
-            System.out.println("Tour #" + (tour + 1) + ": ");
+            out.println("Tour #" + (tour + 1) + ": ");
+            out.print(this);
             playTour();
             sort(contestants, (o1, o2) -> o2.points - o1.points);
         }
-        return contestants;
+    }
+
+    private void shuffle(Object[] arr, int l, int r) {
+        for (int i = r - l - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+            // swap
+            Object a = arr[index + l];
+            arr[index + l] = arr[i + l];
+            arr[i + l] = a;
+        }
+        swapLast();
+    }
+
+    private void swapLast() {
+        if (oneLeft.contains(contestants[number - 1].id)) {
+            for (int i = number - 2; i >= 0; i--) {
+                if (!oneLeft.contains(contestants[i].id)) {
+                    Contestant temp = contestants[number - 1];
+                    contestants[number - 1] = contestants[i];
+                    contestants[i] = temp;
+                }
+            }
+        }
     }
 
     public void playTour() {
         int groupStart = 0;
         while (groupStart < number) {
             int groupEnd = groupStart;
-            while (groupEnd < number && contestants[groupEnd].points == contestants[groupStart].points) {
+            while (groupEnd < number && (groupEnd - groupStart < numTours ||
+                    contestants[groupEnd].points == contestants[groupStart].points)) {
                 groupEnd++;
             }
-            boolean oneLeft = false;
-            if ((groupEnd - groupStart) % 2 != 0) {
-                if (groupEnd < number) {
-                    groupEnd++;
-                } else {
-                    oneLeft = true;
-                }
+            if (number - groupEnd < numTours) {
+                groupEnd = number;
             }
             int segmentL = groupStart, segmentR = groupEnd;
-            while (segmentR - segmentL >= 2) {
-                int x = segmentL++;
-                int y = --segmentR;
-
-                if (random.nextBoolean()) {
-                    playGame(y, x);
-                } else {
-                    playGame(x, y);
+            if ((segmentR - segmentL) % 2 == 1) {
+                segmentR++;
+                if (segmentR >= number) {
+                    segmentR--;
                 }
             }
+
+            // keep last has no free wins
+            swapLast();
+
+            // play games
+            HashSet<Integer> played = new HashSet<>();
+            while (true) {
+                boolean error = false;
+                ArrayList<ArrayList<Integer>> addedGames = new ArrayList<>();
+                for (int i = segmentL; i < (segmentL + segmentR) / 2; i++) {
+                    if (played.contains(contestants[i].id)) {
+                        continue;
+                    }
+                    for (int j = (segmentR + segmentL) / 2; j < segmentR; j++) {
+                        if (makeGame(addedGames, played, i, j)) break;
+                    }
+                    if (!played.contains(contestants[i].id)) {
+                        System.out.println(i + " " + segmentL + " " + segmentR);
+                    }
+                    if (!played.contains(contestants[i].id)) {
+                        error = true;
+                        for (var el : addedGames) {
+                            games.get(el.get(0)).remove(el.get(1));
+                            games.get(el.get(1)).remove(el.get(0));
+                        }
+                        break;
+                    }
+                }
+                if (!error) {
+                    break;
+                }
+                shuffle(contestants, segmentL, segmentR);
+            }
             groupStart = groupEnd;
-            if (oneLeft) {
-                contestants[groupEnd - 1].points += 2;
+            if ((segmentR - segmentL) % 2 == 1) {
+                assert !played.contains(contestants[segmentR - 1].id);
+                assert !oneLeft.contains(contestants[segmentR - 1].id);
+                contestants[segmentR - 1].points += 2;
+                oneLeft.add(contestants[segmentR - 1].id);
             }
         }
     }
 
-    private void playGame(int player0, int player1) {
+    private boolean makeGame(ArrayList<ArrayList<Integer>> addedGames, HashSet<Integer> played, int i, int j) {
+        if (!played.contains(j) && !games.get(contestants[i].id).contains(contestants[j].id)) {
+            games.get(contestants[i].id).add(contestants[j].id);
+            games.get(contestants[j].id).add(contestants[i].id);
+            played.add(contestants[i].id);
+            played.add(contestants[j].id);
+            addedGames.add(new ArrayList<>(List.of(contestants[i].id, contestants[j].id)));
+            if (random.nextBoolean()) {
+                playGame(j, i);
+            } else {
+                playGame(i, j);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void playGame(int player0_idx, int player1_idx) {
         out.println(
-                "Player #" + (contestants[player0].id + 1) + " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
-                        "Player #" + (contestants[player1].id + 1) + " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
+                "Player #" + (contestants[player0_idx].id + 1) + " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
+                        "Player #" + (contestants[player1_idx].id + 1) + " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
         );
-        Game game = new Game(true, playerFabric.getPlayer(), playerFabric.getPlayer());
+        Game game = new Game(false, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
 
         int result = game.play(new MNKBoard(n, m, k));
 
         if (result == 1) {
-            contestants[player0].points += 2;
+            contestants[player0_idx].points += 2;
         } else if (result == 2) {
-            contestants[player1].points += 2;
+            contestants[player1_idx].points += 2;
         } else {
-            contestants[player0].points++;
-            contestants[player1].points++;
+            contestants[player0_idx].points++;
+            contestants[player1_idx].points++;
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Tournament standings:\n");
+        for (Contestant contestant : contestants) {
+            sb.append("Contestant #").append(contestant.id + 1).append(": ").append(contestant.points).append(" points\n");
+        }
+        return sb.toString();
     }
 }

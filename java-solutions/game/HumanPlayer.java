@@ -16,10 +16,6 @@ public class HumanPlayer implements Player {
         this.in = in;
     }
 
-    public HumanPlayer(final Scanner in) {
-        this(System.out, in);
-    }
-
     @Override
     public Move move(final Position position, final Cell cell, final boolean prevOffer) {
         while (true) {
@@ -39,8 +35,19 @@ public class HumanPlayer implements Player {
                 if (first == -2) {
                     return new Move(0, 0, cell, false, true);
                 }
-                final Move move = new Move(first, in.nextInt(), cell, false, false);
-                if (position.isValid(move)) {
+                int second = in.nextInt();
+                boolean valid = true;
+                if (position.isRotated()) {
+                    second = (second - first - position.getN() + 1);
+                    if (second % 2 != 0) {
+                        valid = false;
+                    }
+                    int row = second / -2;
+                    second = first - row;
+                    first = row;
+                }
+                final Move move = new Move(first, second, cell, false, false);
+                if (position.isValid(move) && valid) {
                     return move;
                 }
                 out.println("Move " + move + " is invalid");

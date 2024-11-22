@@ -32,6 +32,11 @@ public class MNKPosition implements Position {
     }
 
     @Override
+    public int getN() {
+        return cells.length;
+    }
+
+    @Override
     public void setCell(final int r, final int c, final Cell v) {
         cells[r][c] = v;
     }
@@ -46,6 +51,11 @@ public class MNKPosition implements Position {
         turn = v;
     }
 
+    @Override
+    public boolean isRotated() {
+        return rotated;
+    }
+
     private boolean isValidPosition(int r, int c) {
         return 0 <= r && r < cells.length
                 && 0 <= c && c < cells[0].length;
@@ -58,32 +68,37 @@ public class MNKPosition implements Position {
 
     @Override
     public String toString() {
+        final StringBuilder sb;
         if (!rotated) {
-            final StringBuilder sb = new StringBuilder(" ");
+            sb = new StringBuilder().repeat(' ', 3);
             for (int i = 0; i < cells[0].length; i++) {
-                sb.append(i);
+                sb.append(i).repeat(' ', 3 - String.valueOf(i).length());
             }
             for (int r = 0; r < cells.length; r++) {
                 sb.append("\n");
-                sb.append(r);
+                sb.append(r).repeat(' ', 3 - String.valueOf(r).length());
+                ;
                 for (int c = 0; c < cells[0].length; c++) {
-                    sb.append(SYMBOLS.get(cells[r][c]));
+                    sb.append(SYMBOLS.get(cells[r][c])).repeat(' ', 2);
                 }
             }
-            return sb.toString();
         } else {
-            final StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < cells[0].length + cells.length - 1; i++) {
-                sb.append("  ".repeat(abs(i - cells.length + 1)));
-                for (int r = min(cells.length - 1, i); r >= max(0, i - cells[0].length + 1); r--) {
-                    int c = i - r;
-                    sb.append(SYMBOLS.get(cells[r][c]));
-                    sb.append("   ");
-                }
-                sb.append("\n");
+            sb = new StringBuilder().repeat(' ', 5);
+            for (int i = 0; i < cells.length + cells[0].length - 1; i++) {
+                sb.append(i).repeat(' ', 3 - String.valueOf(i).length());
             }
-            return sb.toString();
+            for (int d = 0; d < cells[0].length + cells.length - 1; d++) {
+                sb.append('\n');
+                sb.append(d).repeat(' ', 5 - String.valueOf(d).length())
+                        .repeat(' ', abs(d - cells.length + 1) * 3);
+                for (int r = min(cells.length - 1, d); r >= max(0, d - cells[0].length + 1); r--) {
+                    int c = d - r;
+                    sb.append(SYMBOLS.get(cells[r][c]));
+                    sb.repeat(' ', 5);
+                }
+            }
         }
+        return sb.toString();
 
     }
 }

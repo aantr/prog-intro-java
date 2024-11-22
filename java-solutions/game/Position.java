@@ -8,9 +8,13 @@ public interface Position {
 
     Cell getCell(int r, int c);
 
+    int getN();
+
     void setCell(int r, int c, Cell v);
 
     Cell getTurn();
 
     void setTurn(Cell v);
+
+    boolean isRotated();
 }
