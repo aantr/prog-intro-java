@@ -77,7 +77,7 @@ public class MNKPosition implements Position {
             for (int r = 0; r < cells.length; r++) {
                 sb.append("\n");
                 sb.append(r).repeat(' ', 3 - String.valueOf(r).length());
-                ;
+
                 for (int c = 0; c < cells[0].length; c++) {
                     sb.append(SYMBOLS.get(cells[r][c])).repeat(' ', 2);
                 }
