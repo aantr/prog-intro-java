@@ -9,14 +9,16 @@ import static java.util.Arrays.sort;
 public class SwissSystem {
     private int number;
     private int n, m, k;
+    private int numTours;
+
+    private final PrintStream out;
+    private final Scanner scanner;
+    private final Random random;
+
     private final Contestant[] contestants;
     private final PlayerFabric playerFabric;
     private final ArrayList<Set<Integer>> games;
     private final Set<Integer> oneLeft;
-    private int numTours;
-    private final PrintStream out;
-    private final Scanner scanner;
-    private final Random random;
 
     private boolean readPlayers() {
         out.print("Enter number of players: ");
