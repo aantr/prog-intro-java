@@ -1,9 +1,8 @@
 package expression;
 
-import java.util.Objects;
+import java.util.HashSet;
 
-public class Const implements Expression {
-
+public class Const extends StringHashCode implements Expression {
     public int value;
 
     public Const(int value) {
@@ -14,6 +13,11 @@ public class Const implements Expression {
     public int evaluate(int x) {
         return value;
     }
+
+//    @Override
+//    public int evaluate(int x, int y, int z) {
+//        return value;
+//    }
 
     @Override
     public String toString() {

@@ -1,6 +1,6 @@
 package expression;
 
-public abstract class Operation implements Expression {
+public abstract class Operation extends StringHashCode implements Expression {
     public Expression f, s;
     public char symbol;
 
@@ -11,8 +11,14 @@ public abstract class Operation implements Expression {
 
     public abstract int getResult(int x);
 
+    public abstract int getResult(int x, int y, int z);
+
     public int evaluate(int x) {
         return getResult(x);
+    }
+
+    public int evaluate(int x, int y, int z) {
+        return getResult(x, y, z);
     }
 
     public String toString() {
@@ -50,11 +56,6 @@ public abstract class Operation implements Expression {
         return (left ? "(" + f.toMiniString() + ")" : f.toMiniString()) +
                 " " + symbol + " " +
                 (right ? "(" + s.toMiniString() + ")" : s.toMiniString());
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
     }
 
 }

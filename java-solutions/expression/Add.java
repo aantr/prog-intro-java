@@ -11,4 +11,9 @@ public class Add extends Operation {
     public int getResult(int x) {
         return f.evaluate(x) + s.evaluate(x);
     }
+
+    @Override
+    public int getResult(int x, int y, int z) {
+        return 0;
+    }
 }

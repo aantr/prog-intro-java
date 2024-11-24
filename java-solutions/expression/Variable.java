@@ -1,6 +1,8 @@
 package expression;
 
-public class Variable implements Expression {
+import java.util.HashSet;
+
+public class Variable extends StringHashCode implements Expression {
     public String symbol;
 
     public Variable(String symbol) {
@@ -15,10 +17,5 @@ public class Variable implements Expression {
     @Override
     public String toString() {
         return symbol;
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
     }
 }
