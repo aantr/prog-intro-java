@@ -8,9 +8,9 @@ public abstract class BaseExpression implements Expression, TripleExpression {
         return false;
     }
 
-    public boolean equals(ToMiniString baseExpression) {
-        return equals((Object) baseExpression);
-    }
+//    public boolean equals(ToMiniString baseExpression) {
+//        return equals((Object) baseExpression);
+//    }
 
     public boolean equals(BaseExpression baseExpression) {
         return equals((Object) baseExpression);
