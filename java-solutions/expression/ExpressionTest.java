@@ -14,7 +14,6 @@ public final class ExpressionTest {
             .variant("Base", v(Expression::tester));
 
     private ExpressionTest() {
-
     }
 
     public static Consumer<TestCounter> v(final Function<TestCounter, ? extends ExpressionTester<?, ?>> tester) {

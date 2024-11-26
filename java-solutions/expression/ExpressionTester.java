@@ -132,7 +132,7 @@ public class ExpressionTester<E extends ToMiniString, C> extends Tester {
                             && (expectedResult.getClass() == Double.class || expectedResult.getClass() == Float.class)
             ) {
                 final double expectedValue = ((Number) expectedResult).doubleValue();
-                final double actualValue = ((Number) expectedResult).doubleValue();
+                final double actualValue = ((Number) actualResult).doubleValue();
                 Asserts.assertEquals(reason, expectedValue, actualValue, 1e-6);
             } else {
                 assertTrue(reason, Objects.deepEquals(expectedResult, actualResult));

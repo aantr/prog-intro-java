@@ -2,18 +2,13 @@ package expression;
 
 public class Subtract extends Operation{
 
-    public Subtract(Expression f, Expression s) {
+    public Subtract(BaseExpression f, BaseExpression s) {
         super(f, s);
         symbol = '-';
     }
 
     @Override
-    public int getResult(int x) {
-        return f.evaluate(x) - s.evaluate(x);
-    }
-
-    @Override
-    public int getResult(int x, int y, int z) {
-        return 0;
+    public int operation(int a, int b) {
+        return a - b;
     }
 }

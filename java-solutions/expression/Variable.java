@@ -1,8 +1,6 @@
 package expression;
 
-import java.util.HashSet;
-
-public class Variable extends StringHashCode implements Expression {
+public class Variable extends BaseExpression {
     public String symbol;
 
     public Variable(String symbol) {
@@ -17,5 +15,15 @@ public class Variable extends StringHashCode implements Expression {
     @Override
     public String toString() {
         return symbol;
+    }
+
+    @Override
+    public int evaluate(int x, int y, int z) {
+        if (symbol.equals("x")) {
+            return x;
+        } else if (symbol.equals("y")) {
+            return y;
+        }
+        return z;
     }
 }

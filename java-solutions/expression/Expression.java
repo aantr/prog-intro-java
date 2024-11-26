@@ -1,4 +1,3 @@
-
 package expression;
 
 import base.Asserts;
@@ -63,7 +62,7 @@ public interface Expression extends ToMiniString {
                 .basic("x", "x", x -> x, vx)
                 .basic("(x + 2)", "x + 2", x -> x + 2, new Add(vx, c(2)))
                 .basic("(2 - x)", "2 - x", x -> 2 - x, new Subtract(c(2), vx))
-                .basic("(3 * x)", "3 * x", x -> 3 * x, new Multiply(c(3), vx))
+                .basic("(3 * x)", "3 * x", x -> 3*x, new Multiply(c(3), vx))
                 .basic("(x + x)", "x + x", x -> x + x, new Add(vx, vx))
                 .basic("(x / -2)", "x / -2", x -> -x / 2, new Divide(vx, c(-2)))
                 .basic("(2 + x)", "2 + x", x -> 2 + x, new Add(c(2), vx))
@@ -109,10 +108,5 @@ public interface Expression extends ToMiniString {
                 .advanced("(((1 * 2) + x) - 1)", "1 * 2 + x - 1", x -> 1 * 2 + x - 1, new Subtract(new Add(new Multiply(c1, c2), vx), c1))
                 .advanced("(((2 + 1) / 1) * x)", "(2 + 1) / 1 * x", x -> (2 + 1) / 1 * x, new Multiply(new Divide(new Add(c2, c1), c1), vx))
                 .advanced("((2 / (x - 1)) / 2)", "2 / (x - 1) / 2", x -> 2 / (x - 1) / 2, new Divide(new Divide(c2, new Subtract(vx, c1)), c2));
-    }
-
-    default boolean equals(Expression other) {
-        System.out.println("Expression equals");
-        return equals((ToMiniString) other);
     }
 }

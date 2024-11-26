@@ -1,30 +1,30 @@
 package expression;
 
-public abstract class Operation extends StringHashCode implements Expression {
-    public Expression f, s;
+public abstract class Operation extends BaseExpression {
+    public BaseExpression f, s;
     public char symbol;
 
-    public Operation(Expression f, Expression s) {
+    public Operation(BaseExpression f, BaseExpression s) {
         this.f = f;
         this.s = s;
     }
 
-    public abstract int getResult(int x);
-
-    public abstract int getResult(int x, int y, int z);
+    public abstract int operation(int a, int b);
 
     public int evaluate(int x) {
-        return getResult(x);
+        return operation(f.evaluate(x), s.evaluate(x));
     }
 
     public int evaluate(int x, int y, int z) {
-        return getResult(x, y, z);
+        return operation(f.evaluate(x, y, z), s.evaluate(x, y, z));
     }
 
+    @Override
     public String toString() {
         return "(%s %c %s)".formatted(f.toString(), symbol, s.toString());
     }
 
+    @Override
     public String toMiniString() {
         boolean left = false, right = false;
         if (symbol == '-') {
