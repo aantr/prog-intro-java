@@ -18,13 +18,7 @@ public class Multiply extends Operation {
 
     @Override
     public String toMiniString() {
-        boolean left = false, right = false;
-        if (s.getClass() != Multiply.class) {
-            right = true;
-        }
-        if (f.getClass() != Multiply.class && f.getClass() != Divide.class) {
-            left = true;
-        }
+        boolean left = f.getClass() != Multiply.class && f.getClass() != Divide.class, right = s.getClass() != Multiply.class;
         return miniStringBuilder(left, right);
     }
 }
