@@ -12,6 +12,6 @@ public record Move(int row, int column, Cell value, boolean draw, boolean resign
         if (resign) {
             return "resign=true";
         }
-        return "row=" + row + ", column=" + column + ", value=" + value;
+        return "row=" + (row + 1) + ", column=" + (column + 1) + ", value=" + value;
     }
 }

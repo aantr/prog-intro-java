@@ -103,6 +103,35 @@ public class SwissSystem {
         }
     }
 
+    // trying to pair by rules then shuffle if failed
+    private void playTourGames(int segmentL, int segmentR) {
+        HashSet<Integer> played = new HashSet<>();
+        while (true) {
+            boolean error = false;
+            ArrayList<ArrayList<Integer>> addedGames = new ArrayList<>();
+            for (int i = segmentL; i < (segmentL + segmentR) / 2; i++) {
+                if (played.contains(contestants[i].id)) {
+                    continue;
+                }
+                for (int j = (segmentR + segmentL) / 2; j < segmentR; j++) {
+                    if (makeGame(addedGames, played, i, j)) break;
+                }
+                if (!played.contains(contestants[i].id)) {
+                    error = true;
+                    for (var el : addedGames) {
+                        games.get(el.get(0)).remove(el.get(1));
+                        games.get(el.get(1)).remove(el.get(0));
+                    }
+                    break;
+                }
+            }
+            if (!error) {
+                break;
+            }
+            shuffle(contestants, segmentL, segmentR);
+        }
+    }
+
     public void playTour() {
         int groupStart = 0;
         while (groupStart < number) {
@@ -126,38 +155,11 @@ public class SwissSystem {
             swapLast();
 
             // play games
-            HashSet<Integer> played = new HashSet<>();
-            while (true) {
-                boolean error = false;
-                ArrayList<ArrayList<Integer>> addedGames = new ArrayList<>();
-                for (int i = segmentL; i < (segmentL + segmentR) / 2; i++) {
-                    if (played.contains(contestants[i].id)) {
-                        continue;
-                    }
-                    for (int j = (segmentR + segmentL) / 2; j < segmentR; j++) {
-                        if (makeGame(addedGames, played, i, j)) break;
-                    }
-                    if (!played.contains(contestants[i].id)) {
-                        System.out.println(i + " " + segmentL + " " + segmentR);
-                    }
-                    if (!played.contains(contestants[i].id)) {
-                        error = true;
-                        for (var el : addedGames) {
-                            games.get(el.get(0)).remove(el.get(1));
-                            games.get(el.get(1)).remove(el.get(0));
-                        }
-                        break;
-                    }
-                }
-                if (!error) {
-                    break;
-                }
-                shuffle(contestants, segmentL, segmentR);
-            }
+            playTourGames(segmentL, segmentR);
+
+            // mov
             groupStart = groupEnd;
             if ((segmentR - segmentL) % 2 == 1) {
-                assert !played.contains(contestants[segmentR - 1].id);
-                assert !oneLeft.contains(contestants[segmentR - 1].id);
                 contestants[segmentR - 1].points += 2;
                 oneLeft.add(contestants[segmentR - 1].id);
             }
@@ -182,11 +184,12 @@ public class SwissSystem {
     }
 
     private void playGame(int player0_idx, int player1_idx) {
-        out.println(
-                "Player #" + (contestants[player0_idx].id + 1) + " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
-                        "Player #" + (contestants[player1_idx].id + 1) + " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
+        out.println("Player #" + (contestants[player0_idx].id + 1) +
+                " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
+                "Player #" + (contestants[player1_idx].id + 1) +
+                " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
         );
-        Game game = new Game(false, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
+        Game game = new Game(true, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
 
         int result = game.play(new MNKBoard(n, m, k));
 
@@ -204,7 +207,8 @@ public class SwissSystem {
     public String toString() {
         StringBuilder sb = new StringBuilder("Tournament standings:\n");
         for (Contestant contestant : contestants) {
-            sb.append("Contestant #").append(contestant.id + 1).append(": ").append(contestant.points).append(" points\n");
+            sb.append("Contestant #").append(contestant.id + 1).append(": ").
+                    append(contestant.points).append(" points\n");
         }
         return sb.toString();
     }

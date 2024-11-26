@@ -6,7 +6,6 @@ import static game.MNKBoard.SYMBOLS;
 import static java.lang.Math.*;
 
 public class MNKPosition implements Position {
-
     private final Cell[][] cells;
     private Cell turn;
     private final boolean rotated;
@@ -72,11 +71,11 @@ public class MNKPosition implements Position {
         if (!rotated) {
             sb = new StringBuilder().repeat(' ', 3);
             for (int i = 0; i < cells[0].length; i++) {
-                sb.append(i).repeat(' ', 3 - String.valueOf(i).length());
+                sb.append(i + 1).repeat(' ', 3 - String.valueOf(i + 1).length());
             }
             for (int r = 0; r < cells.length; r++) {
-                sb.append("\n");
-                sb.append(r).repeat(' ', 3 - String.valueOf(r).length());
+                sb.append('\n');
+                sb.append(r + 1).repeat(' ', 3 - String.valueOf(r + 1).length());
 
                 for (int c = 0; c < cells[0].length; c++) {
                     sb.append(SYMBOLS.get(cells[r][c])).repeat(' ', 2);
@@ -85,16 +84,18 @@ public class MNKPosition implements Position {
         } else {
             sb = new StringBuilder().repeat(' ', 5);
             for (int i = 0; i < cells.length + cells[0].length - 1; i++) {
-                sb.append(i).repeat(' ', 3 - String.valueOf(i).length());
+                sb.append(i + 1).repeat(' ', 3 - String.valueOf(i + 1).length());
             }
             for (int d = 0; d < cells[0].length + cells.length - 1; d++) {
                 sb.append('\n');
-                sb.append(d).repeat(' ', 5 - String.valueOf(d).length())
+                sb.append(d + 1).repeat(' ', 5 - String.valueOf(d + 1).length())
                         .repeat(' ', abs(d - cells.length + 1) * 3);
                 for (int r = min(cells.length - 1, d); r >= max(0, d - cells[0].length + 1); r--) {
                     int c = d - r;
                     sb.append(SYMBOLS.get(cells[r][c]));
-                    sb.repeat(' ', 5);
+                    if (r >  max(0, d - cells[0].length + 1)) {
+                        sb.repeat(' ', 5);
+                    }
                 }
             }
         }

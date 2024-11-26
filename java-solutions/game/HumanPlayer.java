@@ -35,7 +35,9 @@ public class HumanPlayer implements Player {
                 if (first == -2) {
                     return new Move(0, 0, cell, false, true);
                 }
+                first--;
                 int second = in.nextInt();
+                second--;
                 boolean valid = true;
                 if (position.isRotated()) {
                     second = (second - first - position.getN() + 1);
