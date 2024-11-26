@@ -9,6 +9,9 @@ public interface ToMiniString {
     }
 
     default boolean equals(ToMiniString toMiniString) {
+        if (toMiniString == null) {
+            return false;
+        }
         return toString().equals(toMiniString.toString());
     }
 }
