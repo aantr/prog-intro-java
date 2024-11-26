@@ -10,4 +10,9 @@ public class Divide extends Operation {
     public int operation(int a, int b) {
         return a / b;
     }
+
+    @Override
+    public double operation(double a, double b) {
+        return a / b;
+    }
 }

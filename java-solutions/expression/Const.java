@@ -3,14 +3,17 @@ package expression;
 import java.util.Map;
 
 public class Const extends BaseExpression {
-    public double value;
+    private double value;
+    private final boolean isDouble;
 
     public Const(int value) {
         this.value = value;
+        isDouble = false;
     }
 
     public Const(double value) {
         this.value = value;
+        isDouble = true;
     }
 
     @Override
@@ -30,6 +33,9 @@ public class Const extends BaseExpression {
 
     @Override
     public String toString() {
-        return Double.toString(value);
+        if (isDouble) {
+            return Double.toString(value);
+        }
+        return Integer.toString((int) value);
     }
 }
