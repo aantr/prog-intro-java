@@ -1,5 +1,7 @@
 package expression;
 
+import java.util.Map;
+
 public class Variable extends BaseExpression {
     public String symbol;
 
@@ -25,5 +27,10 @@ public class Variable extends BaseExpression {
             return y;
         }
         return z;
+    }
+
+    @Override
+    public double evaluateD(Map<String, Double> variables) {
+        return variables.get(symbol);
     }
 }

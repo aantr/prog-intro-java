@@ -1,5 +1,7 @@
 package expression;
 
+import java.util.Map;
+
 public abstract class Operation extends BaseExpression {
     public BaseExpression f, s;
     public char symbol;
@@ -11,12 +13,21 @@ public abstract class Operation extends BaseExpression {
 
     public abstract int operation(int a, int b);
 
+    public abstract double operation(double a, double b);
+
+    @Override
     public int evaluate(int x) {
         return operation(f.evaluate(x), s.evaluate(x));
     }
 
+    @Override
     public int evaluate(int x, int y, int z) {
         return operation(f.evaluate(x, y, z), s.evaluate(x, y, z));
+    }
+
+    @Override
+    public double evaluateD(Map<String, Double> variables) {
+        return operation(f.evaluateD(variables), s.evaluateD(variables));
     }
 
     @Override

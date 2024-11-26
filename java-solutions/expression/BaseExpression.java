@@ -1,6 +1,6 @@
 package expression;
 
-public abstract class BaseExpression implements Expression, TripleExpression {
+public abstract class BaseExpression implements Expression, TripleExpression, DoubleMapExpression {
     public boolean equals(BaseExpression baseExpression) {
         return toString().equals(baseExpression.toString());
     }
