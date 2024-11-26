@@ -30,7 +30,7 @@ public class Variable extends BaseExpression {
     }
 
     @Override
-    public double evaluateD(Map<String, Double> variables) {
+    public float evaluateF(Map<String, Float> variables) {
         return variables.get(symbol);
     }
 }

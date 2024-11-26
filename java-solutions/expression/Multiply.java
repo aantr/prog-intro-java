@@ -13,7 +13,7 @@ public class Multiply extends Operation {
     }
 
     @Override
-    public double operation(double a, double b) {
+    public float operation(float a, float b) {
         return a * b;
     }
 }

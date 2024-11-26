@@ -13,7 +13,7 @@ public abstract class Operation extends BaseExpression {
 
     public abstract int operation(int a, int b);
 
-    public abstract double operation(double a, double b);
+    public abstract float operation(float a, float b);
 
     @Override
     public int evaluate(int x) {
@@ -26,8 +26,8 @@ public abstract class Operation extends BaseExpression {
     }
 
     @Override
-    public double evaluateD(Map<String, Double> variables) {
-        return operation(f.evaluateD(variables), s.evaluateD(variables));
+    public float evaluateF(Map<String, Float> variables) {
+        return operation(f.evaluateF(variables), s.evaluateF(variables));
     }
 
     @Override
