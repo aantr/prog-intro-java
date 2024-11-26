@@ -5,12 +5,12 @@ import java.util.Map;
 public class Variable extends BaseExpression {
     public String symbol;
 
-    public Variable(String symbol) {
+    public Variable(final String symbol) {
         this.symbol = symbol;
     }
 
     @Override
-    public int evaluate(int x) {
+    public int evaluate(final int x) {
         return x;
     }
 
@@ -20,17 +20,18 @@ public class Variable extends BaseExpression {
     }
 
     @Override
-    public int evaluate(int x, int y, int z) {
+    public int evaluate(final int x, final int y, final int z) {
         if (symbol.equals("x")) {
             return x;
         } else if (symbol.equals("y")) {
             return y;
+        } else {
+            return z;
         }
-        return z;
     }
 
     @Override
-    public float evaluateF(Map<String, Float> variables) {
+    public float evaluateF(final Map<String, Float> variables) {
         return variables.get(symbol);
     }
 }
