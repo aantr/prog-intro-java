@@ -41,8 +41,12 @@ public abstract class Operation extends BaseExpression {
     }
 
     protected String miniStringBuilder(boolean left, boolean right) {
-        if (!(f instanceof Operation)) left = false;
-        if (!(s instanceof Operation)) right = false;
+        if (!(f instanceof Operation)) {
+            left = false;
+        }
+        if (!(s instanceof Operation)) {
+            right = false;
+        }
         return insertBraces(f.toMiniString(), left) + " " + symbol + " " + insertBraces(s.toMiniString(), right);
     }
 
