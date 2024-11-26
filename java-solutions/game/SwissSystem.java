@@ -109,12 +109,14 @@ public class SwissSystem {
         while (true) {
             boolean error = false;
             ArrayList<ArrayList<Integer>> addedGames = new ArrayList<>();
-            for (int i = segmentL; i < (segmentL + segmentR) / 2; i++) {
+            for (int i = segmentL; i < (segmentL + segmentR) / 2; i++) { // first half
                 if (played.contains(contestants[i].id)) {
                     continue;
                 }
-                for (int j = (segmentR + segmentL) / 2; j < segmentR; j++) {
-                    if (makeGame(addedGames, played, i, j)) break;
+                for (int j = (segmentR + segmentL) / 2; j < segmentR; j++) { // pair with second half
+                    if (makeGame(addedGames, played, i, j)) {
+                        break;
+                    }
                 }
                 if (!played.contains(contestants[i].id)) {
                     error = true;
@@ -167,7 +169,7 @@ public class SwissSystem {
     }
 
     private boolean makeGame(ArrayList<ArrayList<Integer>> addedGames, HashSet<Integer> played, int i, int j) {
-        if (!played.contains(j) && !games.get(contestants[i].id).contains(contestants[j].id)) {
+        if (!played.contains(contestants[j].id) && !games.get(contestants[i].id).contains(contestants[j].id)) {
             games.get(contestants[i].id).add(contestants[j].id);
             games.get(contestants[j].id).add(contestants[i].id);
             played.add(contestants[i].id);
