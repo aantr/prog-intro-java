@@ -6,5 +6,5 @@ package game;
 public interface Player {
     Move move(Position position, Cell cell, boolean prevOffer);
 
-    int drawResponse();
+    boolean drawResponse();
 }

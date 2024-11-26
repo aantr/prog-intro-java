@@ -11,38 +11,51 @@ public class MNKBoard implements Board {
             Cell.E, '.'
     );
 
-    private final MNKPosition position;
     private int empty;
     private final int k;
+
+    private final Cell[][] cells;
+    private Cell turn;
+    private final boolean rhombus;
 
     static boolean isValidNMK(int n, int m, int k) {
         return n >= 1 && m >= 1 && k <= max(n, m);
     }
 
-    public MNKBoard(int n, int m, int k) {
+    public MNKBoard(int n, int m, int k, boolean rhombus) {
+        assert !rhombus || n == m;
         assert isValidNMK(n, m, k);
+        this.rhombus = rhombus;
         this.k = k;
         this.empty = n * m;
-        position = new MNKPosition(n, m, true);
+        if (rhombus) {
+            n = n * 2 - 1;
+            m = n;
+        }
+        cells = new Cell[n][m];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                cells[i][j] = Cell.E;
+        turn = Cell.X;
     }
 
     @Override
-    public Position getPosition() {
-        return position;
+    public MNKPosition getPosition() {
+        return new MNKPosition(cells, turn, rhombus);
     }
 
     @Override
     public Cell getCell() {
-        return position.getTurn();
+        return turn;
     }
 
     @Override
     public Result makeMove(final Move move) {
-        if (!position.isValid(move)) {
-            return Result.LOSE; // loser
+        if (!getPosition().isValid(move)) {
+            return Result.LOSE;
         }
 
-        position.setCell(move.row(), move.column(), move.value());
+        cells[move.row()][move.column()] = move.value();
         empty--;
 
         int[][] vectors = {{1, 1}, {0, 1}, {1, 0}};
@@ -59,13 +72,14 @@ public class MNKBoard implements Board {
         if (empty == 0) {
             return Result.DRAW;
         }
-        position.setTurn(position.getTurn() == Cell.X ? Cell.O : Cell.X);
+        turn = turn == Cell.X ? Cell.O : Cell.X;
         return Result.UNKNOWN;
     }
 
+
     private int getMaxSubsequence(int[] vector, int[] cur) {
         int length = 0;
-        while (position.isCurrent(cur[0] + vector[0], cur[1] + vector[1])) {
+        while (getPosition().isCurrent(cur[0] + vector[0], cur[1] + vector[1])) {
             cur[0] += vector[0];
             cur[1] += vector[1];
             length++;

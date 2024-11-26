@@ -193,7 +193,7 @@ public class SwissSystem {
         );
         Game game = new Game(true, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
 
-        int result = game.play(new MNKBoard(n, m, k));
+        int result = game.play(new MNKBoard(n, m, k, true));
 
         if (result == 1) {
             contestants[player0_idx].points += 2;

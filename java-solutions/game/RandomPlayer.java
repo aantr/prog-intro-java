@@ -32,7 +32,7 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public int drawResponse() {
-        return 0;
+    public boolean drawResponse() {
+        return false;
     }
 }

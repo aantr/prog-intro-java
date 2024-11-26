@@ -1,22 +1,17 @@
 package game;
 
-import java.util.Arrays;
-
 import static game.MNKBoard.SYMBOLS;
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
 
 public class MNKPosition implements Position {
     private final Cell[][] cells;
-    private Cell turn;
-    private final boolean rotated;
+    private final Cell turn;
+    private final boolean rhombus;
 
-    public MNKPosition(int n, int m, boolean rotated) {
-        this.rotated = rotated;
-        this.cells = new Cell[n][m];
-        for (Cell[] row : cells) {
-            Arrays.fill(row, Cell.E);
-        }
-        turn = Cell.X;
+    public MNKPosition(final Cell[][] cells, final Cell turn, final boolean rhombus) {
+        this.rhombus = rhombus;
+        this.cells = cells;
+        this.turn = turn;
     }
 
     @Override
@@ -25,37 +20,13 @@ public class MNKPosition implements Position {
                 && cells[move.row()][move.column()] == Cell.E;
     }
 
-    @Override
-    public Cell getCell(final int r, final int c) {
-        return cells[r][c];
-    }
-
-    @Override
-    public int getN() {
-        return cells.length;
-    }
-
-    @Override
-    public void setCell(final int r, final int c, final Cell v) {
-        cells[r][c] = v;
-    }
-
-    @Override
-    public Cell getTurn() {
-        return turn;
-    }
-
-    @Override
-    public void setTurn(Cell v) {
-        turn = v;
-    }
-
-    @Override
-    public boolean isRotated() {
-        return rotated;
-    }
-
     private boolean isValidPosition(int r, int c) {
+        if (rhombus) {
+            return cells.length / 2 <= r + c &&
+                    cells.length / 2 <= r + cells.length - 1 - c &&
+                    cells.length / 2 <= cells.length - 1 - r + c &&
+                    cells.length / 2 <= cells.length - 1 - r + cells.length - 1 - c;
+        }
         return 0 <= r && r < cells.length
                 && 0 <= c && c < cells[0].length;
     }
@@ -68,7 +39,7 @@ public class MNKPosition implements Position {
     @Override
     public String toString() {
         final StringBuilder sb;
-        if (!rotated) {
+        if (!rhombus) {
             sb = new StringBuilder().repeat(' ', 3);
             for (int i = 0; i < cells[0].length; i++) {
                 sb.append(i + 1).repeat(' ', 3 - String.valueOf(i + 1).length());
@@ -82,24 +53,19 @@ public class MNKPosition implements Position {
                 }
             }
         } else {
-            sb = new StringBuilder().repeat(' ', 5);
-            for (int i = 0; i < cells.length + cells[0].length - 1; i++) {
+            sb = new StringBuilder().repeat(' ', 3);
+            for (int i = 0; i < cells[0].length; i++) {
                 sb.append(i + 1).repeat(' ', 3 - String.valueOf(i + 1).length());
             }
-            for (int d = 0; d < cells[0].length + cells.length - 1; d++) {
+            for (int r = 0; r < cells.length; r++) {
                 sb.append('\n');
-                sb.append(d + 1).repeat(' ', 5 - String.valueOf(d + 1).length())
-                        .repeat(' ', abs(d - cells.length + 1) * 3);
-                for (int r = min(cells.length - 1, d); r >= max(0, d - cells[0].length + 1); r--) {
-                    int c = d - r;
-                    sb.append(SYMBOLS.get(cells[r][c]));
-                    if (r >  max(0, d - cells[0].length + 1)) {
-                        sb.repeat(' ', 5);
-                    }
+                sb.append(r + 1).repeat(' ', 3 - String.valueOf(r + 1).length());
+                sb.repeat(' ', 3 * abs(r - cells.length / 2));
+                for (int c = abs(r - cells.length / 2); c < cells[0].length - abs(r - cells.length / 2); c++) {
+                    sb.append(SYMBOLS.get(cells[r][c])).repeat(' ', 2);
                 }
             }
         }
         return sb.toString();
-
     }
 }

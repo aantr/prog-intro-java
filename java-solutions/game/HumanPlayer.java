@@ -38,18 +38,8 @@ public class HumanPlayer implements Player {
                 first--;
                 int second = in.nextInt();
                 second--;
-                boolean valid = true;
-                if (position.isRotated()) {
-                    second = (second - first - position.getN() + 1);
-                    if (second % 2 != 0) {
-                        valid = false;
-                    }
-                    int row = second / -2;
-                    second = first - row;
-                    first = row;
-                }
                 final Move move = new Move(first, second, cell, false, false);
-                if (position.isValid(move) && valid) {
+                if (position.isValid(move)) {
                     return move;
                 }
                 out.println("Move " + move + " is invalid");
@@ -61,9 +51,9 @@ public class HumanPlayer implements Player {
     }
 
     @Override
-    public int drawResponse() {
+    public boolean drawResponse() {
         out.println("Opponent offers a draw [yes/No]: ");
         String ans = in.next();
-        return ans.equalsIgnoreCase("yes") ? 1 : 0;
+        return ans.equalsIgnoreCase("yes");
     }
 }

@@ -44,13 +44,13 @@ public class Game {
 
     private int move(final Board board, final Player player, final int no, final boolean wasOffer, final boolean prevOffer) {
         if (wasOffer) {
-            int result = player.drawResponse();
-            if (result == 1) {
+            boolean result = player.drawResponse();
+            if (result) {
                 log("Player " + no + " accepts a draw");
             } else {
                 log("Player " + no + " declined a draw");
             }
-            return result;
+            return result ? 1 : 0;
         }
         final Move move = player.move(board.getPosition(), board.getCell(), prevOffer);
         if (move.resign()) {
