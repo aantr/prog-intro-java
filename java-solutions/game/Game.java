@@ -52,7 +52,14 @@ public class Game {
             }
             return result ? 1 : 0;
         }
-        final Move move = player.move(board.getPosition(), board.getCell(), prevOffer);
+        final Move move;
+        try {
+            move = player.move(board.getPosition(), board.getCell(), prevOffer);
+        } catch (Exception e) {
+            log("Player " + no + " makes incorrect move");
+            log("Player " + (3 - no) + " won");
+            return 3 - no;
+        }
         if (move.resign()) {
             log("Player " + no + " resign");
             log("Player " + (3 - no) + " won");
