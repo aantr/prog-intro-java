@@ -3,8 +3,7 @@ package expression;
 public class Add extends Operation {
 
     public Add(final BaseExpression f, final BaseExpression s) {
-        super(f, s);
-        symbol = '+';
+        super(f, s, '+');
     }
 
     @Override
@@ -15,5 +14,10 @@ public class Add extends Operation {
     @Override
     public float operation(final float a, final float b) {
         return a + b;
+    }
+
+    @Override
+    public String toMiniString() {
+        return miniStringBuilder(false, false);
     }
 }

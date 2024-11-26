@@ -3,9 +3,7 @@ package expression;
 import java.util.Map;
 
 public class Const extends BaseExpression {
-    // :NOTE: single var
-    private float valueF = 0;
-    private int value = 0;
+    private Object value = 0; // float int
     private final boolean isFloat;
 
     public Const(int value) {
@@ -14,30 +12,30 @@ public class Const extends BaseExpression {
     }
 
     public Const(float value) {
-        this.valueF = value;
+        this.value = value;
         isFloat = true;
     }
 
     @Override
     public int evaluate(int x) {
-        return value;
+        return (int) value;
     }
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return value;
+        return (int) value;
     }
 
     @Override
     public float evaluateF(Map<String, Float> variables) {
-        return valueF;
+        return (float) value;
     }
 
     @Override
     public String toString() {
         if (isFloat) {
-            return Float.toString(valueF);
+            return Float.toString((float) value);
         }
-        return Integer.toString(value);
+        return Integer.toString((int) value);
     }
 }

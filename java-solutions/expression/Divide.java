@@ -2,8 +2,7 @@ package expression;
 
 public class Divide extends Operation {
     public Divide(BaseExpression f, BaseExpression s) {
-        super(f, s);
-        symbol = '/';
+        super(f, s, '/');
     }
 
     @Override
@@ -14,5 +13,11 @@ public class Divide extends Operation {
     @Override
     public float operation(float a, float b) {
         return a / b;
+    }
+
+    @Override
+    public String toMiniString() {
+        boolean left = f.getClass() != Divide.class && f.getClass() != Multiply.class;
+        return miniStringBuilder(left, true);
     }
 }

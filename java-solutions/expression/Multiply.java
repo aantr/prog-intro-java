@@ -3,8 +3,7 @@ package expression;
 public class Multiply extends Operation {
 
     public Multiply(BaseExpression f, BaseExpression s) {
-        super(f, s);
-        symbol = '*';
+        super(f, s, '*');
     }
 
     @Override
@@ -15,5 +14,17 @@ public class Multiply extends Operation {
     @Override
     public float operation(float a, float b) {
         return a * b;
+    }
+
+    @Override
+    public String toMiniString() {
+        boolean left = false, right = false;
+        if (s.getClass() != Multiply.class) {
+            right = true;
+        }
+        if (f.getClass() != Multiply.class && f.getClass() != Divide.class) {
+            left = true;
+        }
+        return miniStringBuilder(left, right);
     }
 }
