@@ -3,8 +3,8 @@ package expression;
 import java.util.Map;
 
 public abstract class Operation extends BaseExpression {
-    public BaseExpression f, s;
-    public char symbol;
+    protected final BaseExpression f, s;
+    private final char symbol;
 
     public Operation(final BaseExpression f, final BaseExpression s, final char symbol) {
         this.f = f;
@@ -12,9 +12,9 @@ public abstract class Operation extends BaseExpression {
         this.symbol = symbol;
     }
 
-    public abstract int operation(int a, int b);
+    public abstract int operation(final int a, final int b);
 
-    public abstract float operation(float a, float b);
+    public abstract float operation(final float a, final float b);
 
     @Override
     public int evaluate(final int x) {

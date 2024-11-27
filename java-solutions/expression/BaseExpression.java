@@ -2,7 +2,7 @@ package expression;
 
 public abstract class BaseExpression implements Expression, TripleExpression, FloatMapExpression {
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof BaseExpression)) {
             return false;
         }

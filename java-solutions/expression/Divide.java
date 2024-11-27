@@ -1,17 +1,17 @@
 package expression;
 
 public class Divide extends Operation {
-    public Divide(BaseExpression f, BaseExpression s) {
+    public Divide(final BaseExpression f, final BaseExpression s) {
         super(f, s, '/');
     }
 
     @Override
-    public int operation(int a, int b) {
+    public int operation(final int a, final int b) {
         return a / b;
     }
 
     @Override
-    public float operation(float a, float b) {
+    public float operation(final float a, final float b) {
         return a / b;
     }
 

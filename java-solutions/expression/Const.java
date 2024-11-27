@@ -3,26 +3,26 @@ package expression;
 import java.util.Map;
 
 public class Const extends BaseExpression {
-    private Object value = 0; // float int
+    private final Object value; // float int
     private final boolean isFloat;
 
-    public Const(int value) {
+    public Const(final int value) {
         this.value = value;
         isFloat = false;
     }
 
-    public Const(float value) {
+    public Const(final float value) {
         this.value = value;
         isFloat = true;
     }
 
     @Override
-    public int evaluate(int x) {
+    public int evaluate(final int x) {
         return (int) value;
     }
 
     @Override
-    public int evaluate(int x, int y, int z) {
+    public int evaluate(final int x, final int y, final int z) {
         return (int) value;
     }
 

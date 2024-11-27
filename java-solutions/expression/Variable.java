@@ -3,7 +3,7 @@ package expression;
 import java.util.Map;
 
 public class Variable extends BaseExpression {
-    public String symbol;
+    public final String symbol;
 
     public Variable(final String symbol) {
         this.symbol = symbol;
