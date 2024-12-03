@@ -20,7 +20,7 @@ public class MNKPosition implements Position {
                 && cells[move.row()][move.column()] == Cell.E;
     }
 
-    private boolean isValidPosition(int r, int c) {
+    private boolean isValidPosition(final int r, final int c) {
         if (rhombus) {
             return cells.length / 2 <= r + c &&
                     cells.length / 2 <= r + cells.length - 1 - c &&
@@ -31,7 +31,7 @@ public class MNKPosition implements Position {
                 && 0 <= c && c < cells[0].length;
     }
 
-    public boolean isCurrent(int r, int c) {
+    public boolean isCurrent(final int r, final int c) {
         return isValidPosition(r, c) &&
                 cells[r][c] == turn;
     }

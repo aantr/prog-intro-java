@@ -17,7 +17,7 @@ public class HumanPlayer implements Player {
     public Move move(final Position position, final Cell cell, final boolean prevOffer) {
         while (true) {
             out.println("Position");
-            out.println(position);
+            out.println(position); // :NOTE: toString
             out.println(cell + "'s move");
             if (!prevOffer) {
                 out.println("Enter row and column / -1 to offer a draw / -2 to resign");

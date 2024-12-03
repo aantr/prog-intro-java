@@ -24,7 +24,7 @@ public class SwissSystem {
         out.print("Enter number of players: ");
         try {
             number = scanner.nextInt();
-        } catch (InputMismatchException ignored) {
+        } catch (final InputMismatchException ignored) {
             scanner.next();
             return false;
         }
@@ -38,7 +38,7 @@ public class SwissSystem {
             m = scanner.nextInt();
             k = scanner.nextInt();
             return isValidNMK(n, m, k);
-        } catch (InputMismatchException ignored) {
+        } catch (final InputMismatchException ignored) {
             scanner.next();
             return false;
         }
@@ -49,7 +49,7 @@ public class SwissSystem {
         Player getPlayer(int n, int m, int k);
     }
 
-    public SwissSystem(PlayerFabric playerFabric, final PrintStream out, final Scanner scanner) {
+    public SwissSystem(final PlayerFabric playerFabric, final PrintStream out, final Scanner scanner) {
         this.out = out;
         this.scanner = scanner;
         this.playerFabric = playerFabric;
@@ -70,6 +70,7 @@ public class SwissSystem {
         }
     }
 
+    // :NOTE: no results
     public void play() {
         numTours = (int) Math.ceil(Math.log(number) / Math.log(2));
         for (int tour = 0; tour < numTours; tour++) {
@@ -80,11 +81,11 @@ public class SwissSystem {
         }
     }
 
-    private void shuffle(Object[] arr, int l, int r) {
+    private void shuffle(final Object[] arr, final int l, final int r) {
         for (int i = r - l - 1; i > 0; i--) {
-            int index = random.nextInt(i + 1);
+            final int index = random.nextInt(i + 1);
             // swap
-            Object a = arr[index + l];
+            final Object a = arr[index + l];
             arr[index + l] = arr[i + l];
             arr[i + l] = a;
         }
@@ -95,7 +96,7 @@ public class SwissSystem {
         if (oneLeft.contains(contestants[number - 1].id)) {
             for (int i = number - 2; i >= 0; i--) {
                 if (!oneLeft.contains(contestants[i].id)) {
-                    Contestant temp = contestants[number - 1];
+                    final Contestant temp = contestants[number - 1];
                     contestants[number - 1] = contestants[i];
                     contestants[i] = temp;
                 }
@@ -104,11 +105,11 @@ public class SwissSystem {
     }
 
     // trying to pair by rules then shuffle if failed
-    private void playTourGames(int segmentL, int segmentR) {
-        HashSet<Integer> played = new HashSet<>();
+    private void playTourGames(final int segmentL, final int segmentR) {
+        final HashSet<Integer> played = new HashSet<>();
         while (true) {
             boolean error = false;
-            ArrayList<ArrayList<Integer>> addedGames = new ArrayList<>();
+            final ArrayList<ArrayList<Integer>> addedGames = new ArrayList<>();
             for (int i = segmentL; i < (segmentL + segmentR) / 2; i++) { // first half
                 if (played.contains(contestants[i].id)) {
                     continue;
@@ -120,7 +121,7 @@ public class SwissSystem {
                 }
                 if (!played.contains(contestants[i].id)) {
                     error = true;
-                    for (var el : addedGames) {
+                    for (final var el : addedGames) {
                         games.get(el.get(0)).remove(el.get(1));
                         games.get(el.get(1)).remove(el.get(0));
                     }
@@ -145,7 +146,8 @@ public class SwissSystem {
             if (number - groupEnd < numTours) {
                 groupEnd = number;
             }
-            int segmentL = groupStart, segmentR = groupEnd;
+            final int segmentL = groupStart;
+            int segmentR = groupEnd;
             if ((segmentR - segmentL) % 2 == 1) {
                 segmentR++;
                 if (segmentR >= number) {
@@ -168,7 +170,7 @@ public class SwissSystem {
         }
     }
 
-    private boolean makeGame(ArrayList<ArrayList<Integer>> addedGames, HashSet<Integer> played, int i, int j) {
+    private boolean makeGame(final ArrayList<ArrayList<Integer>> addedGames, final HashSet<Integer> played, final int i, final int j) {
         if (!played.contains(contestants[j].id) && !games.get(contestants[i].id).contains(contestants[j].id)) {
             games.get(contestants[i].id).add(contestants[j].id);
             games.get(contestants[j].id).add(contestants[i].id);
@@ -185,15 +187,15 @@ public class SwissSystem {
         return false;
     }
 
-    private void playGame(int player0_idx, int player1_idx) {
+    private void playGame(final int player0_idx, final int player1_idx) {
         out.println("Player #" + (contestants[player0_idx].id + 1) +
                 " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
                 "Player #" + (contestants[player1_idx].id + 1) +
                 " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
         );
-        Game game = new Game(true, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
+        final Game game = new Game(true, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
 
-        int result = game.play(new MNKBoard(n, m, k, true));
+        final int result = game.play(new MNKBoard(n, m, k, true));
 
         if (result == 1) {
             contestants[player0_idx].points += 2;
@@ -207,8 +209,8 @@ public class SwissSystem {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Tournament standings:\n");
-        for (Contestant contestant : contestants) {
+        final StringBuilder sb = new StringBuilder("Tournament standings:\n");
+        for (final Contestant contestant : contestants) {
             sb.append("Contestant #").append(contestant.id + 1).append(": ").
                     append(contestant.points).append(" points\n");
         }

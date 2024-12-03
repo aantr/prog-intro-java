@@ -10,6 +10,7 @@ public class MNKBoard implements Board {
             Cell.O, 'O',
             Cell.E, '.'
     );
+    private static final int[][] VECTORS = new int[][]{{1, 1}, {0, 1}, {1, 0}};
 
     private int empty;
     private final int k;
@@ -18,11 +19,11 @@ public class MNKBoard implements Board {
     private Cell turn;
     private final boolean rhombus;
 
-    static boolean isValidNMK(int n, int m, int k) {
+    static boolean isValidNMK(final int n, final int m, final int k) {
         return n >= 1 && m >= 1 && k <= max(n, m);
     }
 
-    public MNKBoard(int n, int m, int k, boolean rhombus) {
+    public MNKBoard(int n, int m, final int k, final boolean rhombus) {
         assert !rhombus || n == m;
         assert isValidNMK(n, m, k);
         this.rhombus = rhombus;
@@ -58,14 +59,10 @@ public class MNKBoard implements Board {
         cells[move.row()][move.column()] = move.value();
         empty--;
 
-        int[][] vectors = {{1, 1}, {0, 1}, {1, 0}};
-        for (var vector : vectors) {
-            int length = 0;
-            for (int i = 0; i < 2; i++) {
-                int[] cur = {move.row(), move.column()};
-                length += getMaxSubsequence(vector, cur);
-            }
-            if (length + 1 >= k) {
+        for (final var vector : VECTORS) {
+            // :NOTE: simplified
+            if (getMaxSubsequence(move, vector[0], vector[1]) +
+                    getMaxSubsequence(move, -vector[0], -vector[1]) + 1 >= k) {
                 return Result.WIN;
             }
         }
@@ -77,16 +74,15 @@ public class MNKBoard implements Board {
     }
 
 
-    private int getMaxSubsequence(int[] vector, int[] cur) {
+    private int getMaxSubsequence(final Move move, final int dr, final int dc) {
+        int r = move.row();
+        int c = move.column();
         int length = 0;
-        while (getPosition().isCurrent(cur[0] + vector[0], cur[1] + vector[1])) {
-            cur[0] += vector[0];
-            cur[1] += vector[1];
+        while (getPosition().isCurrent(r + dr, c + dc)) {
+            r += dr;
+            c += dc;
             length++;
         }
-        vector[0] *= -1;
-        vector[1] *= -1;
         return length;
     }
-
 }

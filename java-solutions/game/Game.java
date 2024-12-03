@@ -41,7 +41,7 @@ public class Game {
 
     private int move(final Board board, final Player player, final int no, final boolean wasOffer, final boolean prevOffer) {
         if (wasOffer) {
-            boolean result = player.drawResponse();
+            final boolean result = player.drawResponse();
             if (result) {
                 log("Player " + no + " accepts a draw");
             } else {
@@ -52,7 +52,8 @@ public class Game {
         final Move move;
         try {
             move = player.move(board.getPosition(), board.getCell(), prevOffer);
-        } catch (Exception e) {
+            // :NOTE: catch Exception
+        } catch (final Exception e) {
             log("Player " + no + " makes incorrect move");
             log("Player " + (3 - no) + " won");
             return 3 - no;

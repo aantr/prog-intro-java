@@ -11,6 +11,7 @@ public class Main {
                     (int n, int m, int k) -> new HumanPlayer(System.out, scanner), System.out, scanner
             );
             tournament.play();
+            // :NOTE: tournament.playTour();
             System.out.println(tournament);
         }
     }
