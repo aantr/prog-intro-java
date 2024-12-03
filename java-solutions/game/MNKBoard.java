@@ -2,6 +2,7 @@ package game;
 
 import java.util.Map;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
 public class MNKBoard implements Board {
@@ -85,4 +86,5 @@ public class MNKBoard implements Board {
         }
         return length;
     }
+
 }
