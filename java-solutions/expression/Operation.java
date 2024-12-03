@@ -36,21 +36,17 @@ public abstract class Operation extends BaseExpression {
         return "(%s %c %s)".formatted(f, symbol, s);
     }
 
-    private String insertBraces(String str, boolean insert) {
+    private String insertBraces(final String str, final boolean insert) {
         return insert ? "(%s)".formatted(str) : str;
     }
 
-    protected String miniStringBuilder(boolean left, boolean right) {
-        if (!(f instanceof Operation)) {
-            left = false;
-        }
-        if (!(s instanceof Operation)) {
-            right = false;
-        }
-        return insertBraces(f.toMiniString(), left) + " " + symbol + " " + insertBraces(s.toMiniString(), right);
+    protected String miniStringBuilder(final boolean left, final boolean right) {
+        // :NOTE: simplified
+        return insertBraces(f.toMiniString(), left && f instanceof Operation) + " " +
+                symbol + " " + insertBraces(s.toMiniString(), right && f instanceof Operation);
     }
 
+    // :NOTE: ??
     @Override
     public abstract String toMiniString();
-
 }
