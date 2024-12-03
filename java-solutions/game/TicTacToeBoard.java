@@ -99,6 +99,11 @@ public class TicTacToeBoard implements Board, Position {
     }
 
     @Override
+    public String getString() {
+        return toString();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(" 012");
         for (int r = 0; r < 3; r++) {

@@ -11,6 +11,7 @@ public class MNKBoard implements Board {
             Cell.O, 'O',
             Cell.E, '.'
     );
+
     private static final int[][] VECTORS = new int[][]{{1, 1}, {0, 1}, {1, 0}};
 
     private int empty;
