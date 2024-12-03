@@ -6,9 +6,11 @@ public abstract class BaseExpression implements Expression, TripleExpression, Fl
         if (!(obj instanceof BaseExpression)) {
             return false;
         }
+        // :NOTE: toString equals
         return toString().equals(obj.toString());
     }
-    public boolean equals(BaseExpression baseExpression) {
+
+    public boolean equals(final BaseExpression baseExpression) {
         return equals((Object) baseExpression);
     }
 

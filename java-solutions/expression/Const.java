@@ -3,6 +3,8 @@ package expression;
 import java.util.Map;
 
 public class Const extends BaseExpression {
+    // :NOTE: Object
+    // :NOTE: single field
     private final Object value; // float int
     private final boolean isFloat;
 
