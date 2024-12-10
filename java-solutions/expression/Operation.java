@@ -43,14 +43,9 @@ public abstract class Operation extends BaseExpression {
     }
 
     protected String miniStringBuilder(final boolean left, final boolean right) {
-        // :NOTE: simplified
         return insertBraces(f.toMiniString(), left) + " " +
                 symbol + " " + insertBraces(s.toMiniString(), right);
     }
-
-    // :NOTE: ??
-    @Override
-    public abstract String toMiniString();
 
     @Override
     public boolean equals(final Object obj) {
