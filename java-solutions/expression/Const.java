@@ -4,18 +4,14 @@ import java.util.Map;
 
 public class Const extends BaseExpression {
     // :NOTE: Object
-    // :NOTE: single field
     private final Object value; // float int
-    private final boolean isFloat;
 
     public Const(final int value) {
         this.value = value;
-        isFloat = false;
     }
 
     public Const(final float value) {
         this.value = value;
-        isFloat = true;
     }
 
     @Override
@@ -33,11 +29,24 @@ public class Const extends BaseExpression {
         return (float) value;
     }
 
+    private boolean isFloat() {
+        return value.getClass() == Float.class;
+    }
+
     @Override
     public String toString() {
-        if (isFloat) {
+        if (isFloat()) {
             return Float.toString((float) value);
         }
         return Integer.toString((int) value);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Const)) {
+            return false;
+        }
+        if (isFloat()) return (float) value == (float) ((Const) obj).value;
+        return (int) value == (int) ((Const) obj).value;
     }
 }

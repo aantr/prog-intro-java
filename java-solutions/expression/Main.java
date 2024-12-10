@@ -9,6 +9,7 @@ public class Main {
             Expression expr = new Add(new Subtract(new Multiply(new Variable("x"), new Variable("x")), new Multiply(
                     new Variable("x"), new Const(2))), new Const(1));
             System.out.println(expr.evaluate(x));
+            System.out.println(new Subtract(new Subtract(new Const(1), new Const(2)), new Const(3)).toMiniString());
         }
     }
 }

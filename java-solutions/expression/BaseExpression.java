@@ -2,13 +2,7 @@ package expression;
 
 public abstract class BaseExpression implements Expression, TripleExpression, FloatMapExpression {
     @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof BaseExpression)) {
-            return false;
-        }
-        // :NOTE: toString equals
-        return toString().equals(obj.toString());
-    }
+    public abstract boolean equals(final Object obj);
 
     public boolean equals(final BaseExpression baseExpression) {
         return equals((Object) baseExpression);

@@ -5,11 +5,13 @@ import java.util.Map;
 public abstract class Operation extends BaseExpression {
     protected final BaseExpression f, s;
     private final char symbol;
+    protected final int priority;
 
-    public Operation(final BaseExpression f, final BaseExpression s, final char symbol) {
+    public Operation(final BaseExpression f, final BaseExpression s, final char symbol, final int priority) {
         this.f = f;
         this.s = s;
         this.symbol = symbol;
+        this.priority = priority;
     }
 
     public abstract int operation(final int a, final int b);
@@ -42,11 +44,19 @@ public abstract class Operation extends BaseExpression {
 
     protected String miniStringBuilder(final boolean left, final boolean right) {
         // :NOTE: simplified
-        return insertBraces(f.toMiniString(), left && f instanceof Operation) + " " +
-                symbol + " " + insertBraces(s.toMiniString(), right && f instanceof Operation);
+        return insertBraces(f.toMiniString(), left) + " " +
+                symbol + " " + insertBraces(s.toMiniString(), right);
     }
 
     // :NOTE: ??
     @Override
     public abstract String toMiniString();
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Operation)) {
+            return false;
+        }
+        return symbol == ((Operation) obj).symbol && f.equals(((Operation) obj).f) && s.equals(((Operation) obj).s);
+    }
 }
