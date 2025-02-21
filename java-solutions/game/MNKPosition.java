@@ -20,18 +20,24 @@ public class MNKPosition implements Position {
                 && cells[move.row()][move.column()] == Cell.E;
     }
 
-    @Override
-    public Cell getTurn() {
-        return turn;
+    private boolean isValidPosition(final int r, final int c) {
+        if (rhombus) {
+            return cells.length / 2 <= r + c &&
+                    cells.length / 2 <= r + cells.length - 1 - c &&
+                    cells.length / 2 <= cells.length - 1 - r + c &&
+                    cells.length / 2 <= cells.length - 1 - r + cells.length - 1 - c;
+        }
+        return 0 <= r && r < cells.length
+                && 0 <= c && c < cells[0].length;
+    }
+
+    public boolean isCurrent(final int r, final int c) {
+        return isValidPosition(r, c) &&
+                cells[r][c] == turn;
     }
 
     @Override
-    public Cell getCell(final int r, final int c) {
-        return cells[r][c];
-    }
-
-    @Override
-    public String getString() {
+    public String toString() {
         final StringBuilder sb;
         if (!rhombus) {
             sb = new StringBuilder().repeat(' ', 3);
@@ -61,25 +67,5 @@ public class MNKPosition implements Position {
             }
         }
         return sb.toString();
-    }
-
-    public boolean getRhombus() {
-        return rhombus;
-    }
-
-    private boolean isValidPosition(final int r, final int c) {
-        if (rhombus) {
-            return cells.length / 2 <= r + c &&
-                    cells.length / 2 <= r + cells.length - 1 - c &&
-                    cells.length / 2 <= cells.length - 1 - r + c &&
-                    cells.length / 2 <= cells.length - 1 - r + cells.length - 1 - c;
-        }
-        return 0 <= r && r < cells.length
-                && 0 <= c && c < cells[0].length;
-    }
-
-    public boolean isCurrent(final int r, final int c) {
-        return isValidPosition(r, c) &&
-                cells[r][c] == turn;
     }
 }

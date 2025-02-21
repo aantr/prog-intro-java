@@ -3,14 +3,16 @@ package game;
 import java.io.PrintStream;
 import java.util.*;
 
+import static game.MNKBoard.isValidNMK;
 import static java.util.Arrays.sort;
 
 public class SwissSystem {
     private int number;
-    private final int n, m, k;
+    private int n, m, k;
     private int numTours;
 
     private final PrintStream out;
+    private final Scanner scanner;
     private final Random random;
 
     private final Contestant[] contestants;
@@ -18,20 +20,47 @@ public class SwissSystem {
     private final ArrayList<Set<Integer>> games;
     private final Set<Integer> oneLeft;
 
+    private boolean readPlayers() {
+        out.print("Enter number of players: ");
+        try {
+            number = scanner.nextInt();
+        } catch (final InputMismatchException ignored) {
+            scanner.next();
+            return false;
+        }
+        return number >= 1;
+    }
+
+    private boolean readNMK() {
+        try {
+            out.print("Enter n, m, k: ");
+            n = scanner.nextInt();
+            m = scanner.nextInt();
+            k = scanner.nextInt();
+            return isValidNMK(n, m, k);
+        } catch (final InputMismatchException ignored) {
+            scanner.next();
+            return false;
+        }
+    }
+
     @FunctionalInterface
     public interface PlayerFabric {
         Player getPlayer(int n, int m, int k);
     }
 
-    public SwissSystem(final int number, final int n, final int m, final int k, final PlayerFabric playerFabric, final PrintStream out, final Scanner scanner) {
+    public SwissSystem(final PlayerFabric playerFabric, final PrintStream out, final Scanner scanner) {
         this.out = out;
+        this.scanner = scanner;
         this.playerFabric = playerFabric;
         this.random = new Random(1234);
         this.oneLeft = new HashSet<>();
-        this.n = n;
-        this.m = m;
-        this.k = k;
-        this.number = number;
+        while (!readPlayers()) {
+            System.out.println("Number is invalid");
+        }
+        while (!readNMK()) {
+            out.println("Numbers n, m, k are invalid");
+        }
         contestants = new Contestant[number];
         games = new ArrayList<>();
         for (int i = 0; i < number; i++) {
@@ -106,7 +135,7 @@ public class SwissSystem {
         }
     }
 
-    private void playTour() {
+    public void playTour() {
         int groupStart = 0;
         while (groupStart < number) {
             int groupEnd = groupStart;
@@ -176,10 +205,6 @@ public class SwissSystem {
             contestants[player0_idx].points++;
             contestants[player1_idx].points++;
         }
-    }
-
-    public Contestant[] getStandings() {
-        return contestants;
     }
 
     @Override

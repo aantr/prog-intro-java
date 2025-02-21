@@ -14,16 +14,28 @@ public class HumanPlayer implements Player {
     }
 
     @Override
-    public Move move(final Position position, final Cell cell) {
+    public Move move(final Position position, final Cell cell, final boolean prevOffer) {
         while (true) {
             out.println("Position");
-            out.println(position.getString());
+            out.println(position); // :NOTE: toString
             out.println(cell + "'s move");
+            if (!prevOffer) {
+                out.println("Enter row and column / -1 to offer a draw / -2 to resign");
+            } else {
+                out.println("Enter row and column / -2 to resign");
+            }
             try {
-                int hv = in.nextInt();
                 int first = in.nextInt();
+                if (first == -1 && !prevOffer) {
+                    return new Move(0, 0, cell, true, false);
+                }
+                if (first == -2) {
+                    return new Move(0, 0, cell, false, true);
+                }
+                first--;
                 int second = in.nextInt();
-                final Move move = new Move(hv, first, second, cell);
+                second--;
+                final Move move = new Move(first, second, cell, false, false);
                 if (position.isValid(move)) {
                     return move;
                 }
@@ -35,4 +47,10 @@ public class HumanPlayer implements Player {
         }
     }
 
+    @Override
+    public boolean drawResponse() {
+        out.println("Opponent offers a draw [yes/No]: ");
+        String ans = in.next();
+        return ans.equalsIgnoreCase("yes");
+    }
 }

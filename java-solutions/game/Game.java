@@ -53,7 +53,7 @@ public class Game {
         try {
             move = player.move(board.getPosition(), board.getCell(), prevOffer);
             // :NOTE: catch Exception
-        } catch (final RuntimeException e) {
+        } catch (final Exception e) {
             log("Player " + no + " makes incorrect move");
             log("Player " + (3 - no) + " won");
             return 3 - no;
