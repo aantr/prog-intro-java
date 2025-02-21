@@ -160,13 +160,13 @@ public class SwissSystem {
 
     private void playGame(final int player0_idx, final int player1_idx) {
         out.println("Player #" + (contestants[player0_idx].id + 1) +
-                " is %c, ".formatted(MNKBoard.SYMBOLS.get(Cell.X)) +
+                " is %c, ".formatted(SticksBoard.SYMBOLS.get(Cell.X)) +
                 "Player #" + (contestants[player1_idx].id + 1) +
-                " is %c".formatted(MNKBoard.SYMBOLS.get(Cell.O))
+                " is %c".formatted(SticksBoard.SYMBOLS.get(Cell.O))
         );
         final Game game = new Game(true, playerFabric.getPlayer(n, m, k), playerFabric.getPlayer(n, m, k));
 
-        final int result = game.play(new MNKBoard(n, m, k, true));
+        final int result = game.play(new SticksBoard(n, m, k, true));
 
         if (result == 1) {
             contestants[player0_idx].points += 2;

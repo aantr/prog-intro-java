@@ -11,7 +11,7 @@ public class Reader {
     private final PrintStream out;
     private final Scanner scanner;
 
-    Reader(final PrintStream out, final Scanner scanner) {
+    public Reader(final PrintStream out, final Scanner scanner) {
         this.out = out;
         this.scanner = scanner;
     }
