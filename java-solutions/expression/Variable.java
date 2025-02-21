@@ -34,12 +34,4 @@ public class Variable extends BaseExpression {
     public float evaluateF(final Map<String, Float> variables) {
         return variables.get(symbol);
     }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof Variable)) {
-            return false;
-        }
-        return symbol.equals(((Variable) obj).symbol);
-    }
 }

@@ -2,6 +2,7 @@ package game;
 
 import java.util.Map;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
 public class MNKBoard implements Board {
@@ -10,6 +11,7 @@ public class MNKBoard implements Board {
             Cell.O, 'O',
             Cell.E, '.'
     );
+
     private static final int[][] VECTORS = new int[][]{{1, 1}, {0, 1}, {1, 0}};
 
     private int empty;
@@ -85,4 +87,5 @@ public class MNKBoard implements Board {
         }
         return length;
     }
+
 }

@@ -3,7 +3,7 @@ package expression;
 public class Multiply extends Operation {
 
     public Multiply(final BaseExpression f, final BaseExpression s) {
-        super(f, s, '*', 3);
+        super(f, s, '*');
     }
 
     @Override
@@ -18,7 +18,7 @@ public class Multiply extends Operation {
 
     @Override
     public String toMiniString() {
-        return miniStringBuilder(f instanceof Operation && ((Operation) f).priority < 2,
-                s instanceof Operation && ((Operation) s).priority < 3);
+        boolean left = f.getClass() != Multiply.class && f.getClass() != Divide.class, right = s.getClass() != Multiply.class;
+        return miniStringBuilder(left, right);
     }
 }

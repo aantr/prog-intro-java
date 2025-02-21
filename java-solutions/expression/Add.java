@@ -3,7 +3,7 @@ package expression;
 public class Add extends Operation {
 
     public Add(final BaseExpression f, final BaseExpression s) {
-        super(f, s, '+', 1);
+        super(f, s, '+');
     }
 
     @Override

@@ -3,7 +3,7 @@ package expression;
 public class Subtract extends Operation {
 
     public Subtract(final BaseExpression f, final BaseExpression s) {
-        super(f, s, '-', 1);
+        super(f, s, '-');
     }
 
     @Override
@@ -18,8 +18,7 @@ public class Subtract extends Operation {
 
     @Override
     public String toMiniString() {
-        // :NOTE: sibling type
-//        boolean right = s.getClass() != Multiply.class && s.getClass() != Divide.class;
-        return miniStringBuilder(false, s instanceof Operation && ((Operation) s).priority < 2);
+        boolean right = s.getClass() != Multiply.class && s.getClass() != Divide.class;
+        return miniStringBuilder(false, right);
     }
 }

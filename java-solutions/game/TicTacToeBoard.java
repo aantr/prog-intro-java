@@ -89,6 +89,21 @@ public class TicTacToeBoard implements Board, Position {
     }
 
     @Override
+    public Cell getTurn() {
+        return turn;
+    }
+
+    @Override
+    public Cell getCell(final int r, final int c) {
+        return cells[r][c];
+    }
+
+    @Override
+    public String getString() {
+        return toString();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(" 012");
         for (int r = 0; r < 3; r++) {
