@@ -5,7 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Md2Html {
 
@@ -35,26 +38,26 @@ public class Md2Html {
     );
 
     private static void readSpecial(
-            final Deque<Element> open, final ArrayList<Element> res,
+            final Deque<String> open, final StringBuilder res,
             final String special, final String str, final int index
     ) {
-        if (!open.isEmpty() && open.getLast().key.equals(OPENED.getOrDefault(special, special))) {
+        if (!open.isEmpty() && open.getLast().equals(OPENED.getOrDefault(special, special))) {
             open.removeLast();
-            res.add(new Element("</%s>".formatted(KEYWORDS.get(special))));
+            res.append("</%s>".formatted(KEYWORDS.get(special)));
         } else if (KEYWORDS.containsKey(special) && index + 1 < str.length() &&
                 !Character.isWhitespace(str.charAt(index + 1))) {
-            res.add(new Element("<%s>".formatted(KEYWORDS.get(special)), special));
-            open.addLast(res.getLast());
+            open.addLast(special);
+            res.append("<%s>".formatted(KEYWORDS.get(special)));
         } else {
             for (final char ch : special.toCharArray()) {
-                res.add(new Element(SCREENING.getOrDefault(ch, Character.toString(ch))));
+                res.append(SCREENING.getOrDefault(ch, Character.toString(ch)));
             }
         }
     }
 
     private static String parse(final String str) {
-        final Deque<Element> open = new ArrayDeque<>();
-        final ArrayList<Element> res = new ArrayList<>();
+        final Deque<String> open = new ArrayDeque<>();
+        final StringBuilder res = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
             if (SPECIAL.contains(Character.toString(c))) {
@@ -67,19 +70,10 @@ public class Md2Html {
                 if (c == '\\' && i + 1 < str.length()) {
                     c = str.charAt(++i);
                 }
-                res.add(new Element(SCREENING.getOrDefault(c, Character.toString(c))));
+                res.append(SCREENING.getOrDefault(c, Character.toString(c)));
             }
         }
-        for (var el : open) {
-            StringBuilder builder = new StringBuilder();
-            for (char c : el.key.toCharArray()) builder.append(SCREENING.getOrDefault(c, Character.toString(c)));
-            el.str = builder.toString();
-        }
-        StringBuilder resString = new StringBuilder();
-        for (var el : res) {
-            resString.append(el.str);
-        }
-        return resString.toString();
+        return res.toString();
     }
 
     private static int levelHeader(final String str) {
