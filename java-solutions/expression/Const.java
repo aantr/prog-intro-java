@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class Const extends BaseExpression {
     // :NOTE: Object
-    private final Number value; // float int
+    private final Object value; // float int
 
     public Const(final int value) {
         this.value = value;

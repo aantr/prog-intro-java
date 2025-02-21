@@ -18,7 +18,8 @@ public class Subtract extends Operation {
 
     @Override
     public String toMiniString() {
+        // :NOTE: sibling type
+//        boolean right = s.getClass() != Multiply.class && s.getClass() != Divide.class;
         return miniStringBuilder(false, s instanceof Operation && ((Operation) s).priority < 2);
     }
 }
-

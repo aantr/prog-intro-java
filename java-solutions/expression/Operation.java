@@ -49,9 +49,9 @@ public abstract class Operation extends BaseExpression {
 
     @Override
     public boolean equals(final Object obj) {
-        if (!(obj instanceof Operation operation)) {
+        if (!(obj instanceof Operation)) {
             return false;
         }
-        return symbol == operation.symbol && f.equals(operation.f) && s.equals((operation.s));
+        return symbol == ((Operation) obj).symbol && f.equals(((Operation) obj).f) && s.equals(((Operation) obj).s);
     }
 }
